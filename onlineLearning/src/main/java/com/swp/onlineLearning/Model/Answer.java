@@ -18,6 +18,6 @@ public class Answer implements Serializable {
     private String AnswerContent;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "LessonTypeID", nullable = false)
-    private LessonType lessonType;
+    @JoinColumn(name = "QuestionID", nullable = false)
+    private Question question;
 }

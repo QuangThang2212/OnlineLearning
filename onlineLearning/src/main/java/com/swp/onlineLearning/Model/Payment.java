@@ -17,7 +17,6 @@ public class Payment implements Serializable {
     @Id
     private String paymentID;
     @Range(min = 0)
-    @NotNull
     @Column(nullable = false)
     private Double Amount;
     @NotNull

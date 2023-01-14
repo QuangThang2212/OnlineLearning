@@ -35,4 +35,13 @@ public class Account implements Serializable {
 
     @OneToMany(mappedBy = "account",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<CourseRate> courseRates;
+
+    @OneToMany(mappedBy = "account",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<QuizResult> quizResult;
+
+    @OneToMany(mappedBy = "account",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Blog> blogs;
+
+    @OneToMany(mappedBy = "account",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<FavouriteBlog> favouriteBlogs;
 }

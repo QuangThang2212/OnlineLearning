@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.Range;
 
 import java.io.Serializable;
@@ -14,26 +15,26 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CourseRate implements Serializable {
+public class QuizResult implements Serializable {
     @Id
-    private String CourseRateID;
-    @NotNull
+    private String QuizResult;
+    @Range(min = 0, max = 10)
     @Column(nullable = false)
-    private boolean EnrollStatus;
-    @Range(min = 1)
-    private int LessonLocation;
+    private float Result;
     @NotNull
     @NotBlank
-    private LocalDateTime EnrollTime;
-    private String content;
-
+    @Column(nullable = false)
+    private LocalDateTime EnrollTimel;
     @NotNull
+    @NotBlank
+    @Column(nullable = false)
+    private LocalDateTime FinishTime;
+    private boolean Status;
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "CourseID", nullable = false)
-    private Course course;
-
-    @NotNull
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "AccountID", nullable = false)
+    @JoinColumn(name = "accountID", nullable = false)
     private Account account;
+
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "quizID", nullable = false)
+    private Quiz quiz;
 }

@@ -1,7 +1,6 @@
 package com.swp.onlineLearning.Model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,9 +20,8 @@ public class Course implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int CourseID;
-    @Column(nullable = false, unique = true)
-    @NotBlank
-    @NotNull
+    @Column(nullable = false, unique = true, length = 70)
+    @Length(min = 10, max = 70)
     private String CourseName;
     @Column(nullable = false, length = 250)
     @Length(min = 40, max = 240, message = "Description length must in range from 40 to 240")
@@ -36,14 +34,20 @@ public class Course implements Serializable {
     @Range(min = 0)
     private Double Price;
     @Range(min = 1,max = 3, message = "Invalid Course status value")
-    @NotNull
     @Column(nullable = false)
     private byte Status;
 
+    @OneToMany(mappedBy = "course",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<LessonPackage> lessonPackages;
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "ExpertID", nullable = false)
     private Account ExpertID;
 
     @OneToMany(mappedBy = "course",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<CourseRate> courseRates;
+
+    @NotNull
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "CourseTypeID", nullable = false)
+    private CourseType courseType;
 }
