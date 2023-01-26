@@ -1,11 +1,13 @@
 package com.swp.onlineLearning.Model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -22,6 +24,9 @@ public class Account implements Serializable {
     private String Avatar;
     @Column(nullable = false)
     private Boolean BanStatus;
+    @NotNull
+    @Column(nullable = false)
+    private LocalDateTime CreateAt;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "RoleID", nullable = false)
@@ -43,5 +48,7 @@ public class Account implements Serializable {
     private List<Blog> blogs;
 
     @OneToMany(mappedBy = "account",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<FavouriteBlog> favouriteBlogs;
+    private List<BlogReact> blogReacts;
+    @OneToMany(mappedBy = "account",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Comment> comments;
 }

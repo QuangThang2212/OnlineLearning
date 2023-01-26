@@ -1,8 +1,6 @@
 package com.swp.onlineLearning.Model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,6 +8,8 @@ import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.Range;
 
 import java.io.Serializable;
+import java.util.List;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -39,4 +39,6 @@ public class Lesson implements Serializable {
 
     @OneToOne(mappedBy = "lesson", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Quiz quiz;
+    @OneToMany(mappedBy = "lesson",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Comment> comments;
 }

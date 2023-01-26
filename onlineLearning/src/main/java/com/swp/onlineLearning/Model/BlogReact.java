@@ -12,7 +12,7 @@ import java.io.Serializable;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class FavouriteBlog implements Serializable {
+public class BlogReact implements Serializable {
     @Id
     private String BlogReactID;
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)

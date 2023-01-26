@@ -25,8 +25,13 @@ public class Payment implements Serializable {
     @NotNull
     @Column(nullable = false)
     private String to;
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "AccountID", nullable = false)
     private Account account;
-
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "CourseID", nullable = false)
+    private Course course;
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "VoucherID")
+    private Voucher voucher;
 }

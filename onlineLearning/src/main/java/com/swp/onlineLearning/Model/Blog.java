@@ -42,5 +42,7 @@ public class Blog implements Serializable {
     private CourseType courseType;
 
     @OneToMany(mappedBy = "blog",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<FavouriteBlog> favouriteBlogs;
+    private List<BlogReact> blogReacts;
+    @OneToMany(mappedBy = "blog",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Comment> comments;
 }

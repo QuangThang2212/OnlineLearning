@@ -32,7 +32,11 @@ public class Course implements Serializable {
     @Column(nullable = false)
     private LocalDateTime CreateDate;
     @Range(min = 0)
-    private Double Price;
+    private double Price;
+    @Range(min = 0)
+    private int NumberOfQuiz;
+    @Range(min = 0)
+    private int NumberOfEnroll;
     @Range(min = 1,max = 3, message = "Invalid Course status value")
     @Column(nullable = false)
     private byte Status;
@@ -50,4 +54,10 @@ public class Course implements Serializable {
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "CourseTypeID", nullable = false)
     private CourseType courseType;
+
+    @OneToMany(mappedBy = "course",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Payment> payments;
+
+    @OneToMany(mappedBy = "course",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Voucher> vouchers;
 }

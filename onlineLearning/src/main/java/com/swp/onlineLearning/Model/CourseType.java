@@ -28,4 +28,6 @@ public class CourseType implements Serializable {
 
     @OneToMany(mappedBy = "courseType",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Course> courses;
+    @OneToMany(mappedBy = "courseType",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Voucher> vouchers;
 }

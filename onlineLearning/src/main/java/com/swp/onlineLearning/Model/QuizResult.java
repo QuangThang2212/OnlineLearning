@@ -6,7 +6,6 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.Range;
 
 import java.io.Serializable;
@@ -31,10 +30,10 @@ public class QuizResult implements Serializable {
     private LocalDateTime FinishTime;
     private boolean Status;
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "accountID", nullable = false)
+    @JoinColumn(name = "AccountID", nullable = false)
     private Account account;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "quizID", nullable = false)
+    @JoinColumn(name = "QuizID", nullable = false)
     private Quiz quiz;
 }
