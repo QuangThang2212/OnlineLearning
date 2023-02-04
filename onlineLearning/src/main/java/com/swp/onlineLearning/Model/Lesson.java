@@ -1,6 +1,6 @@
 package com.swp.onlineLearning.Model;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,7 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 public class Lesson implements Serializable {
     @Id
-    private String PackageID;
+    private String LessonID;
     @Column(nullable = false, length = 70)
     @Length(min = 10, max = 70)
     private String Name;

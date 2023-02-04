@@ -1,7 +1,7 @@
 package com.swp.onlineLearning.Model;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,15 +23,15 @@ public class Payment implements Serializable {
     @Column(nullable = false)
     private LocalDateTime PaymentAt;
     @NotNull
-    @Column(nullable = false)
-    private String to;
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @Column(nullable = false, length = 100)
+    private String toPerson;
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "AccountID", nullable = false)
     private Account account;
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "CourseID", nullable = false)
     private Course course;
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "VoucherID")
     private Voucher voucher;
 }

@@ -1,8 +1,8 @@
 package com.swp.onlineLearning.Model;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,6 +17,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Blog implements Serializable {
+    @Id
     private String BlogID;
     @Column(nullable = false, unique = true, length = 70)
     @Length(min = 10, max = 70)
@@ -24,6 +25,9 @@ public class Blog implements Serializable {
     @Column(nullable = false)
     @Length(min = 10, max = 150)
     private String BlogMeta;
+    @Column(nullable = false)
+    @Length(min = 200, max = 2500)
+    private String Content;
     @NotNull
     @NotBlank
     @Column(nullable = false)
