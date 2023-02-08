@@ -13,9 +13,9 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class Answer implements Serializable {
     @Id
-    private String AnswerID;
+    private String answerID;
     @Range(min = 30)
-    private String AnswerContent;
+    private String answerContent;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "QuestionID", nullable = false)

@@ -18,22 +18,22 @@ import java.util.List;
 @AllArgsConstructor
 public class Blog implements Serializable {
     @Id
-    private String BlogID;
+    private String blogID;
     @Column(nullable = false, unique = true, length = 70)
     @Length(min = 10, max = 70)
-    private String BlogName;
+    private String blogName;
     @Column(nullable = false)
     @Length(min = 10, max = 150)
-    private String BlogMeta;
+    private String blogMeta;
     @Column(nullable = false)
     @Length(min = 200, max = 2500)
-    private String Content;
+    private String content;
     @NotNull
     @NotBlank
     @Column(nullable = false)
-    private LocalDateTime CreateDate;
+    private LocalDateTime createDate;
 
-    private boolean ReportStatus;
+    private boolean reportStatus;
 
     @NotNull
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)

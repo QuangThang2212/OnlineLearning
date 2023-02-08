@@ -15,13 +15,13 @@ import java.util.List;
 @AllArgsConstructor
 public class Quiz implements Serializable {
     @Id
-    private String QuizID;
+    private String quizID;
     @Range(min = 0, max = 10)
-    private float PassCondition;
+    private float passCondition;
     @Range(min = 30)
-    private float Duration;
+    private float duration;
     @Range(min = 0)
-    private float TimeBeforeRetake;
+    private float timeBeforeRetake;
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "LessonID", nullable = false, unique = true)
     private Lesson lesson;

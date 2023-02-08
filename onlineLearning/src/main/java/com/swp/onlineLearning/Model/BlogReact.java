@@ -14,7 +14,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class BlogReact implements Serializable {
     @Id
-    private String BlogReactID;
+    private String blogReactID;
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "AccountID", nullable = false)
     private Account account;

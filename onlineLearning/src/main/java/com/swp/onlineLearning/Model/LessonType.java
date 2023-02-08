@@ -16,10 +16,10 @@ import java.util.List;
 public class LessonType implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int LessonTypeID;
+    private int lessonTypeID;
     @Column(nullable = false, length = 40)
     @Length(max = 40)
-    private String Name;
+    private String name;
 
     @OneToMany(mappedBy = "lessonType",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Lesson> lessons;

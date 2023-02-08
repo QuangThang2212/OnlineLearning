@@ -18,10 +18,10 @@ public class Payment implements Serializable {
     private String paymentID;
     @Range(min = 0)
     @Column(nullable = false)
-    private Double Amount;
+    private Double amount;
     @NotNull
     @Column(nullable = false)
-    private LocalDateTime PaymentAt;
+    private LocalDateTime paymentAt;
     @NotNull
     @Column(nullable = false, length = 100)
     private String toPerson;

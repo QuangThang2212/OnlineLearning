@@ -13,7 +13,7 @@ import java.util.List;
 public class RoleUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int RoleID;
+    private int roleID;
     @Column(nullable = false,unique = true)
     private String name;
     @OneToMany(mappedBy = "role",fetch = FetchType.LAZY, cascade = CascadeType.ALL)

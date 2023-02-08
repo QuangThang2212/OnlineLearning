@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -16,16 +15,16 @@ import java.util.List;
 @AllArgsConstructor
 public class Account implements Serializable {
     @Id
-    private String AccountID;
+    private String accountID;
     @Column(nullable = false)
-    private String AccountName;
-    private String Password;
-    private String Gmail;
-    private String Avatar;
+    private String accountName;
+    private String password;
+    private String gmail;
+    private String avatar;
     @Column(nullable = false)
-    private Boolean BanStatus;
+    private Boolean banStatus;
     @Column(nullable = false)
-    private LocalDateTime CreateAt;
+    private LocalDateTime createAt;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "RoleID", nullable = false)
@@ -34,8 +33,8 @@ public class Account implements Serializable {
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Payment> payments;
 
-    @OneToMany(mappedBy = "ExpertID",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Course> ExpertCourses;
+    @OneToMany(mappedBy = "expertID",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Course> expertCourses;
 
     @OneToMany(mappedBy = "account",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<CourseRate> courseRates;

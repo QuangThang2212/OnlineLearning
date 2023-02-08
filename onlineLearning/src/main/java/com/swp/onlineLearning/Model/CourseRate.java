@@ -16,15 +16,15 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class CourseRate implements Serializable {
     @Id
-    private String CourseRateID;
+    private String courseRateID;
     @NotNull
     @Column(nullable = false)
-    private boolean EnrollStatus;
+    private boolean enrollStatus;
     @Range(min = 1)
-    private int LessonLocation;
+    private int lessonLocation;
     @NotNull
     @NotBlank
-    private LocalDateTime EnrollTime;
+    private LocalDateTime enrollTime;
     private String content;
 
     @NotNull

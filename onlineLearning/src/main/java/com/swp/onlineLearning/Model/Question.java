@@ -15,10 +15,10 @@ import java.util.List;
 @AllArgsConstructor
 public class Question implements Serializable {
     @Id
-    private String QuestionID;
+    private String questionID;
 
     @Range(min = 30)
-    private String QuestionContent;
+    private String questionContent;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "QuizID", nullable = false)

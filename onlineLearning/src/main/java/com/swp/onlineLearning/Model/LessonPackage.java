@@ -16,15 +16,15 @@ import java.util.List;
 @AllArgsConstructor
 public class LessonPackage implements Serializable {
     @Id
-    private String PackageID;
+    private String packageID;
     @Column(nullable = false)
     @Length(min = 10, max = 70)
-    private String Name;
+    private String name;
     @Column(nullable = false)
-    private boolean Status;
+    private boolean status;
     @Range(min = 1)
     @Column(nullable = false)
-    private int PackageLocation;
+    private int packageLocation;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "CourseID", nullable = false)

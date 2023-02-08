@@ -16,19 +16,19 @@ import java.util.List;
 @AllArgsConstructor
 public class Lesson implements Serializable {
     @Id
-    private String LessonID;
+    private String lessonID;
     @Column(nullable = false, length = 70)
     @Length(min = 10, max = 70)
-    private String Name;
+    private String name;
     @Column(nullable = false, length = 250)
     @Length(min = 40, max = 240, message = "Description length must in range from 40 to 240")
-    private String Description;
+    private String description;
     @Column(nullable = false)
-    private boolean Status;
+    private boolean status;
     @Range(min = 1)
     @Column(nullable = false)
-    private int LessonLocation;
-    private String Link;
+    private int lessonLocation;
+    private String link;
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "PackageID", nullable = false)
     private LessonPackage lessonPackage;

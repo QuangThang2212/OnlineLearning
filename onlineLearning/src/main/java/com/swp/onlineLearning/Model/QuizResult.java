@@ -16,19 +16,19 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class QuizResult implements Serializable {
     @Id
-    private String QuizResult;
+    private String quizResult;
     @Range(min = 0, max = 10)
     @Column(nullable = false)
-    private float Result;
+    private float result;
     @NotNull
     @NotBlank
     @Column(nullable = false)
-    private LocalDateTime EnrollTimel;
+    private LocalDateTime enrollTimel;
     @NotNull
     @NotBlank
     @Column(nullable = false)
-    private LocalDateTime FinishTime;
-    private boolean Status;
+    private LocalDateTime finishTime;
+    private boolean status;
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "AccountID", nullable = false)
     private Account account;

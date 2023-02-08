@@ -4,9 +4,10 @@ import com.swp.onlineLearning.Model.RoleUser;
 import com.swp.onlineLearning.Repository.RoleRepo;
 import com.swp.onlineLearning.Service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.Optional;
-
+@Service
 public class RoleServiceImple implements RoleService {
     @Autowired
     private RoleRepo roleRepo;

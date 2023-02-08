@@ -1,7 +1,6 @@
 package com.swp.onlineLearning.Model;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,13 +15,13 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class Comment implements Serializable {
     @Id
-    private String CommentID;
+    private String commentID;
     private String comment;
     @NotNull
     @Column(nullable = false)
-    private LocalDateTime CreateAt;
-    private LocalDateTime UpdateAt;
-    private boolean ReportStatus;
+    private LocalDateTime createAt;
+    private LocalDateTime updateAt;
+    private boolean reportStatus;
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "AccountID", nullable = false)
     private Account account;
@@ -30,7 +29,7 @@ public class Comment implements Serializable {
     @JoinColumn(name = "ParentID")
     private Comment parentID;
     @OneToOne(mappedBy = "parentID",cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private Comment Parent;
+    private Comment parent;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "BlogID")

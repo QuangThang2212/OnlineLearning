@@ -18,29 +18,29 @@ import java.util.List;
 @AllArgsConstructor
 public class Voucher implements Serializable {
     @Id
-    private String VoucherID;
+    private String voucherID;
     @Column(nullable = false, length = 70)
     @Length(min = 10, max = 70)
-    private String Name;
+    private String name;
     @Column(nullable = false, length = 250)
     @Length(min = 40, max = 240, message = "Description length must in range from 40 to 240")
-    private String Description;
+    private String description;
 
     @Range(min = 0)
     @Column(nullable = false)
-    private double Amount;
+    private double amount;
     @NotNull
     @Column(nullable = false)
-    private LocalDateTime StartDate;
+    private LocalDateTime startDate;
     @NotNull
     @Column(nullable = false)
-    private boolean Status;
+    private boolean status;
     @NotNull
     @Column(nullable = false)
-    private float StartApply;
+    private float startApply;
     @NotNull
     @Column(nullable = false)
-    private float Duration;
+    private float duration;
     @OneToMany(mappedBy = "voucher", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Payment> payments;
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
