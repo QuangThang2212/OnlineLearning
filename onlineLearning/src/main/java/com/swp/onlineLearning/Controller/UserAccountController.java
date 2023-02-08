@@ -9,11 +9,9 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class UserAccountController {
     @GetMapping("/login")
     public ResponseEntity<Account> login(){
-        System.out.println("aaaaaaaahhhhhhhhhhhhhh");
         Account account = new Account();
         account.setAccountName("aquang thang");
         return new ResponseEntity<>(account, HttpStatus.OK);
