@@ -16,5 +16,4 @@ public class CourseManagementController {
 
         return null;
     }
-
 }
