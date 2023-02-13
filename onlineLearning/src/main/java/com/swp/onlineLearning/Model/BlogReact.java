@@ -21,7 +21,4 @@ public class BlogReact implements Serializable {
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "BlogID", nullable = false)
     private Blog blog;
-    @NotNull@NotBlank
-    @Column(nullable = false)
-    private String Type;
 }

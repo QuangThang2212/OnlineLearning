@@ -26,17 +26,21 @@ public class Course implements Serializable {
     @Column(nullable = false, length = 250)
     @Length(min = 40, max = 240, message = "Description length must in range from 40 to 240")
     private String description;
+    private String image;
     @Range(min = 1, max = 5)
     private float starRated;
     @NotNull
     @Column(nullable = false)
     private LocalDateTime createDate;
+
     @Range(min = 0)
     private double price;
     @Range(min = 0)
     private int numberOfQuiz;
     @Range(min = 0)
     private int numberOfEnroll;
+    @Range(min = 0)
+    private int numberOfFavorite;
     @Range(min = 1,max = 3, message = "Invalid Course status value")
     @Column(nullable = false)
     private byte status;

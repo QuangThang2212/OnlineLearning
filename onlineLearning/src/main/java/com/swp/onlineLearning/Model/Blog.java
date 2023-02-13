@@ -33,7 +33,7 @@ public class Blog implements Serializable {
     @Column(nullable = false)
     private LocalDateTime createDate;
 
-    private boolean reportStatus;
+    private byte reportStatus;
 
     @NotNull
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)

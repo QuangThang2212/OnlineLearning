@@ -6,6 +6,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/blog")
+@RequestMapping("/api/blog")
 public class BlogManagementController {
 }

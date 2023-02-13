@@ -3,6 +3,7 @@ package com.swp.onlineLearning.Model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.*;
 import java.util.List;
@@ -18,4 +19,5 @@ public class RoleUser {
     private String name;
     @OneToMany(mappedBy = "role",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Account> accounts;
+
 }

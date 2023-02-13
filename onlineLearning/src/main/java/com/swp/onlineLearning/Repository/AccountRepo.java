@@ -10,7 +10,7 @@ import java.util.Optional;
 @Repository
 public interface AccountRepo extends JpaRepository<Account, String> {
     List<Account> findAll();
-    Optional<Account> findByAccountNameAndPassword(String accountName, String pass);
-    Optional<Account> findByAccountName(String accountName);
+    Optional<Account> findByGmailAndPassword(String Gmail, String pass);
+    Account findByGmail(String Gmail);
     Account save(Account account);
 }

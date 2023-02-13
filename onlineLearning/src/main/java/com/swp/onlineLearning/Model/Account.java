@@ -3,6 +3,9 @@ package com.swp.onlineLearning.Model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -17,8 +20,9 @@ public class Account implements Serializable {
     @Id
     private String accountID;
     @Column(nullable = false)
-    private String accountName;
+    private String name;
     private String password;
+    @Column(unique = true)
     private String gmail;
     private String avatar;
     @Column(nullable = false)
@@ -49,4 +53,5 @@ public class Account implements Serializable {
     private List<BlogReact> blogReacts;
     @OneToMany(mappedBy = "account",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Comment> comments;
+
 }

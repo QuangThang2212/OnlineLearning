@@ -8,14 +8,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api/home")
 public class CommonActionController {
     @Autowired
     private CourseService courseService;
-    @GetMapping({"/","/home"})
+    @GetMapping()
     public ResponseEntity<HomePageObject> homePage(){
         HomePageObject homePageObject = courseService.getHomepageInfor();
 
