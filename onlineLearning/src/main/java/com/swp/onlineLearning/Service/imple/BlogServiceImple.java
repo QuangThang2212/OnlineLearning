@@ -2,8 +2,10 @@ package com.swp.onlineLearning.Service.imple;
 
 import com.swp.onlineLearning.DTO.BlogDTO;
 import com.swp.onlineLearning.Model.Blog;
+import com.swp.onlineLearning.Model.CourseType;
 import com.swp.onlineLearning.Repository.BlogRepo;
 import com.swp.onlineLearning.Repository.CourseRepo;
+import com.swp.onlineLearning.Repository.CourseTypeRepo;
 import com.swp.onlineLearning.Service.BlogService;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -23,7 +25,8 @@ public class BlogServiceImple implements BlogService {
     private BlogRepo blogRepo;
     @Autowired
     private PasswordEncoder passwordEncoder;
-
+    @Autowired
+    private CourseTypeRepo courseTypeRepo;
 
     @Override
     public HashMap<String, Object> save(BlogDTO blogDTO) {
@@ -35,7 +38,7 @@ public class BlogServiceImple implements BlogService {
             return json;
         }
 
-        Blog blogTypeCheck = blogRepo.findByTitle(blogDTO.getBlogName());
+        Blog blogTypeCheck = blogRepo.findByBlogName(blogDTO.getBlogName());
         if (blogTypeCheck != null){
             log.error(blogDTO.getBlogName()+" had already exist in system");
             json.put("msg", blogDTO.getBlogName()+" had already exist in system");
@@ -43,12 +46,19 @@ public class BlogServiceImple implements BlogService {
         }
         blogDTO.setCreateDate(LocalDateTime.now());
         blogDTO.setBlogID(passwordEncoder.encode(blogDTO.getBlogName()));
+        CourseType courseType = courseTypeRepo.findByCourseTypeID(blogDTO.getCourseTypeId());
 
-
+        if(courseType == null){
+            log.error("Type not exist in system");
+            json.put("msg","Type not exist in system");
+            return json;
+        }
 
         ModelMapper modelMapper = new ModelMapper();
         Blog blog = new Blog();
         modelMapper.map(blogDTO,blog);
+
+        blog.setCourseType(courseType);
 
         try {
             blogRepo.save(blog);

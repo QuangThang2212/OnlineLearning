@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository;
 public interface BlogRepo extends JpaRepository<Blog,Integer> {
     Blog save(Blog blog);
 
-    Blog findByTitle(String name);
+    Blog findByBlogName(String name);
 }
