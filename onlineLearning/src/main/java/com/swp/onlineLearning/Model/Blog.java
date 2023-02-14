@@ -17,6 +17,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Blog implements Serializable {
+
     @Id
     private String blogID;
     @Column(nullable = false, unique = true, length = 70)

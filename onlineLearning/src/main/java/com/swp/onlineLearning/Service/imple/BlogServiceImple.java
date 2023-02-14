@@ -8,8 +8,10 @@ import com.swp.onlineLearning.Service.BlogService;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 @Slf4j
 @Service
@@ -19,6 +21,9 @@ public class BlogServiceImple implements BlogService {
 
     @Autowired
     private BlogRepo blogRepo;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
 
     @Override
     public HashMap<String, Object> save(BlogDTO blogDTO) {
@@ -30,12 +35,16 @@ public class BlogServiceImple implements BlogService {
             return json;
         }
 
-        Blog blogTypeCheck = blogRepo.findByBlogTypeName(blogDTO.getBlogName());
+        Blog blogTypeCheck = blogRepo.findByTitle(blogDTO.getBlogName());
         if (blogTypeCheck != null){
             log.error(blogDTO.getBlogName()+" had already exist in system");
             json.put("msg", blogDTO.getBlogName()+" had already exist in system");
             return json;
         }
+        blogDTO.setCreateDate(LocalDateTime.now());
+        blogDTO.setBlogID(passwordEncoder.encode(blogDTO.getBlogName()));
+
+
 
         ModelMapper modelMapper = new ModelMapper();
         Blog blog = new Blog();
@@ -49,7 +58,6 @@ public class BlogServiceImple implements BlogService {
             json.put("msg", "Save Blog type with name " + blog.getBlogName()+" fail");
             return json;
         }
-
         log.info("Saving new Blog type with name:"+ blog.getBlogName()+" successfully");
         json.put("msg", "Saving new Blog type with name:"+ blog.getBlogName()+" successfully");
         json.replace("type",true);

@@ -7,6 +7,7 @@ import com.swp.onlineLearning.Model.CourseType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -16,26 +17,13 @@ import java.util.List;
 public class BlogDTO {
 
     private String blogID;
-
     private String blogName;
-
     private String blogMeta;
-
     private String content;
-
-
     private LocalDateTime createDate;
-
+    @Value("0")
     private byte reportStatus;
 
+    private int courseTypeId;
 
-    private Account account;
-
-
-    private CourseType courseType;
-
-
-    private List<BlogReact> blogReacts;
-
-    private List<Comment> comments;
 }
