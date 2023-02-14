@@ -10,7 +10,9 @@ import java.util.Optional;
 @Repository
 public interface CourseRepo extends JpaRepository<Course, String> {
     List<Course> findAll();
-    Optional<Course> findById(String courseID);
+    Optional<Course> findByCourseID(int courseID);
+    @Query(nativeQuery = true, value = "Select * From Course a where a.courseRateID = ?")
+    List<Course> findByCourseType(int id);
     Course save(Course course);
     void delete(Course course);
     @Query(nativeQuery = true, value = "Select (Top 8) * From Course OrderBy NumberOfEnroll DEC")

@@ -55,7 +55,7 @@ public class Course implements Serializable {
     private List<CourseRate> courseRates;
 
     @NotNull
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "courseTypeID", nullable = false)
     private CourseType courseType;
 
