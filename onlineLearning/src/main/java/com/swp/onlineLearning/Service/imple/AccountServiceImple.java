@@ -123,14 +123,25 @@ public class AccountServiceImple implements AccountService, UserDetailsService {
     }
 
     @Override
-    public Account update(UserDTO userDTO) {
+    public HashMap<String, Object> activeAccount(UserDTO userDTO) {
+        HashMap<String, Object> json = new HashMap<>();
+        json.put("type",false);
         if(userDTO==null){
-            return null;
+            log.error("Not allow null account to register");
+            json.put("msg", "Not allow null account to register");
+            return json;
         }
-        ModelMapper modelMapper = new ModelMapper();
-        Account account = new Account();
-        modelMapper.map(userDTO, account);
-        return accountRepo.save(account);
+
+        return null;
+    }
+
+    @Override
+    public HashMap<String, Object> update(int id) {
+        HashMap<String, Object> json = new HashMap<>();
+        json.put("type",false);
+
+
+        return null;
     }
 
 }

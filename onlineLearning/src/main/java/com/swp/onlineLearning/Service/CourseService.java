@@ -1,12 +1,14 @@
 package com.swp.onlineLearning.Service;
 
-import com.swp.onlineLearning.DTO.HomePageObject;
+import com.swp.onlineLearning.DTO.CourseDTO;
 import com.swp.onlineLearning.Model.Course;
 
+import java.util.HashMap;
+
 public interface CourseService {
-    HomePageObject getHomepageInfor();
+    HashMap<String, Object> getHomepageInfor();
     Course findById(String courseID);
-    Course save(Course course);
+    HashMap<String, Object> save(CourseDTO courseDTO);
     Course update (Course course);
     Course Delete (Course course);
 }

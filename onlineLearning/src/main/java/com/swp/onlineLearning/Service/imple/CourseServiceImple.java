@@ -1,35 +1,47 @@
 package com.swp.onlineLearning.Service.imple;
 
-import com.swp.onlineLearning.DTO.HomePageObject;
+import com.swp.onlineLearning.DTO.CourseDTO;
 import com.swp.onlineLearning.Model.Course;
 import com.swp.onlineLearning.Repository.CourseRepo;
 import com.swp.onlineLearning.Service.CourseService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.util.HashMap;
+
 @Service
+@Slf4j
 public class CourseServiceImple implements CourseService {
     @Autowired
     private CourseRepo courseRepo;
     @Override
-    public HomePageObject getHomepageInfor() {
-        HomePageObject homePageObject = new HomePageObject();
-        homePageObject.setPopularCourse(courseRepo.findTop8PopularCourse());
-        homePageObject.setFreePopularCourse(courseRepo.findTop8FreePopularCourse());
-        homePageObject.setNewestCourse(courseRepo.findTop8NewestCourse());
-        homePageObject.setFamousPaidCourses(courseRepo.findTop8FamousPaidCourses());
-        return homePageObject;
+    public HashMap<String, Object> getHomepageInfor() {
+        HashMap<String, Object> json = new HashMap<>();
+
+        json.put("PopularCourse", courseRepo.findTop8PopularCourse());
+        json.put("FreePopularCourse", courseRepo.findTop8FreePopularCourse());
+        json.put("NewestCourse", courseRepo.findTop8NewestCourse());
+        json.put("FamousPaidCourses", courseRepo.findTop8FamousPaidCourses());
+
+        return json;
     }
 
     @Override
     public Course findById(String courseID) {
-        Optional<Course> course = courseRepo.findById(courseID);
-        return course.orElse(null);
+        return null;
     }
 
     @Override
-    public Course save(Course course) {
+    public HashMap<String, Object> save(CourseDTO courseDTO) {
+        HashMap<String, Object> json = new HashMap<>();
+        json.put("type",false);
+        if(courseDTO == null ){
+            log.error("Not allow pass object null");
+            json.put("msg", "Not allow pass object null");
+            return json;
+        }
+
         return null;
     }
 

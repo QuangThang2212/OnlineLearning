@@ -21,7 +21,7 @@ public class Comment implements Serializable {
     @Column(nullable = false)
     private LocalDateTime createAt;
     private LocalDateTime updateAt;
-    private boolean reportStatus;
+    private byte reportStatus;
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "AccountID", nullable = false)
     private Account account;
