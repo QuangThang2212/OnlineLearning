@@ -24,7 +24,7 @@ public class JWTUtil {
                 .setClaims(claims)
                 .setSubject(account.getAccountID())
                 .setSubject(account.getName())
-                .setSubject(account.getAvatar())
+                .setSubject(account.getImage())
                 .setSubject(account.getRole().getName())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))

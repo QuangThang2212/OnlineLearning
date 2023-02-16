@@ -3,9 +3,6 @@ package com.swp.onlineLearning.Model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -24,7 +21,7 @@ public class Account implements Serializable {
     private String password;
     @Column(unique = true)
     private String gmail;
-    private String avatar;
+    private String image;
     @Column(nullable = false)
     private Boolean banStatus;
     @Column(nullable = false)

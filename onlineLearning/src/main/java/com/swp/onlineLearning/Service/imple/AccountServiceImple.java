@@ -1,6 +1,5 @@
 package com.swp.onlineLearning.Service.imple;
 
-import com.swp.onlineLearning.Config.ApplicationConfig;
 import com.swp.onlineLearning.DTO.UserDTO;
 import com.swp.onlineLearning.Model.Account;
 import com.swp.onlineLearning.Model.RoleUser;
@@ -93,7 +92,6 @@ public class AccountServiceImple implements AccountService, UserDetailsService {
         ModelMapper modelMapper = new ModelMapper();
         Account account = new Account();
         modelMapper.map(userDTO, account);
-
         //save role
         RoleUser role = roleRepo.findByName(roleUserName);
         if(role==null){
