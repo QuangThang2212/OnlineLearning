@@ -69,9 +69,14 @@ public class AccountServiceImple implements AccountService, UserDetailsService {
     }
 
     @Override
-    public Account findByGmail(String gmail) {
+    public HashMap<String, Object> findByGmail(String gmail) {
+        HashMap<String, Object> json = new HashMap<>();
+        json.put("type",false);
         Account accountFind = accountRepo.findByGmail(gmail);
-        return accountFind;
+        json.put("name",accountFind.getName());
+        json.put("image",accountFind.getImage());
+        json.put("id",accountFind.getAccountID());
+        return json;
     }
 
     @Override

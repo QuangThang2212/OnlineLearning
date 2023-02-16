@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 
@@ -43,8 +44,9 @@ public class UserAccountController {
             json.put("msg","Incorrect username or password");
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
-        final Account account = accountService.findByGmail(userDTO.getGmail());
-        final String token = jwtUtil.generateToken(account);
+        final HashMap<String, Object> account = accountService.findByGmail(userDTO.getGmail());
+        final UserDetails userDetails = userDetailsService.loadUserByUsername(userDTO.getGmail());
+        final String token = jwtUtil.generateToken(userDetails);
         if(token==null){
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }

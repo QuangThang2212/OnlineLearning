@@ -18,14 +18,12 @@ public class JWTUtil {
         this.expiration = expiration;
     }
 
-    public String generateToken(Account account) {
+    public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
         return Jwts.builder()
                 .setClaims(claims)
-                .setSubject(account.getAccountID())
-                .setSubject(account.getName())
-                .setSubject(account.getImage())
-                .setSubject(account.getRole().getName())
+                .setSubject(userDetails.getUsername())
+                .setSubject(userDetails.getAuthorities().toString())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(SignatureAlgorithm.HS512, secret)
