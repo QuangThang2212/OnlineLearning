@@ -1,5 +1,6 @@
 package com.swp.onlineLearning.Service.imple;
 
+import com.swp.onlineLearning.DTO.RoleDTO;
 import com.swp.onlineLearning.DTO.UserDTO;
 import com.swp.onlineLearning.Model.Account;
 import com.swp.onlineLearning.Model.RoleUser;
@@ -10,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -31,6 +34,8 @@ public class AccountServiceImple implements AccountService, UserDetailsService {
     private RoleRepo roleRepo;
     @Value("${role.user}")
     private String roleUserName;
+    @Value("${role.courseExpert}")
+    private String roleCourseExpert;
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -48,35 +53,50 @@ public class AccountServiceImple implements AccountService, UserDetailsService {
             log.info("User found");
         }
         Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority(account.getRole().getName()));
+        authorities.add(new SimpleGrantedAuthority(account.getRoleUser().getName()));
         return new org.springframework
                 .security.core
                 .userdetails
                 .User(account.getName(), account.getPassword(), authorities);
     }
     @Override
-    public HashMap<String, Object> findAll(int pageNumber) {
+    public HashMap<String, Object> findAllExcept(String gmail, int pageNumber, int size) {
         HashMap<String, Object> json = new HashMap<>();
         json.put("type",false);
-        List<Account> accounts = accountRepo.findAll();
-        if(accounts.size()==0){
-            log.error("0 account founded");
-            json.put("msg", "NoAccountFound");
+        if(pageNumber<1 || size <1){
+            log.error("Invalid page "+pageNumber+" or size "+size);
+            json.put("msg", "Invalid page "+pageNumber+" or size "+size);
             return json;
         }
-        json.put("users",json);
+
+        int totalNumber = accountRepo.findAllExcept(gmail, PageRequest.of(pageNumber-1,size)).getTotalPages();
+        if(totalNumber==0){
+            log.error("0 account founded");
+            json.put("msg", "0 account founded for page");
+            return json;
+        }else if(pageNumber>totalNumber){
+            log.error("invalid page "+pageNumber);
+            json.put("msg", "invalid page "+pageNumber);
+            return json;
+        }
+        
+        Page<Account> accounts = accountRepo.findAllExcept(gmail, PageRequest.of(pageNumber-1,size));
+        if(accounts.isEmpty()){
+            log.error("0 account founded for page "+pageNumber);
+            json.put("msg", "0 account founded for page "+pageNumber);
+            return json;
+        }
+        List<Account> list = accounts.stream().toList();
+        
+        json.put("users",list);
+        json.put("numPage",totalNumber);
+        json.put("type",true);
         return json;
     }
 
     @Override
-    public HashMap<String, Object> findByGmail(String gmail) {
-        HashMap<String, Object> json = new HashMap<>();
-        json.put("type",false);
-        Account accountFind = accountRepo.findByGmail(gmail);
-        json.put("name",accountFind.getName());
-        json.put("image",accountFind.getImage());
-        json.put("id",accountFind.getAccountID());
-        return json;
+    public Account findByGmail(String gmail) {
+        return accountRepo.findByGmail(gmail);
     }
 
     @Override
@@ -88,10 +108,15 @@ public class AccountServiceImple implements AccountService, UserDetailsService {
             json.put("msg", "Not allow null account to register");
             return json;
         }
+        String id = passwordEncoder.encode(userDTO.getGmail());
+        if(id.length()>20){
+            userDTO.setAccountID(id.substring(id.length()-15));
+        }else{
+            userDTO.setAccountID(id);
+        }
         //object validation
         userDTO.setCreateAt(LocalDateTime.now());
         userDTO.setBanStatus(false);
-        userDTO.setAccountID(passwordEncoder.encode(userDTO.getGmail()));
         userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
 
         ModelMapper modelMapper = new ModelMapper();
@@ -108,9 +133,9 @@ public class AccountServiceImple implements AccountService, UserDetailsService {
                 json.put("msg", "Save role "+roleUserName+" fail");
                 return json;
             }
-            account.setRole(roleCheck);
+            account.setRoleUser(roleCheck);
         }else{
-            account.setRole(role);
+            account.setRoleUser(role);
         }
 
         //check exits mail
@@ -156,6 +181,69 @@ public class AccountServiceImple implements AccountService, UserDetailsService {
 
 
         return null;
+    }
+
+    @Override
+    public HashMap<String, Object> changRole(RoleDTO roleDTO) {
+        HashMap<String, Object> json = new HashMap<>();
+        json.put("type",false);
+        if(roleDTO==null){
+            log.error("Not allow null account to register");
+            json.put("msg", "Not allow null account to register");
+            return json;
+        }
+        RoleUser roleUser = roleRepo.findByName(roleDTO.getName());
+        if(roleUser == null){
+            log.error("This role \""+roleDTO.getName()+"\" not exist in the system");
+            json.put("msg", "This role \""+roleDTO.getName()+"\" not exist in the system");
+            return json;
+        }
+        Account account = accountRepo.getById(roleDTO.getAccountID());
+        if(account == null){
+            log.error("Account with id="+roleDTO.getAccountID()+" not exist in the system");
+            json.put("msg", "Account with id="+roleDTO.getAccountID()+" not exist in the system");
+            return json;
+        }
+
+        try{
+            account.setRoleUser(roleUser);
+            accountRepo.save(account);
+        }catch (Exception e) {
+            log.error("Change role for account with id="+roleDTO.getAccountID()+" fail\n" +e.getMessage());
+            json.put("msg", "Change role for account with id="+roleDTO.getAccountID()+" fail");
+            return json;
+        }
+        log.error("Change role for account with id="+roleDTO.getAccountID()+" successfully");
+        json.put("msg", "Change role for account with id="+roleDTO.getAccountID()+" successfully");
+        json.put("type",true);
+        return json;
+    }
+
+    @Override
+    public HashMap<String, Object> findBAllCourseExpert() {
+        HashMap<String, Object> json = new HashMap<>();
+        json.put("type",false);
+        if(roleCourseExpert==""||roleCourseExpert==null){
+            log.error("Can't found course expert role");
+            json.put("msg", "Can't found course expert role");
+            return json;
+        }
+        RoleUser roleUser = roleRepo.findByName(roleCourseExpert);
+        if(roleUser==null){
+            log.error("Can't found course expert role");
+            json.put("msg", "Can't found course expert role");
+            return json;
+        }
+        List<Account> accounts = accountRepo.findByRoleUser(roleUser);
+        if(accounts.isEmpty()){
+            log.error("0 course expert found on the system");
+            json.put("msg", "0 course expert found on the system");
+            return json;
+        }
+        json.put("msg", accounts.size()+" course expert found on the system");
+        json.put("users", accounts);
+        json.put("type",true);
+        return json;
     }
 
 }

@@ -7,6 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,19 +28,23 @@ public class BlogManagementController {
 
 
     @PostMapping("/create")
-    public ResponseEntity<HashMap> createBlogType(@Valid @RequestBody BlogDTO blogDTO) throws Exception{
-        HashMap<String,Object> json = blogService.save(blogDTO);
-        String type = "false";
-        try {
-            type = json.get("type").toString();
-        }catch (Exception e){
-            log.error("type value of save blog type message unavailable \n" +e.getMessage());
-        }
-
-        if (type.equals("true")){
-            return  new ResponseEntity<>(json, HttpStatus.OK);
-        }else{
+    public ResponseEntity<HashMap> createBlogType(@Valid @RequestBody BlogDTO blogDTO, BindingResult result) throws Exception{
+        HashMap<String, Object> json = new HashMap<>();
+        StringBuffer stringBuffer = new StringBuffer();
+        if (result.hasErrors()) {
+            for (FieldError error : result.getFieldErrors()) {
+                stringBuffer.append(error.getDefaultMessage()+" \n") ;
+            }
+            json.put("msg",stringBuffer.toString());
             return new ResponseEntity<>(json,HttpStatus.BAD_REQUEST);
+        }
+        json = blogService.save(blogDTO);
+
+        String type = json.get("type").toString();
+        if(type.equals("true")){
+            return new ResponseEntity<>(json, HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
     }
 }

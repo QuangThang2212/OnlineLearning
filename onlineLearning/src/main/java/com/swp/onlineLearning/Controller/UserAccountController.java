@@ -12,12 +12,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
-import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -30,8 +28,7 @@ public class UserAccountController {
     private UserDetailsService userDetailsService;
     @Autowired
     private AuthenticationManager authenticationManager;
-    @Autowired
-    private JWTUtil jwtUtil;
+
 
     @PostMapping("/login")
     public ResponseEntity<HashMap> login(@RequestBody UserDTO userDTO) {
@@ -44,25 +41,23 @@ public class UserAccountController {
             json.put("msg","Incorrect username or password");
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
-        final HashMap<String, Object> account = accountService.findByGmail(userDTO.getGmail());
-        final UserDetails userDetails = userDetailsService.loadUserByUsername(userDTO.getGmail());
-        final String token = jwtUtil.generateToken(userDetails);
+        final Account account = accountService.findByGmail(userDTO.getGmail());
+
+        final String token = JWTUtil.generateToken(account);
         if(token==null){
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
         json.put("token",token);
+        json.put("name",account.getName());
+        json.put("image",account.getImage());
+        json.put("id",account.getAccountID());
         return new ResponseEntity<>(json, HttpStatus.OK);
     }
     @PostMapping("/register")
     public ResponseEntity<HashMap> register(@RequestBody UserDTO userDTO) throws Exception {
         HashMap<String, Object> json = accountService.save(userDTO);
-        String type = "false";
-        try{
-            type = json.get("type").toString();
-        }catch (Exception e){
-            log.error("type value of save account message unavailable \n" +e.getMessage());
-        }
 
+        String type = json.get("type").toString();
         if(type.equals("true")){
             return new ResponseEntity<>(json, HttpStatus.OK);
         }else{
