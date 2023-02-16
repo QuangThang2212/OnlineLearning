@@ -1,5 +1,6 @@
 package com.swp.onlineLearning.Config;
 
+import com.swp.onlineLearning.Model.Account;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,12 +18,14 @@ public class JWTUtil {
         this.expiration = expiration;
     }
 
-    public String generateToken(UserDetails userDetails) {
+    public String generateToken(Account account) {
         Map<String, Object> claims = new HashMap<>();
         return Jwts.builder()
                 .setClaims(claims)
-                .setSubject(userDetails.getUsername())
-                .setSubject(userDetails.getAuthorities().toString())
+                .setSubject(account.getAccountID())
+                .setSubject(account.getName())
+                .setSubject(account.getAvatar())
+                .setSubject(account.getRole().getName())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(SignatureAlgorithm.HS512, secret)

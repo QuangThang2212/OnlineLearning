@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface AccountService {
     HashMap<String, Object> findAll(int pageNumber);
-    Account findByGmailAndPassword(Account account);
+    Account findByGmail(String gmail);
     HashMap<String, Object> save(UserDTO userDTO);
     HashMap<String, Object> activeAccount(UserDTO userDTO);
     HashMap<String, Object> update(int id);

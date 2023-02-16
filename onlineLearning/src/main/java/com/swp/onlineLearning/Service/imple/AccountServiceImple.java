@@ -70,9 +70,9 @@ public class AccountServiceImple implements AccountService, UserDetailsService {
     }
 
     @Override
-    public Account findByGmailAndPassword(Account account) {
-        Optional<Account> accountFind = accountRepo.findByGmailAndPassword(account.getName(), account.getPassword());
-        return accountFind.orElse(null);
+    public Account findByGmail(String gmail) {
+        Account accountFind = accountRepo.findByGmail(gmail);
+        return accountFind;
     }
 
     @Override

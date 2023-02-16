@@ -10,7 +10,6 @@ import java.util.Optional;
 @Repository
 public interface AccountRepo extends JpaRepository<Account, String> {
     List<Account> findAll();
-    Optional<Account> findByGmailAndPassword(String Gmail, String pass);
     Account findByGmail(String Gmail);
     Account save(Account account);
 }
