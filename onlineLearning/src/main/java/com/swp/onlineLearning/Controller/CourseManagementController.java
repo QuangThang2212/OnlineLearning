@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.util.HashMap;
 
 @RestController
@@ -15,8 +16,9 @@ import java.util.HashMap;
 @RequestMapping("/api/course")
 public class CourseManagementController {
     @PostMapping("/create")
-    public ResponseEntity<HashMap> createNewCourse(@RequestBody CourseDTO CourseDTO){
-
+    public ResponseEntity<HashMap> createNewCourse(@Valid @RequestBody CourseDTO CourseDTO){
+        System.out.println(CourseDTO);
+        System.out.println("hello");
         return null;
     }
 }

@@ -15,6 +15,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -31,6 +32,8 @@ public class AccountServiceImple implements AccountService, UserDetailsService {
     private RoleRepo roleRepo;
     @Value("${role.user}")
     private String roleUserName;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -38,7 +41,6 @@ public class AccountServiceImple implements AccountService, UserDetailsService {
             log.error("User name input null");
             throw new UsernameNotFoundException("User name input null");
         }
-        System.out.println(username);
         Account account = accountRepo.findByGmail(username);
         if(account == null){
             log.error("User not found in the database");
@@ -54,8 +56,17 @@ public class AccountServiceImple implements AccountService, UserDetailsService {
                 .User(account.getName(), account.getPassword(), authorities);
     }
     @Override
-    public List<Account> findAll() {
-        return accountRepo.findAll();
+    public HashMap<String, Object> findAll(int pageNumber) {
+        HashMap<String, Object> json = new HashMap<>();
+        json.put("type",false);
+        List<Account> accounts = accountRepo.findAll();
+        if(accounts.size()==0){
+            log.error("0 account founded");
+            json.put("msg", "NoAccountFound");
+            return json;
+        }
+        json.put("users",json);
+        return json;
     }
 
     @Override
@@ -76,8 +87,8 @@ public class AccountServiceImple implements AccountService, UserDetailsService {
         //object validation
         userDTO.setCreateAt(LocalDateTime.now());
         userDTO.setBanStatus(false);
-        userDTO.setAccountID(ApplicationConfig.passwordEncoder().encode(userDTO.getGmail()));
-        userDTO.setPassword(ApplicationConfig.passwordEncoder().encode(userDTO.getPassword()));
+        userDTO.setAccountID(passwordEncoder.encode(userDTO.getGmail()));
+        userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
 
         ModelMapper modelMapper = new ModelMapper();
         Account account = new Account();

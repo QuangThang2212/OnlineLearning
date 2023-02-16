@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public interface AccountService {
-    List<Account> findAll();
+    HashMap<String, Object> findAll(int pageNumber);
     Account findByGmailAndPassword(Account account);
     HashMap<String, Object> save(UserDTO userDTO);
     HashMap<String, Object> activeAccount(UserDTO userDTO);

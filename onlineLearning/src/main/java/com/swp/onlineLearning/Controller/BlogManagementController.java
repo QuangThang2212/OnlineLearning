@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.util.HashMap;
 
 @Slf4j
@@ -25,7 +26,7 @@ public class BlogManagementController {
 
 
     @PostMapping("/create")
-    public ResponseEntity<HashMap> createBlogType(@RequestBody BlogDTO blogDTO) throws Exception{
+    public ResponseEntity<HashMap> createBlogType(@Valid @RequestBody BlogDTO blogDTO) throws Exception{
         HashMap<String,Object> json = blogService.save(blogDTO);
         String type = "false";
         try {

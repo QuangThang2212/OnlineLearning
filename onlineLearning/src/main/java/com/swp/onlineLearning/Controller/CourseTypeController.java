@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.HashMap;
 
 @RestController
@@ -25,7 +26,7 @@ public class CourseTypeController {
         return new ResponseEntity<>(json, HttpStatus.OK);
     }
     @PostMapping("/create")
-    public ResponseEntity<HashMap> createCourseType(@RequestBody CourseTypeDTO courseTypeDTO) throws Exception {
+    public ResponseEntity<HashMap> createCourseType(@Valid @RequestBody CourseTypeDTO courseTypeDTO) throws Exception {
         HashMap<String, Object> json = courseTypeService.save(courseTypeDTO);
         String type = "false";
         try{
@@ -40,7 +41,7 @@ public class CourseTypeController {
         }
     }
     @PostMapping("/update/id={id}")
-    public ResponseEntity<HashMap> updateCourseType(@RequestBody CourseTypeDTO courseTypeDTO,@PathVariable("id") int id) throws Exception {
+    public ResponseEntity<HashMap> updateCourseType(@Valid @RequestBody CourseTypeDTO courseTypeDTO,@PathVariable("id") int id) throws Exception {
         courseTypeDTO.setCourseTypeID(id);
         HashMap<String, Object> json = courseTypeService.update(courseTypeDTO);
         String type = "false";
@@ -56,9 +57,8 @@ public class CourseTypeController {
         }
     }
     @PostMapping("/delete/id={id}")
-    public ResponseEntity<HashMap> deleteCourseType(@RequestBody CourseTypeDTO courseTypeDTO, @PathVariable("id") int id) throws Exception {
-        courseTypeDTO.setCourseTypeID(id);
-        HashMap<String, Object> json = courseTypeService.delete(courseTypeDTO);
+    public ResponseEntity<HashMap> deleteCourseType(@PathVariable("id") int id) throws Exception {
+        HashMap<String, Object> json = courseTypeService.delete(id);
         String type = "false";
         try{
             type = json.get("type").toString();
