@@ -1,6 +1,5 @@
 package com.swp.onlineLearning.Config;
 
-import com.swp.onlineLearning.Model.Account;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.security.core.userdetails.UserDetails;
