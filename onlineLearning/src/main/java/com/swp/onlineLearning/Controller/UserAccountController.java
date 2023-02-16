@@ -49,7 +49,7 @@ public class UserAccountController {
         final UserDetails userDetails = userDetailsService.loadUserByUsername(userDTO.getGmail());
         final String token = jwtUtil.generateToken(userDetails);
         if(token==null){
-            return new ResponseEntity<>(json, HttpStatus.OK);
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
         json.put("token",token);
         return new ResponseEntity<>(json, HttpStatus.OK);
