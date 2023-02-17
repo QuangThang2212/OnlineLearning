@@ -1,8 +1,10 @@
 package com.swp.onlineLearning.Service.imple;
 
 import com.swp.onlineLearning.DTO.BlogDTO;
+import com.swp.onlineLearning.Model.Account;
 import com.swp.onlineLearning.Model.Blog;
 import com.swp.onlineLearning.Model.CourseType;
+import com.swp.onlineLearning.Repository.AccountRepo;
 import com.swp.onlineLearning.Repository.BlogRepo;
 import com.swp.onlineLearning.Repository.CourseRepo;
 import com.swp.onlineLearning.Repository.CourseTypeRepo;
@@ -27,6 +29,9 @@ public class BlogServiceImple implements BlogService {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private CourseTypeRepo courseTypeRepo;
+
+    @Autowired
+    private AccountRepo accountRepo;
 
     @Override
     public HashMap<String, Object> save(BlogDTO blogDTO) {
@@ -53,6 +58,13 @@ public class BlogServiceImple implements BlogService {
             json.put("msg","Type not exist in system");
             return json;
         }
+
+//        Account account = accountRepo.findAll();
+//        if(account == null){
+//            log.error(blogDTO.getAccount()+"Account already exist in system");
+//            json.put("msg", blogDTO.getBlogName()+" Account already exist in system");
+//            return json;
+//        }
 
         ModelMapper modelMapper = new ModelMapper();
         Blog blog = new Blog();
