@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.swp.onlineLearning.Config.JWTUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -31,23 +32,24 @@ public class AuthenticationFilter extends BasicAuthenticationFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-//        final String token;
-//        if(request.getMethod() == "get"){
-//            token = request.getParameter("token");
-//        }else{
-//            ObjectMapper objectMapper = new ObjectMapper();
-//            JsonNode jsonNode = objectMapper.readTree(request.getInputStream());
-//            token = String.valueOf(jsonNode.get("token")).substring(1,String.valueOf(jsonNode.get("token")).length()-1);
-//        }
-//        System.out.println(token);
-//        UsernamePasswordAuthenticationToken authentication;
-//        if (token != null) {
-//            String gmail = JWTUtil.getIdFromToken(token);
-//            if (gmail != null) {
-//                authentication = new UsernamePasswordAuthenticationToken(gmail, null, new ArrayList<>());
-//                SecurityContextHolder.getContext().setAuthentication(authentication);
-//            }
-//        }
+        final String token = request.getHeader("token");
+
+        log.info("access token: "+token);
+        if(token==null){
+            log.error("token unavailable");
+            filterChain.doFilter(request, response);
+            return;
+        }
+        String gmail = JWTUtil.getIdFromToken(token);
+        String role = JWTUtil.getRoleFromToken(token);
+
+        if (gmail == null || role == null) {
+            log.error("token unavailable");
+            filterChain.doFilter(request, response);
+            return;
+        }
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(gmail, null, new ArrayList<>());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
 
         filterChain.doFilter(request, response);
     }

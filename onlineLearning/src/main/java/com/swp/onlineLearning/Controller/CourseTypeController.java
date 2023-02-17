@@ -48,7 +48,7 @@ public class CourseTypeController {
         }
     }
     @PostMapping("/update/id={id}")
-    public ResponseEntity<HashMap> updateCourseType(@Valid @RequestBody CourseTypeDTO courseTypeDTO,@PathVariable("id") int id, BindingResult result) throws Exception {
+    public ResponseEntity<HashMap> updateCourseType(@Valid @RequestBody CourseTypeDTO courseTypeDTO, BindingResult result, @PathVariable("id") int id) throws Exception {
         HashMap<String, Object> json = new HashMap<>();
         StringBuffer stringBuffer = new StringBuffer();
         if (result.hasErrors()) {
