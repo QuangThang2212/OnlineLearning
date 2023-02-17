@@ -1,8 +1,9 @@
 package com.swp.onlineLearning.Model;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -30,24 +31,27 @@ public class Blog implements Serializable {
     @Length(min = 200, max = 2500)
     private String content;
     @NotNull
-    @NotBlank
     @Column(nullable = false)
     private LocalDateTime createDate;
 
     private byte reportStatus;
 
     @NotNull
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "AccountID", nullable = false)
+    @JsonIgnore
     private Account account;
 
     @NotNull
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "CourseTypeID", nullable = false)
+    @JsonIgnore
     private CourseType courseType;
 
-    @OneToMany(mappedBy = "blog",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "blog",cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<BlogReact> blogReacts;
-    @OneToMany(mappedBy = "blog",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "blog",cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Comment> comments;
 }

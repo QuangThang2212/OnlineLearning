@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.security.Principal;
 import java.util.HashMap;
 
 @Slf4j
@@ -28,7 +29,7 @@ public class BlogManagementController {
 
 
     @PostMapping("/create")
-    public ResponseEntity<HashMap> createBlogType(@Valid @RequestBody BlogDTO blogDTO, BindingResult result) throws Exception{
+    public ResponseEntity<HashMap> createBlogType(@Valid @RequestBody BlogDTO blogDTO, BindingResult result, Principal principal) throws Exception{
         HashMap<String, Object> json = new HashMap<>();
         StringBuffer stringBuffer = new StringBuffer();
         if (result.hasErrors()) {
@@ -38,6 +39,7 @@ public class BlogManagementController {
             json.put("msg",stringBuffer.toString());
             return new ResponseEntity<>(json,HttpStatus.BAD_REQUEST);
         }
+        blogDTO.setGmail(principal.getName());
         json = blogService.save(blogDTO);
 
         String type = json.get("type").toString();
