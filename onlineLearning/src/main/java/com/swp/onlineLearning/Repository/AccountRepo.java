@@ -12,7 +12,7 @@ import java.util.List;
 
 @Repository
 public interface AccountRepo extends JpaRepository<Account, String> {
-    @Query(value = "SELECT 8 FROM Account WHERE NOT gmail=?")
+    @Query(nativeQuery = true, value = "SELECT * FROM Account WHERE NOT gmail=?1")
     Page<Account> findAllExcept(String gmail, Pageable pageable);
     List<Account> findByRoleUser(RoleUser roleUser);
     Account findByGmail(String gmail);
