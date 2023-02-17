@@ -1,6 +1,7 @@
 package com.swp.onlineLearning.Repository;
 
 import com.swp.onlineLearning.Model.Course;
+import com.swp.onlineLearning.Model.CourseType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -11,8 +12,7 @@ import java.util.Optional;
 public interface CourseRepo extends JpaRepository<Course, String> {
     List<Course> findAll();
     Optional<Course> findByCourseID(int courseID);
-    @Query(nativeQuery = true, value = "Select * From Course a where a.courseRateID = ?")
-    List<Course> findByCourseType(int id);
+    List<Course> findByCourseType(CourseType courseType);
     Course save(Course course);
     void delete(Course course);
     @Query(nativeQuery = true, value = "Select (Top 8) * From Course OrderBy NumberOfEnroll DEC")

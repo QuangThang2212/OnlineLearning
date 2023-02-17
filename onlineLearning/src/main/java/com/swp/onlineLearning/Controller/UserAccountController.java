@@ -1,6 +1,8 @@
 package com.swp.onlineLearning.Controller;
 
+import com.swp.onlineLearning.Config.JWTUtil;
 import com.swp.onlineLearning.DTO.UserDTO;
+import com.swp.onlineLearning.Model.Account;
 import com.swp.onlineLearning.Service.AccountService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -8,14 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
-import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -26,31 +26,38 @@ public class UserAccountController {
     private AccountService accountService;
     @Autowired
     private UserDetailsService userDetailsService;
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
 
     @PostMapping("/login")
-    public ResponseEntity<Map> login(@RequestBody UserDTO userDTO){
-//        Authentication authentication = authenticationManager.authenticate(
-//                new UsernamePasswordAuthenticationToken(
-//                        userDTO.getGmail(),
-//                        userDTO.getPassword()
-//                )
-//        );
-//        SecurityContextHolder.getContext().setAuthentication(authentication);
-        Map<String, Object> json = new HashMap<>();
+    public ResponseEntity<HashMap> login(@RequestBody UserDTO userDTO) {
+        HashMap<String, Object> json = new HashMap<>();
+        try {
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userDTO.getGmail(), userDTO.getPassword()));
+            json.put("msg","Login successfully");
+        } catch (BadCredentialsException e) {
+            log.error("Incorrect username or password \n" + e.getMessage());
+            json.put("msg","Incorrect username or password");
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
+        final Account account = accountService.findByGmail(userDTO.getGmail());
 
-        json.put("msg","Login successfully");
+        final String token = JWTUtil.generateToken(account);
+        if(token==null){
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
+        json.put("token",token);
+        json.put("name",account.getName());
+        json.put("image",account.getImage());
+        json.put("id",account.getAccountID());
         return new ResponseEntity<>(json, HttpStatus.OK);
     }
     @PostMapping("/register")
     public ResponseEntity<HashMap> register(@RequestBody UserDTO userDTO) throws Exception {
         HashMap<String, Object> json = accountService.save(userDTO);
-        String type = "false";
-        try{
-            type = json.get("type").toString();
-        }catch (Exception e){
-            log.error("type value of save account message unavailable \n" +e.getMessage());
-        }
 
+        String type = json.get("type").toString();
         if(type.equals("true")){
             return new ResponseEntity<>(json, HttpStatus.OK);
         }else{

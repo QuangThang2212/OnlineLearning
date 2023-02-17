@@ -1,9 +1,9 @@
 package com.swp.onlineLearning.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.*;
 import java.util.List;
@@ -17,7 +17,8 @@ public class RoleUser {
     private int roleID;
     @Column(nullable = false,unique = true)
     private String name;
-    @OneToMany(mappedBy = "role",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "roleUser", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Account> accounts;
 
 }

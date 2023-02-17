@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
 import java.time.LocalDateTime;
 
 @Data
@@ -15,7 +14,7 @@ public class UserDTO {
     private String name;
     private String password;
     private String gmail;
-    private String avatar;
+    private String image;
     private Boolean banStatus;
     private LocalDateTime createAt;
     private String type;

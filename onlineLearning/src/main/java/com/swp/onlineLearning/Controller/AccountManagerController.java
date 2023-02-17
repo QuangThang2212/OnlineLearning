@@ -1,13 +1,57 @@
 package com.swp.onlineLearning.Controller;
 
+import com.swp.onlineLearning.DTO.RoleDTO;
+import com.swp.onlineLearning.Service.AccountService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
+import java.util.HashMap;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/account")
 @Slf4j
+@RequestMapping("/api/account")
 public class AccountManagerController {
+    @Autowired
+    private AccountService accountService;
+    @GetMapping()
+    public ResponseEntity<HashMap> getAllAccount(@RequestParam("page")int page, @RequestParam("limit")int limit, Principal principal){
+
+        HashMap<String, Object> json = accountService.findAllExcept(principal.getName(),page, limit);
+
+        String type = json.get("type").toString();
+        if(type.equals("true")){
+            return new ResponseEntity<>(json, HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
+    }
+    @GetMapping("/course_expert")
+    public ResponseEntity<HashMap> getAllCourseExpert(){
+        HashMap<String, Object> json = accountService.findBAllCourseExpert();
+
+        String type = json.get("type").toString();
+        if(type.equals("true")){
+            return new ResponseEntity<>(json, HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
+    }
+    @PostMapping("/change_role/id={id}")
+    public ResponseEntity<HashMap> changeRoleOfAccount(@PathVariable("id")String id, @RequestBody RoleDTO roleDTO){
+        roleDTO.setAccountID(id);
+        HashMap<String, Object> json = accountService.changRole(roleDTO);
+
+        String type = json.get("type").toString();
+        if(type.equals("true")){
+            return new ResponseEntity<>(json, HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
+    }
 }

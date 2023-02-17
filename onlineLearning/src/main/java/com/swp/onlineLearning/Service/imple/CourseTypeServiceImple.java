@@ -1,8 +1,10 @@
 package com.swp.onlineLearning.Service.imple;
 
 import com.swp.onlineLearning.DTO.CourseTypeDTO;
+import com.swp.onlineLearning.Model.Blog;
 import com.swp.onlineLearning.Model.Course;
 import com.swp.onlineLearning.Model.CourseType;
+import com.swp.onlineLearning.Repository.BlogRepo;
 import com.swp.onlineLearning.Repository.CourseRepo;
 import com.swp.onlineLearning.Repository.CourseTypeRepo;
 import com.swp.onlineLearning.Service.CourseTypeService;
@@ -20,6 +22,8 @@ public class CourseTypeServiceImple implements CourseTypeService {
     private CourseTypeRepo courseTypeRepo;
     @Autowired
     private CourseRepo courseRepo;
+    @Autowired
+    private BlogRepo blogRepo;
     @Override
     public HashMap<String, Object> save(CourseTypeDTO courseTypeDTO){
         HashMap<String, Object> json = new HashMap<>();
@@ -92,10 +96,9 @@ public class CourseTypeServiceImple implements CourseTypeService {
     }
 
     @Override
-    public HashMap<String, Object> delete(CourseTypeDTO courseTypeDTO) {
+    public HashMap<String, Object> delete(int id) {
         HashMap<String, Object> json = new HashMap<>();
         json.put("type",false);
-        int id = courseTypeDTO.getCourseTypeID();
 
         CourseType courseType = courseTypeRepo.findByCourseTypeID(id);
         if(courseType==null){
@@ -103,10 +106,16 @@ public class CourseTypeServiceImple implements CourseTypeService {
             json.put("msg", "Course type with id "+id+" not found in system");
             return json;
         }
-        List<Course> courses= courseRepo.findByCourseType(id);
+        List<Course> courses= courseRepo.findByCourseType(courseType);
         if(courses.size() >0 ){
-            log.error(courseTypeDTO.getCourseTypeName()+" is used by other course on the system, can't delete");
-            json.put("msg", courseTypeDTO.getCourseTypeName()+" is used by other course on the system, can't delete");
+            log.error(courseType.getCourseTypeName()+" is used by other course on the system, can't delete");
+            json.put("msg", courseType.getCourseTypeName()+" is used by other course on the system, can't delete");
+            return json;
+        }
+        List<Blog> blogs= blogRepo.findByCourseType(courseType);
+        if(blogs.size() >0 ){
+            log.error(courseType.getCourseTypeName()+" is used by other blog on the system, can't delete");
+            json.put("msg", courseType.getCourseTypeName()+" is used by other blog on the system, can't delete");
             return json;
         }
         try {
@@ -117,10 +126,11 @@ public class CourseTypeServiceImple implements CourseTypeService {
             return json;
         }
 
-        log.info("Update new course type with name:"+ courseType.getCourseTypeName()+" successfully");
-        json.put("msg", "Update new course type with name:"+ courseType.getCourseTypeName()+" successfully");
+        log.info("Delete new course type with name:"+ courseType.getCourseTypeName()+" successfully");
+        json.put("msg", "Delete new course type with name:"+ courseType.getCourseTypeName()+" successfully");
         json.replace("type",true);
-        return null;
+
+        return json;
     }
 
     @Override
