@@ -33,6 +33,7 @@ public class BlogServiceImple implements BlogService {
     @Autowired
     private AccountRepo accountRepo;
 
+
     @Override
     public HashMap<String, Object> save(BlogDTO blogDTO) {
         HashMap<String,Object> json = new HashMap<>();
@@ -52,25 +53,30 @@ public class BlogServiceImple implements BlogService {
         blogDTO.setCreateDate(LocalDateTime.now());
         blogDTO.setBlogID(passwordEncoder.encode(blogDTO.getBlogName()));
         CourseType courseType = courseTypeRepo.findByCourseTypeID(blogDTO.getCourseTypeId());
-
         if(courseType == null){
             log.error("Type not exist in system");
             json.put("msg","Type not exist in system");
             return json;
         }
 
-//        Account account = accountRepo.findAll();
-//        if(account == null){
-//            log.error(blogDTO.getAccount()+"Account already exist in system");
-//            json.put("msg", blogDTO.getBlogName()+" Account already exist in system");
-//            return json;
-//        }
+        if(blogDTO.getGmail() == null){
+            log.error("Gmail not allow null or empty");
+            json.put("msg","Gmail not allow null or empty");
+            return json;
+        }
+        Account account = accountRepo.findByGmail(blogDTO.getGmail());
+        if (account == null){
+            log.error("Account not exist in system");
+            json.put("msg","Account not exist in system");
+            return json;
+        }
 
         ModelMapper modelMapper = new ModelMapper();
         Blog blog = new Blog();
         modelMapper.map(blogDTO,blog);
 
         blog.setCourseType(courseType);
+        blog.setAccount(account);
 
         try {
             blogRepo.save(blog);
