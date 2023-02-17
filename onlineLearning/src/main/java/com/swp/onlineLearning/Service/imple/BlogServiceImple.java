@@ -38,21 +38,24 @@ public class BlogServiceImple implements BlogService {
     public HashMap<String, Object> save(BlogDTO blogDTO) {
         HashMap<String,Object> json = new HashMap<>();
         json.put("type",false);
+
         if (blogDTO == null){
             log.error("Not allow pass object null");
             json.put("msg", "Not allow pass object null");
             return json;
         }
 
-        Blog blogTypeCheck = blogRepo.findByBlogName(blogDTO.getBlogName());
-        if (blogTypeCheck != null){
-            log.error(blogDTO.getBlogName()+" had already exist in system");
-            json.put("msg", blogDTO.getBlogName()+" had already exist in system");
+        Blog blogNameCheck = blogRepo.findByBlogName(blogDTO.getBlogName());
+        if (blogNameCheck != null){
+            log.error(blogDTO.getBlogName()+" Title had already exist in system");
+            json.put("msg", blogDTO.getBlogName()+" Title had already exist in system");
             return json;
         }
+
         blogDTO.setCreateDate(LocalDateTime.now());
         blogDTO.setBlogID(passwordEncoder.encode(blogDTO.getBlogName()));
         CourseType courseType = courseTypeRepo.findByCourseTypeID(blogDTO.getCourseTypeId());
+
         if(courseType == null){
             log.error("Type not exist in system");
             json.put("msg","Type not exist in system");
@@ -71,16 +74,21 @@ public class BlogServiceImple implements BlogService {
             return json;
         }
 
-        ModelMapper modelMapper = new ModelMapper();
-        Blog blog = new Blog();
-        modelMapper.map(blogDTO,blog);
+//        ModelMapper modelMapper = new ModelMapper();
+            Blog blog = new Blog();
+//        modelMapper.map(blogDTO,blog);
+        blog.setBlogID(blog.getBlogID());
+        blog.setBlogName(blogDTO.getBlogName());
+        blog.setBlogMeta(blogDTO.getBlogMeta());
+        blog.setContent(blogDTO.getContent());
+        blog.setCreateDate(blogDTO.getCreateDate());
+        blog.setReportStatus(blogDTO.getReportStatus());
 
         blog.setCourseType(courseType);
         blog.setAccount(account);
 
         try {
             blogRepo.save(blog);
-
         }catch (Exception e){
             log.error("Save Blog type with name " + blog.getBlogName()+" fail\n" + e.getMessage());
             json.put("msg", "Save Blog type with name " + blog.getBlogName()+" fail");

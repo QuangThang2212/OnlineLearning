@@ -25,9 +25,7 @@ public class BlogDTO {
     @Value("0")
     private byte reportStatus;
     private int courseTypeId;
-
     private String gmail;
-
     private String courseType;
 
 
