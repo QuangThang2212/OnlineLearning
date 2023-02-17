@@ -15,13 +15,13 @@ public interface CourseRepo extends JpaRepository<Course, String> {
     List<Course> findByCourseType(CourseType courseType);
     Course save(Course course);
     void delete(Course course);
-    @Query(nativeQuery = true, value = "Select (Top 8) * From Course OrderBy NumberOfEnroll DEC")
+    @Query(nativeQuery = true, value = "Select * From Course Order By NumberOfEnroll DESC LIMIT 8")
     List<Course> findTop8PopularCourse();
 
-    @Query(nativeQuery = true, value = "Select (Top 8) * From Course OrderBy CreateDate ASC")
+    @Query(nativeQuery = true, value = "Select * From Course Order By CreateDate ASC LIMIT 8")
     List<Course> findTop8NewestCourse();
-    @Query(nativeQuery = true, value = "Select (Top 8) * From Course Where Price=0 OrderBy NumberOfEnroll DEC")
+    @Query(nativeQuery = true, value = "Select * From Course Where Price=0 Order By NumberOfEnroll DESC LIMIT 8")
     List<Course> findTop8FreePopularCourse();
-    @Query(nativeQuery = true, value = "Select (Top 8) * From Course Where Price!=0 OrderBy NumberOfEnroll DEC")
+    @Query(nativeQuery = true, value = "Select * From Course Where Price!=0 Order By NumberOfEnroll DESC LIMIT 8")
     List<Course> findTop8FamousPaidCourses();
 }

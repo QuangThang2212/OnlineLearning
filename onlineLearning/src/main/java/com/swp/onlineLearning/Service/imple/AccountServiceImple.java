@@ -87,8 +87,20 @@ public class AccountServiceImple implements AccountService, UserDetailsService {
             return json;
         }
         List<Account> list = accounts.stream().toList();
+
+        List<UserDTO> userDTOs = new ArrayList<>();
+        for(Account a : list){
+            UserDTO userDTO = new UserDTO();
+            userDTO.setAccountID(a.getAccountID());
+            userDTO.setName(a.getName());
+            userDTO.setGmail(a.getGmail());
+            userDTO.setImage(a.getImage());
+            userDTO.setRole(a.getRoleUser().getName());
+
+            userDTOs.add(userDTO);
+        }
         
-        json.put("users",list);
+        json.put("users",userDTOs);
         json.put("numPage",totalNumber);
         json.put("type",true);
         return json;

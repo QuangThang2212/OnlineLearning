@@ -18,4 +18,5 @@ public class UserDTO {
     private Boolean banStatus;
     private LocalDateTime createAt;
     private String type;
+    private String role;
 }
