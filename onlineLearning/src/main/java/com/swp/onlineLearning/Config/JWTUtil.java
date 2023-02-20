@@ -20,7 +20,6 @@ public class JWTUtil {
                 .setId(account.getGmail())
                 .setSubject(account.getRoleUser().getName())
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(SignatureAlgorithm.HS512, secret)
                 .compact();
     }
@@ -34,7 +33,7 @@ public class JWTUtil {
 
     public static boolean validateToken(String token, UserDetails userDetails) {
         String username = getIdFromToken(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        return (username.equals(userDetails.getUsername())) ; // && !isTokenExpired(token)
     }
 
     private static boolean isTokenExpired(String token) {

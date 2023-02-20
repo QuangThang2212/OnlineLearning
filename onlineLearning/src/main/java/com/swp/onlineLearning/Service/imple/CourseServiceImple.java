@@ -4,7 +4,6 @@ import com.swp.onlineLearning.DTO.CourseDTO;
 import com.swp.onlineLearning.Model.Account;
 import com.swp.onlineLearning.Model.Course;
 import com.swp.onlineLearning.Model.CourseType;
-import com.swp.onlineLearning.Model.RoleUser;
 import com.swp.onlineLearning.Repository.AccountRepo;
 import com.swp.onlineLearning.Repository.CourseRepo;
 import com.swp.onlineLearning.Repository.CourseTypeRepo;
@@ -46,11 +45,6 @@ public class CourseServiceImple implements CourseService {
     }
 
     @Override
-    public Course findById(String courseID) {
-        return null;
-    }
-
-    @Override
     public HashMap<String, Object> save(CourseDTO courseDTO) {
         HashMap<String, Object> json = new HashMap<>();
         json.put("type",false);
@@ -76,6 +70,11 @@ public class CourseServiceImple implements CourseService {
         Optional<Course> courseResult = courseRepo.findByCourseName(courseDTO.getCourseName());
         if(courseResult.isPresent()){
             newCourse = courseResult.get();
+            if(newCourse.isStatus()){
+                log.error("Course with " + newCourse.getCourseName()+" are in active status, not allow update");
+                json.put("msg", "Course with " + newCourse.getCourseName()+" are in active status, not allow update");
+                return json;
+            }
             newCourse.setCourseType(courseType);
             newCourse.setExpertID(account);
             newCourse.setPrice(courseDTO.getPrice());
@@ -102,11 +101,6 @@ public class CourseServiceImple implements CourseService {
         json.put("msg", "Save course with name " + newCourse.getCourseName()+" successfully");
         json.replace("type",true);
         return json;
-    }
-
-    @Override
-    public Course update(Course course) {
-        return null;
     }
 
     @Override

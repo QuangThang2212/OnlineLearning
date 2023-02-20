@@ -7,8 +7,6 @@ import java.util.HashMap;
 
 public interface CourseService {
     HashMap<String, Object> getHomepageInfor();
-    Course findById(String courseID);
     HashMap<String, Object> save(CourseDTO courseDTO);
-    Course update (Course course);
     Course Delete (Course course);
 }
