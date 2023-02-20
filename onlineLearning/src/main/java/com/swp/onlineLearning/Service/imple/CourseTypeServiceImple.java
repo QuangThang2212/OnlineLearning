@@ -67,8 +67,8 @@ public class CourseTypeServiceImple implements CourseTypeService {
 
         CourseType courseType = courseTypeRepo.findByCourseTypeID(courseTypeDTO.getCourseTypeID());
         if(courseType==null){
-            log.error("Course type with id "+courseTypeDTO.getCourseTypeID()+" not found in system");
-            json.put("msg", "Course type with id "+courseTypeDTO.getCourseTypeID()+" not found in system");
+            log.error("Course type with id "+courseTypeDTO.getCourseTypeID()+" isn't found in system");
+            json.put("msg", "Course type with id "+courseTypeDTO.getCourseTypeID()+" isn't found in system");
             return json;
         }
         CourseType courseTypeCheck = courseTypeRepo.findByCourseTypeName(courseTypeDTO.getCourseTypeName());
@@ -102,8 +102,8 @@ public class CourseTypeServiceImple implements CourseTypeService {
 
         CourseType courseType = courseTypeRepo.findByCourseTypeID(id);
         if(courseType==null){
-            log.error("Course type with id "+id+" not found in system");
-            json.put("msg", "Course type with id "+id+" not found in system");
+            log.error("Course type with id "+id+" isn't found in system");
+            json.put("msg", "Course type with id "+id+" isn't found in system");
             return json;
         }
         List<Course> courses= courseRepo.findByCourseType(courseType);

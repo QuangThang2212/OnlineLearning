@@ -92,8 +92,8 @@ public class AccountServiceImple implements AccountService, UserDetailsService {
         for(Account a : list){
             UserDTO userDTO = new UserDTO();
             userDTO.setAccountID(a.getAccountID());
-            userDTO.setName(a.getName());
-            userDTO.setGmail(a.getGmail());
+            userDTO.setName(a.getName().trim());
+            userDTO.setGmail(a.getGmail().trim());
             userDTO.setImage(a.getImage());
             userDTO.setRole(a.getRoleUser().getName());
 
@@ -120,17 +120,14 @@ public class AccountServiceImple implements AccountService, UserDetailsService {
             json.put("msg", "Not allow null account to register");
             return json;
         }
-        String id = passwordEncoder.encode(userDTO.getGmail());
-        if(id.length()>20){
-            userDTO.setAccountID(id.substring(id.length()-15));
-        }else{
-            userDTO.setAccountID(id);
-        }
+
         //object validation
         userDTO.setCreateAt(LocalDateTime.now());
         userDTO.setBanStatus(false);
         userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
 
+        String id = userDTO.getGmail().substring(0,2)+"Acc"+LocalDateTime.now();
+        userDTO.setAccountID(id);
         ModelMapper modelMapper = new ModelMapper();
         Account account = new Account();
         modelMapper.map(userDTO, account);

@@ -33,7 +33,8 @@ public class CourseTypeController {
         StringBuffer stringBuffer = new StringBuffer();
         if (result.hasErrors()) {
             for (FieldError error : result.getFieldErrors()) {
-                stringBuffer.append(error.getDefaultMessage()+" \n") ;
+                stringBuffer.append(error.getDefaultMessage()) ;
+                stringBuffer.append("\n") ;
             }
             json.put("msg",stringBuffer.toString());
             return new ResponseEntity<>(json,HttpStatus.BAD_REQUEST);
@@ -53,7 +54,8 @@ public class CourseTypeController {
         StringBuffer stringBuffer = new StringBuffer();
         if (result.hasErrors()) {
             for (FieldError error : result.getFieldErrors()) {
-                stringBuffer.append(error.getDefaultMessage()+" \n") ;
+                stringBuffer.append(error.getDefaultMessage()) ;
+                stringBuffer.append("\n") ;
             }
             json.put("msg",stringBuffer.toString());
             return new ResponseEntity<>(json,HttpStatus.BAD_REQUEST);

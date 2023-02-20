@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
@@ -15,11 +16,11 @@ import java.time.LocalDateTime;
 public class BlogDTO {
 
     private String blogID;
-    @Length(min = 10, max = 120, message = "Blog name must between 10 to 120")
+    @Length(min = 10, max = 200, message = "Blog name must between 10 to 200")
     private String blogName;
-    @Length(min = 10, max = 500, message = "Blog meta must between 10 to 150")
+    @Length(min = 10, max = 400, message = "Blog meta must between 10 to 400")
     private String blogMeta;
-    @Length(min = 200, message = "Blog content must greater than 200")
+    @Length(min = 200, message = "Blog content must greater than 200 characters")
     private String content;
     private LocalDateTime createDate;
     @Value("0")

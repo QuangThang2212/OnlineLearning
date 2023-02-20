@@ -26,15 +26,14 @@ public class BlogManagementController {
     @Autowired
     private BlogService blogService;
 
-
-
     @PostMapping("/create")
     public ResponseEntity<HashMap> createBlogType(@Valid @RequestBody BlogDTO blogDTO, BindingResult result, Principal principal) throws Exception{
         HashMap<String, Object> json = new HashMap<>();
         StringBuffer stringBuffer = new StringBuffer();
         if (result.hasErrors()) {
             for (FieldError error : result.getFieldErrors()) {
-                stringBuffer.append(error.getDefaultMessage()+" \n") ;
+                stringBuffer.append(error.getDefaultMessage()) ;
+                stringBuffer.append("\n") ;
             }
             json.put("msg",stringBuffer.toString());
             return new ResponseEntity<>(json,HttpStatus.BAD_REQUEST);

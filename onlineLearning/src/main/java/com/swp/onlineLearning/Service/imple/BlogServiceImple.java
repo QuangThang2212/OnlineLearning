@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 @Slf4j
@@ -44,6 +45,19 @@ public class BlogServiceImple implements BlogService {
             json.put("msg", "Not allow pass object null");
             return json;
         }
+        CourseType courseType = courseTypeRepo.findByCourseTypeID(blogDTO.getCourseTypeId());
+        if(courseType == null){
+            log.error("Type isn't exist in system");
+            json.put("msg","Type isn't exist in system");
+            return json;
+        }
+
+        Account account = accountRepo.findByGmail(blogDTO.getGmail());
+        if (account == null){
+            log.error("Account isn't exist in system");
+            json.put("msg","Account isn't exist in system");
+            return json;
+        }
 
         Blog blogNameCheck = blogRepo.findByBlogName(blogDTO.getBlogName());
         if (blogNameCheck != null){
@@ -51,38 +65,15 @@ public class BlogServiceImple implements BlogService {
             json.put("msg", blogDTO.getBlogName()+" Title had already exist in system");
             return json;
         }
+        blogDTO.setBlogName(blogDTO.getBlogName().trim());
 
         blogDTO.setCreateDate(LocalDateTime.now());
-        blogDTO.setBlogID(passwordEncoder.encode(blogDTO.getBlogName()));
-        CourseType courseType = courseTypeRepo.findByCourseTypeID(blogDTO.getCourseTypeId());
+        String id = blogDTO.getGmail().substring(0,2)+"Blg"+LocalDateTime.now();
+        blogDTO.setBlogID(id);
 
-        if(courseType == null){
-            log.error("Type not exist in system");
-            json.put("msg","Type not exist in system");
-            return json;
-        }
-
-        if(blogDTO.getGmail() == null){
-            log.error("Gmail not allow null or empty");
-            json.put("msg","Gmail not allow null or empty");
-            return json;
-        }
-        Account account = accountRepo.findByGmail(blogDTO.getGmail());
-        if (account == null){
-            log.error("Account not exist in system");
-            json.put("msg","Account not exist in system");
-            return json;
-        }
-
-//        ModelMapper modelMapper = new ModelMapper();
-            Blog blog = new Blog();
-//        modelMapper.map(blogDTO,blog);
-        blog.setBlogID(blog.getBlogID());
-        blog.setBlogName(blogDTO.getBlogName());
-        blog.setBlogMeta(blogDTO.getBlogMeta());
-        blog.setContent(blogDTO.getContent());
-        blog.setCreateDate(blogDTO.getCreateDate());
-        blog.setReportStatus(blogDTO.getReportStatus());
+        ModelMapper modelMapper = new ModelMapper();
+        Blog blog = new Blog();
+        modelMapper.map(blogDTO,blog);
 
         blog.setCourseType(courseType);
         blog.setAccount(account);

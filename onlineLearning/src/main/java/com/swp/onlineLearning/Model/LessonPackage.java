@@ -18,7 +18,7 @@ public class LessonPackage implements Serializable {
     @Id
     private String packageID;
     @Column(nullable = false)
-    @Length(min = 10, max = 70)
+    @Length(min = 10, max = 256)
     private String name;
     @Column(nullable = false)
     private boolean status;

@@ -16,5 +16,7 @@ public interface AccountRepo extends JpaRepository<Account, String> {
     Page<Account> findAllExcept(String gmail, Pageable pageable);
     List<Account> findByRoleUser(RoleUser roleUser);
     Account findByGmail(String gmail);
+    @Query(nativeQuery = true, value = "SELECT * FROM Account a inner join role_user b on a.roleid = b.roleid WHERE a.accountid = ?1 AND b.name = ?2")
+    Account findByAccountIDAndRoleUser(String id,String name);
     Account save(Account account);
 }

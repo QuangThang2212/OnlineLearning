@@ -17,11 +17,11 @@ import java.util.List;
 public class Lesson implements Serializable {
     @Id
     private String lessonID;
-    @Column(nullable = false, length = 70)
-    @Length(min = 10, max = 70)
+    @Column(nullable = false, length = 120)
+    @Length(min = 10, max = 120)
     private String name;
-    @Column(nullable = false, length = 250)
-    @Length(min = 40, max = 240, message = "Description length must in range from 40 to 240")
+    @Column(nullable = false, length = Integer.MAX_VALUE)
+    @Length(min = 200, message = "Description length must greater than 200")
     private String description;
     @Column(nullable = false)
     private boolean status;

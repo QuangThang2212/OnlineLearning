@@ -2,6 +2,8 @@ package com.swp.onlineLearning.Model;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,17 +22,15 @@ public class Course implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int courseID;
-    @Column(nullable = false, unique = true, length = 70)
-    @Length(min = 10, max = 70)
+    @Column(nullable = false, unique = true)
+    @Length(min = 5, max = 200, message = "Name length must in range from 5 to 120")
     private String courseName;
-    @Column(nullable = false, length = 250)
-    @Length(min = 40, max = 240, message = "Description length must in range from 40 to 240")
+    @Column(nullable = false, length = Integer.MAX_VALUE)
+    @Length(min = 200, message = "Description length must greater than 200")
     private String description;
-    @Column(nullable = false)
-    @NotNull(message = "Benefit length must in range from 40 to 240")
-    private String benefit;
+    @NotNull(message = "Please add image for this course")
     private String image;
-    @Range(min = 1, max = 5)
+    @Range(min = 0, max = 5)
     private float starRated;
     @NotNull
     @Column(nullable = false)
@@ -48,23 +48,28 @@ public class Course implements Serializable {
     @NotNull(message = "Invalid Course status value")
     private boolean status;
 
-    @OneToMany(mappedBy = "course",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "course",cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<LessonPackage> lessonPackages;
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "expertID")
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JsonIgnore
+    @JoinColumn(name = "expertID", nullable = false)
     private Account expertID;
 
-    @OneToMany(mappedBy = "course",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "course",cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<CourseRate> courseRates;
 
     @NotNull
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "courseTypeID", nullable = false)
     private CourseType courseType;
 
-    @OneToMany(mappedBy = "course",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "course",cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Payment> payments;
 
-    @OneToMany(mappedBy = "course",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "course",cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Voucher> vouchers;
 }

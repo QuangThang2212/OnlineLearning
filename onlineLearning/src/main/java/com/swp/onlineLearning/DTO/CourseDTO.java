@@ -8,6 +8,7 @@ import org.hibernate.validator.constraints.Range;
 import org.springframework.beans.factory.annotation.Value;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.time.LocalDateTime;
 
 @Data
@@ -15,12 +16,11 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class CourseDTO {
     private int courseID;
-    @Length(min = 10, max = 70, message = "Name length must in range from 10 to 70")
+    @Length(min = 5, max = 200, message = "Name length must in range from 5 to 200")
     private String courseName;
-    @Length(min = 40, max = 240, message = "Description length must in range from 40 to 240")
+    @Length(min = 200, message = "Description length must greater than 200")
     private String description;
-    @NotNull(message = "Benefit length must in range from 40 to 240")
-    private String benefit;
+    @NotNull(message = "Please add image for this course")
     private String image;
     private LocalDateTime createDate;
     @Range(min = 0)
@@ -32,6 +32,6 @@ public class CourseDTO {
     @Value("false")
     private boolean status;
     @NotNull(message = "Not allow type of course null")
-    private int courseTypeId;
-    private String accountId;
+    private int courseTypeID;
+    private String accountID;
 }
