@@ -1,6 +1,7 @@
 package com.swp.onlineLearning.Service.imple;
 
 import com.swp.onlineLearning.DTO.BlogDTO;
+import com.swp.onlineLearning.DTO.CourseTypeDTO;
 import com.swp.onlineLearning.Model.Account;
 import com.swp.onlineLearning.Model.Blog;
 import com.swp.onlineLearning.Model.CourseType;
@@ -87,6 +88,41 @@ public class BlogServiceImple implements BlogService {
         }
         log.info("Saving new Blog type with name:"+ blog.getBlogName()+" successfully");
         json.put("msg", "Saving new Blog type with name:"+ blog.getBlogName()+" successfully");
+        json.replace("type",true);
+
+        return json;
+    }
+
+    @Override
+    public HashMap<String, Object> update(BlogDTO blogDTO) {
+        HashMap<String, Object> json = new HashMap<>();
+        json.put("type",false);
+
+        CourseType courseType = courseTypeRepo.findByCourseTypeID(blogDTO.getCourseTypeId());
+        if(courseType==null){
+            log.error("Blog type with id "+blogDTO.getBlogID()+" isn't found in system");
+            json.put("msg", "Blog type with id "+blogDTO.getBlogID()+" isn't found in system");
+            return json;
+        }
+        Blog blogNameCheck = blogRepo.findByBlogName(blogDTO.getBlogName());
+        if(blogNameCheck != null ){
+            log.error(blogDTO.getBlogName()+" name had already exist in system, can't update");
+            json.put("msg", blogDTO.getBlogName()+" name had already exist in system, can't update");
+            return json;
+        }
+        ModelMapper modelMapper = new ModelMapper();
+        CourseType updateObject = new CourseType();
+        modelMapper.map(blogDTO, updateObject);
+        try {
+            courseTypeRepo.save(updateObject);
+        }catch (Exception e){
+            log.error("Update blog type with name " + updateObject.getCourseTypeName()+" fail\n" + e.getMessage());
+            json.put("msg", "Update blog type with name " + updateObject.getCourseTypeName()+" fail");
+            return json;
+        }
+
+        log.info("Update new blog type with name:"+ updateObject.getCourseTypeName()+" successfully");
+        json.put("msg", "Update new blog type with name:"+ updateObject.getCourseTypeName()+" successfully");
         json.replace("type",true);
 
         return json;
