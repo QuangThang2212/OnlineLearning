@@ -2,6 +2,7 @@ package com.swp.onlineLearning.Controller;
 
 import com.swp.onlineLearning.DTO.BlogDTO;
 import com.swp.onlineLearning.DTO.CourseTypeDTO;
+import com.swp.onlineLearning.Model.Blog;
 import com.swp.onlineLearning.Service.BlogService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.HashMap;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -60,6 +62,17 @@ public class BlogManagementController {
         }
         blogDTO.setBlogID(blogDTO.getBlogID());
         json = blogService.update(blogDTO);
+
+        String type = json.get("type").toString();
+        if(type.equals("true")){
+            return new ResponseEntity<>(json, HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
+    }
+    @GetMapping()
+    public ResponseEntity<HashMap> getALlBlog(@RequestParam("page")int page, @RequestParam("limit")int limit, Principal principal){
+        HashMap<String, Object> json = blogService.findAllBlog(page, limit);
 
         String type = json.get("type").toString();
         if(type.equals("true")){

@@ -7,8 +7,11 @@ import com.swp.onlineLearning.Model.Blog;
 import com.swp.onlineLearning.Model.Course;
 
 import java.util.HashMap;
+import java.util.List;
 
 public interface BlogService {
     HashMap<String, Object> save(BlogDTO blogDTO);
     HashMap<String, Object> update(BlogDTO blogDTO);
+    HashMap<String, Object> findAllBlog(int pageNumber, int size);
+
 }
