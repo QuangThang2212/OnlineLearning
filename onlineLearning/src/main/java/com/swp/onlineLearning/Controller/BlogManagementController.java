@@ -71,7 +71,7 @@ public class BlogManagementController {
         }
     }
     @GetMapping()
-    public ResponseEntity<HashMap> getALlBlog(@RequestParam("page")int page, @RequestParam("limit")int limit, Principal principal){
+    public ResponseEntity<HashMap> getALlBlog(@RequestParam("page")int page, @RequestParam("limit")int limit){
         HashMap<String, Object> json = blogService.findAllBlog(page, limit);
 
         String type = json.get("type").toString();

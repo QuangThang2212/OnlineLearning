@@ -12,6 +12,7 @@ import com.swp.onlineLearning.Repository.CourseRepo;
 import com.swp.onlineLearning.Repository.CourseTypeRepo;
 import com.swp.onlineLearning.Service.BlogService;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.tool.schema.internal.exec.ScriptTargetOutputToFile;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -143,10 +144,10 @@ public class BlogServiceImple implements BlogService {
             return json;
         }
 
-        int totalNumber = blogRepo.findAllBlog(PageRequest.of(pageNumber - 1, size)).getTotalPages();
+        int totalNumber = blogRepo.findAll(PageRequest.of(pageNumber - 1, size)).getTotalPages();
         if (totalNumber == 0) {
-            log.error("0 account founded");
-            json.put("msg", "0 account founded for page");
+            log.error("0 blog founded");
+            json.put("msg", "0 blog founded for page");
             return json;
         } else if (pageNumber > totalNumber) {
             log.error("invalid page " + pageNumber);
@@ -154,10 +155,10 @@ public class BlogServiceImple implements BlogService {
             return json;
         }
 
-        Page<Blog> blogs = blogRepo.findAllBlog(PageRequest.of(pageNumber - 1, size));
+        Page<Blog> blogs = blogRepo.findAll(PageRequest.of(pageNumber - 1, size));
         if (blogs.isEmpty()) {
-            log.error("0 account founded for page " + pageNumber);
-            json.put("msg", "0 account founded for page " + pageNumber);
+            log.error("0 blog founded for page " + pageNumber);
+            json.put("msg", "0 blog founded for page " + pageNumber);
             return json;
         }
         List<Blog> list = blogs.stream().toList();
@@ -171,7 +172,12 @@ public class BlogServiceImple implements BlogService {
             blogDTO.setContent(a.getContent());
             blogDTO.setCourseTypeId(a.getCourseType().getCourseTypeID());
             blogDTO.setCourseType(a.getCourseType().getCourseTypeName());
+            blogDTO.setGmail(a.getAccount().getGmail());
+            blogDTO.setGmail(a.getAccount().getAccountID());
+            blogDTO.setGmail(a.getAccount().getAccountID());
+            blogDTO.setGmail(a.getAccount().getImage());
 
+            blogDTOs.add(blogDTO);
 
         }
             json.put("blogs", blogDTOs);
