@@ -1,6 +1,8 @@
 package com.swp.onlineLearning.Model;
 
 import javax.persistence.*;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,28 +19,28 @@ import java.util.List;
 public class Lesson implements Serializable {
     @Id
     private String lessonID;
-    @Column(nullable = false, length = 120)
-    @Length(min = 10, max = 120)
+    @Column(nullable = false)
     private String name;
     @Column(nullable = false, length = Integer.MAX_VALUE)
-    @Length(min = 200, message = "Description length must greater than 200")
     private String description;
-    @Column(nullable = false)
-    private boolean status;
     @Range(min = 1)
     @Column(nullable = false)
     private int lessonLocation;
     private String link;
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "PackageID", nullable = false)
+    @JsonIgnore
     private LessonPackage lessonPackage;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "LessonTypeID", nullable = false)
+    @JsonIgnore
     private LessonType lessonType;
 
     @OneToOne(mappedBy = "lesson", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonIgnore
     private Quiz quiz;
     @OneToMany(mappedBy = "lesson",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Comment> comments;
 }

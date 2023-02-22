@@ -5,8 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.swp.onlineLearning.Config.JWTUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -49,6 +51,12 @@ public class AuthenticationFilter extends BasicAuthenticationFilter {
             return;
         }
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(gmail, null, new ArrayList<>());
+
+        try {
+            getAuthenticationManager().authenticate(authentication);
+        } catch (BadCredentialsException e) {
+            log.error("Incorrect username or password \n" + e.getMessage());
+        }
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         filterChain.doFilter(request, response);

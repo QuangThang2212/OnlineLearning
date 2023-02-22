@@ -18,7 +18,6 @@ public class LessonType implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int lessonTypeID;
     @Column(nullable = false, length = 40)
-    @Length(max = 40)
     private String name;
 
     @OneToMany(mappedBy = "lessonType",cascade = CascadeType.ALL, fetch = FetchType.LAZY)

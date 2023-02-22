@@ -126,23 +126,17 @@ public class AccountServiceImple implements AccountService, UserDetailsService {
         userDTO.setBanStatus(false);
         userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
 
-        String id = userDTO.getGmail().substring(0,2)+"Acc"+LocalDateTime.now();
+        String id = LocalDateTime.now().toString();
         userDTO.setAccountID(id);
         ModelMapper modelMapper = new ModelMapper();
         Account account = new Account();
         modelMapper.map(userDTO, account);
-        //save role
+
         RoleUser role = roleRepo.findByName(roleUserName);
         if(role==null){
-            RoleUser user = new RoleUser();
-            user.setName(roleUserName);
-            RoleUser roleCheck = roleRepo.save(user);
-            if(roleCheck==null){
-                log.error("Save role "+roleUserName+" fail");
-                json.put("msg", "Save role "+roleUserName+" fail");
-                return json;
-            }
-            account.setRoleUser(roleCheck);
+            log.error("Role "+roleUserName+" isn't exist");
+            json.put("msg", "Role "+roleUserName+" isn't exist");
+            return json;
         }else{
             account.setRoleUser(role);
         }

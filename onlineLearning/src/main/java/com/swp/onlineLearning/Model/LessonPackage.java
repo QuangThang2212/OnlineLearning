@@ -16,20 +16,18 @@ import java.util.List;
 @AllArgsConstructor
 public class LessonPackage implements Serializable {
     @Id
-    private String packageID;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int packageID;
     @Column(nullable = false)
-    @Length(min = 10, max = 256)
     private String name;
-    @Column(nullable = false)
-    private boolean status;
     @Range(min = 1)
     @Column(nullable = false)
     private int packageLocation;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "CourseID", nullable = false)
     private Course course;
 
-    @OneToMany(mappedBy = "lessonPackage",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "lessonPackage",cascade = CascadeType.ALL)
     private List<Lesson> lessons;
 }

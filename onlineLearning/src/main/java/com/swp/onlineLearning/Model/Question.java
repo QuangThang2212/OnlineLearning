@@ -16,10 +16,7 @@ import java.util.List;
 public class Question implements Serializable {
     @Id
     private String questionID;
-
-    @Range(min = 30)
     private String questionContent;
-
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "QuizID", nullable = false)
     private Quiz quiz;

@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.Range;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -23,7 +24,7 @@ public class Course implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int courseID;
     @Column(nullable = false, unique = true)
-    @Length(min = 5, max = 200, message = "Name length must in range from 5 to 120")
+    @Length(min = 5, max = 250, message = "Name length must in range from 5 to 250")
     private String courseName;
     @Column(nullable = false, length = Integer.MAX_VALUE)
     @Length(min = 200, message = "Description length must greater than 200")
@@ -37,13 +38,13 @@ public class Course implements Serializable {
     private LocalDateTime createDate;
 
     @Range(min = 0)
+    @Value("0")
     private double price;
     @Range(min = 0)
     private int numberOfQuiz;
     @Range(min = 0)
+    @Value("0")
     private int numberOfEnroll;
-    @Range(min = 0)
-    private int numberOfFavorite;
     @Column(nullable = false)
     @NotNull(message = "Invalid Course status value")
     private boolean status;
