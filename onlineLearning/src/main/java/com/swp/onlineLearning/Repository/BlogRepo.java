@@ -14,7 +14,6 @@ import java.util.List;
 
 @Repository
 public interface BlogRepo extends JpaRepository<Blog,Integer> {
-    Blog save(Blog blog);
     Blog findByBlogName(String BlogName);
     List<Blog> findByCourseType(CourseType courseType);
     Page<Blog> findAll(Pageable pageable);

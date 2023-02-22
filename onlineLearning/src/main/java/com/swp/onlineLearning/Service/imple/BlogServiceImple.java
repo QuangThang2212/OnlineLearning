@@ -6,10 +6,7 @@ import com.swp.onlineLearning.DTO.UserDTO;
 import com.swp.onlineLearning.Model.Account;
 import com.swp.onlineLearning.Model.Blog;
 import com.swp.onlineLearning.Model.CourseType;
-import com.swp.onlineLearning.Repository.AccountRepo;
-import com.swp.onlineLearning.Repository.BlogRepo;
-import com.swp.onlineLearning.Repository.CourseRepo;
-import com.swp.onlineLearning.Repository.CourseTypeRepo;
+import com.swp.onlineLearning.Repository.*;
 import com.swp.onlineLearning.Service.BlogService;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.tool.schema.internal.exec.ScriptTargetOutputToFile;
@@ -28,6 +25,7 @@ import java.util.List;
 
 @Slf4j
 @Service
+@Transactional
 public class BlogServiceImple implements BlogService {
     @Autowired
     private CourseRepo courseRepo;
@@ -41,7 +39,6 @@ public class BlogServiceImple implements BlogService {
 
     @Autowired
     private AccountRepo accountRepo;
-
 
     @Override
     public HashMap<String, Object> save(BlogDTO blogDTO) {

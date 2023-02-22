@@ -10,7 +10,6 @@ import java.util.Optional;
 
 @Repository
 public interface RoleRepo extends JpaRepository<RoleUser, Integer> {
-    RoleUser save(RoleUser roleUser);
     Optional<CourseType> findById(int RoleID);
     RoleUser findByName(String name);
 }

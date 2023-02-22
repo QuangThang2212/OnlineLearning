@@ -8,7 +8,6 @@ import java.util.List;
 
 @Repository
 public interface CourseTypeRepo extends JpaRepository<CourseType, Integer> {
-    CourseType save(CourseType courseType);
     void delete(CourseType courseType);
     CourseType findByCourseTypeName(String name);
     CourseType findByCourseTypeID(int id);

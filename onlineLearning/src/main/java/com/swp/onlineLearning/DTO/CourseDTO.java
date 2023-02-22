@@ -1,5 +1,6 @@
 package com.swp.onlineLearning.DTO;
 
+import com.swp.onlineLearning.Model.Account;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -34,4 +36,10 @@ public class CourseDTO {
     @NotNull(message = "Not allow type of course null")
     private int courseTypeID;
     private String accountID;
+    private List<LessonPackageDTO> lessonPackages;
+    private Account courseExpert;
+    @Value("0")
+    private float starRated;
+    @Value("0")
+    private int numberOfEnroll;
 }
