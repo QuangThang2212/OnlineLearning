@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.Range;
 
 import java.io.Serializable;
@@ -18,7 +17,8 @@ import java.util.List;
 @AllArgsConstructor
 public class Lesson implements Serializable {
     @Id
-    private String lessonID;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int lessonID;
     @Column(nullable = false)
     private String name;
     @Column(nullable = false, length = Integer.MAX_VALUE)
@@ -27,6 +27,7 @@ public class Lesson implements Serializable {
     @Column(nullable = false)
     private int lessonLocation;
     private String link;
+    private double time;
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "PackageID", nullable = false)
     @JsonIgnore
@@ -37,10 +38,13 @@ public class Lesson implements Serializable {
     @JsonIgnore
     private LessonType lessonType;
 
-    @OneToOne(mappedBy = "lesson", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "lesson", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonIgnore
-    private Quiz quiz;
+    private List<Question> questions;
     @OneToMany(mappedBy = "lesson",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
     private List<Comment> comments;
+    @OneToMany(mappedBy = "lesson",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<QuizResult> quizResults;
 }

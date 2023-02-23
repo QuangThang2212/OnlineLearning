@@ -23,7 +23,7 @@ public class QuizResult implements Serializable {
     @NotNull
     @NotBlank
     @Column(nullable = false)
-    private LocalDateTime enrollTimel;
+    private LocalDateTime enrollTime;
     @NotNull
     @NotBlank
     @Column(nullable = false)
@@ -34,6 +34,6 @@ public class QuizResult implements Serializable {
     private Account account;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "QuizID", nullable = false)
-    private Quiz quiz;
+    @JoinColumn(name = "LessonID", nullable = false)
+    private Lesson lesson;
 }

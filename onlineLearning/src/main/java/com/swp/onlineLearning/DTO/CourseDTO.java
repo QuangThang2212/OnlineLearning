@@ -9,7 +9,6 @@ import org.hibernate.validator.constraints.Range;
 import org.springframework.beans.factory.annotation.Value;
 
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -35,7 +34,7 @@ public class CourseDTO {
     private boolean status;
     @NotNull(message = "Not allow type of course null")
     private int courseTypeID;
-    private String accountID;
+    private int accountID;
     private List<LessonPackageDTO> lessonPackages;
     private Account courseExpert;
     @Value("0")

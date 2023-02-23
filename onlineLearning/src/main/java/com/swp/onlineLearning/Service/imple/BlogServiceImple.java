@@ -1,15 +1,12 @@
 package com.swp.onlineLearning.Service.imple;
 
 import com.swp.onlineLearning.DTO.BlogDTO;
-import com.swp.onlineLearning.DTO.CourseTypeDTO;
-import com.swp.onlineLearning.DTO.UserDTO;
 import com.swp.onlineLearning.Model.Account;
 import com.swp.onlineLearning.Model.Blog;
 import com.swp.onlineLearning.Model.CourseType;
 import com.swp.onlineLearning.Repository.*;
 import com.swp.onlineLearning.Service.BlogService;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.tool.schema.internal.exec.ScriptTargetOutputToFile;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -169,13 +166,10 @@ public class BlogServiceImple implements BlogService {
             blogDTO.setContent(a.getContent());
             blogDTO.setCourseTypeId(a.getCourseType().getCourseTypeID());
             blogDTO.setCourseType(a.getCourseType().getCourseTypeName());
-            blogDTO.setGmail(a.getAccount().getGmail());
-            blogDTO.setGmail(a.getAccount().getAccountID());
-            blogDTO.setGmail(a.getAccount().getAccountID());
-            blogDTO.setGmail(a.getAccount().getImage());
+            blogDTO.setName(a.getAccount().getGmail());
+            blogDTO.setImage(a.getAccount().getImage());
 
             blogDTOs.add(blogDTO);
-
         }
             json.put("blogs", blogDTOs);
             json.put("type",true);

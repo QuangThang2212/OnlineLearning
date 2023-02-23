@@ -120,15 +120,13 @@ public class AccountServiceImple implements AccountService, UserDetailsService {
             json.put("msg", "Not allow null account to register");
             return json;
         }
-        System.out.println(userDTO);
 
         //object validation
         userDTO.setCreateAt(LocalDateTime.now());
         userDTO.setBanStatus(false);
         userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+        userDTO.setGmail(userDTO.getGmail().trim());
 
-        String id = LocalDateTime.now().toString();
-        userDTO.setAccountID(id);
         ModelMapper modelMapper = new ModelMapper();
         Account account = new Account();
         modelMapper.map(userDTO, account);
@@ -227,7 +225,7 @@ public class AccountServiceImple implements AccountService, UserDetailsService {
     public HashMap<String, Object> findBAllCourseExpert() {
         HashMap<String, Object> json = new HashMap<>();
         json.put("type",false);
-        if(roleCourseExpert==""||roleCourseExpert==null){
+        if(roleCourseExpert.equals("")){
             log.error("Can't found course expert role");
             json.put("msg", "Can't found course expert role");
             return json;

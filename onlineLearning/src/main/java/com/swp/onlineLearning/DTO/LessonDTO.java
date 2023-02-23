@@ -12,7 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LessonDTO {
-    private String lessonID;
+    private Integer lessonID;
     @Length(min = 5, max = 250)
     private String title;
     @Length(min = 5)
@@ -22,4 +22,6 @@ public class LessonDTO {
     @NotNull
     private String type;
     private List<QuestionDTO> value;
+
+    private String lessonPackageName;
 }

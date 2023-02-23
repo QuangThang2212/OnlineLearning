@@ -19,38 +19,41 @@ import java.util.HashMap;
 public class AccountManagerController {
     @Autowired
     private AccountService accountService;
-    @GetMapping()
-    public ResponseEntity<HashMap> getAllAccount(@RequestParam("page")int page, @RequestParam("limit")int limit, Principal principal){
 
-        HashMap<String, Object> json = accountService.findAllExcept(principal.getName(),page, limit);
+    @GetMapping()
+    public ResponseEntity<HashMap> getAllAccount(@RequestParam("page") int page, @RequestParam("limit") int limit, Principal principal) {
+
+        HashMap<String, Object> json = accountService.findAllExcept(principal.getName(), page, limit);
 
         String type = json.get("type").toString();
-        if(type.equals("true")){
+        if (type.equals("true")) {
             return new ResponseEntity<>(json, HttpStatus.OK);
-        }else{
+        } else {
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
     }
+
     @GetMapping("/course_expert")
-    public ResponseEntity<HashMap> getAllCourseExpert(){
+    public ResponseEntity<HashMap> getAllCourseExpert() {
         HashMap<String, Object> json = accountService.findBAllCourseExpert();
 
         String type = json.get("type").toString();
-        if(type.equals("true")){
+        if (type.equals("true")) {
             return new ResponseEntity<>(json, HttpStatus.OK);
-        }else{
+        } else {
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
     }
+
     @PostMapping("/change_role/id={id}")
-    public ResponseEntity<HashMap> changeRoleOfAccount(@PathVariable("id")String id, @RequestBody RoleDTO roleDTO){
+    public ResponseEntity<HashMap> changeRoleOfAccount(@PathVariable("id") int id, @RequestBody RoleDTO roleDTO) {
         roleDTO.setAccountID(id);
         HashMap<String, Object> json = accountService.changRole(roleDTO);
 
         String type = json.get("type").toString();
-        if(type.equals("true")){
+        if (type.equals("true")) {
             return new ResponseEntity<>(json, HttpStatus.OK);
-        }else{
+        } else {
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
     }

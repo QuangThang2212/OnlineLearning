@@ -12,7 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class QuestionDTO {
-    private String questionID;
+    private Integer questionID;
     @Length(min = 5, max=256)
     private String title;
     @NotNull

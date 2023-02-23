@@ -23,8 +23,7 @@ public class BlogDTO {
     private byte reportStatus;
     private int courseTypeId;
     private String gmail;
+    private String name;
     private String courseType;
-
-
-
+    private String image;
 }

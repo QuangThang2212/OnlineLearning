@@ -42,28 +42,20 @@ public class CourseManagementController {
         }
     }
     @PostMapping("/update_pakage/id={id}")
-    public ResponseEntity<HashMap> createNewCourse(@RequestBody ListOfPackageDTO lessonPackageDTOS, @PathVariable("id") int id){
-        System.out.println(lessonPackageDTOS);
-        System.out.println(id);
-//        HashMap<String, Object> json = new HashMap<>();
-//        StringBuffer stringBuffer = new StringBuffer();
-//        if (result.hasErrors()) {
-//            for (FieldError error : result.getFieldErrors()) {
-//                stringBuffer.append(error.getDefaultMessage()) ;
-//                stringBuffer.append("\n") ;
-//            }
-//            json.put("msg",stringBuffer.toString());
-//            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
-//        }
-//        json = courseService.save(courseDTO);
-//
-//        String type = json.get("type").toString();
-//        if(type.equals("true")){
-//            return new ResponseEntity<>(json, HttpStatus.OK);
-//        }else{
-//            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
-//        }
-        return null;
+    public ResponseEntity<HashMap> createNewCourse(@RequestBody ListOfPackageDTO lessonPackageDTOS, @PathVariable("id") Integer id){
+        HashMap<String, Object> json = new HashMap<>();
+        if(id==null){
+            json.put("msg", "Not allow id course null");
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
+        json = courseService.saveLessonPackage(lessonPackageDTOS, id);
+
+        String type = json.get("type").toString();
+        if(type.equals("true")){
+            return new ResponseEntity<>(json, HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
     }
     @PostMapping("/getAllCourse")
     public ResponseEntity<HashMap> getAllCourse(@RequestParam("limit") int limit, @RequestParam("page") int page){
