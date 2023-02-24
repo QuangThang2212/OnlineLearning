@@ -37,7 +37,7 @@ public class QuestionServiceImple implements QuestionService {
 
         Question question = new Question();
         question.setLesson(returnLesson);
-        question.setQuestionContent(questionDTO.getTitle());
+        question.setQuestionContent(questionDTO.getTitle().trim());
 
         Question returnQuestion;
         try{

@@ -12,6 +12,6 @@ import java.util.List;
 public class LessonPackageDTO {
     private Integer packageID;
     @Length(min = 5, max=256)
-    private String lessonTitle;
+    private String packageTitle;
     private List<LessonDTO> numLesson;
 }

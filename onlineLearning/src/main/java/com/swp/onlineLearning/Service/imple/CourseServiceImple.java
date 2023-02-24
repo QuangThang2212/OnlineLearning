@@ -159,6 +159,29 @@ public class CourseServiceImple implements CourseService {
                 }
             }
         }
+        for (LessonPackageDTO inputPack : input) {
+            if(inputPack.getPackageTitle()==null || inputPack.getPackageTitle().trim().equals("")){
+                log.error("Not allow name of topic empty or have null value");
+                json.put("msg", "Not allow name of topic empty or have null value");
+                return json;
+            }
+            for(LessonDTO inputLesson: inputPack.getNumLesson()){
+                if(inputLesson.getTitle()==null || inputLesson.getTitle().trim().equals("")){
+                    log.error("Not allow name of lesson at topic "+inputPack.getPackageTitle()+" empty or have null value");
+                    json.put("msg", "Not allow name of lesson at topic "+inputPack.getPackageTitle()+" empty or have null value");
+                    return json;
+                }
+                if(inputLesson.getType().equals(typeQuiz)){
+                    for(QuestionDTO inputQuestion: inputLesson.getValue()){
+                        if(inputQuestion.getTitle()==null || inputQuestion.getTitle().trim().equals("")){
+                            log.error("Not allow question in "+inputLesson.getTitle()+" empty or have null value");
+                            json.put("msg", "Not allow question in "+inputLesson.getTitle()+" empty or have null value");
+                            return json;
+                        }
+                    }
+                }
+            }
+        }
 
         LessonPackage fkPackage;
         LessonType lessonTypeDB;
@@ -179,7 +202,7 @@ public class CourseServiceImple implements CourseService {
             if (in.getPackageID() == null) {
                 fkPackage = new LessonPackage();
                 fkPackage.setCourse(course);
-                fkPackage.setName(in.getLessonTitle());
+                fkPackage.setName(in.getPackageTitle().trim());
                 fkPackage.setPackageLocation(packCount);
 
                 try{
@@ -199,9 +222,8 @@ public class CourseServiceImple implements CourseService {
                         json.put("msg", "Type of lesson " + lessonDTO.getType() + " isn't found in this course");
                         return json;
                     }
-
-                    lesson.setName(lessonDTO.getTitle());
-                    lesson.setDescription(lessonDTO.getDescription());
+                    lesson.setName(lessonDTO.getTitle().trim());
+                    lesson.setDescription(lessonDTO.getDescription().trim());
                     lesson.setLink(lessonDTO.getLink());
                     lesson.setTime(lessonDTO.getTime());
                     lesson.setLessonLocation(lessCount);
@@ -232,7 +254,7 @@ public class CourseServiceImple implements CourseService {
                 continue;
             }
             fkPackage = packageFromDB.get(in.getPackageID());
-            fkPackage.setName(in.getLessonTitle());
+            fkPackage.setName(in.getPackageTitle().trim());
             fkPackage.setPackageLocation(packCount);
             savePackage.add(fkPackage);
 
@@ -240,7 +262,7 @@ public class CourseServiceImple implements CourseService {
             for(LessonDTO lesInput : in.getNumLesson()){
                 if(lesInput.getLessonID()==null){
                     lesson = new Lesson();
-                    lesson.setName(lesInput.getTitle());
+                    lesson.setName(lesInput.getTitle().trim());
                     lesson.setDescription(lesInput.getDescription());
                     lesson.setLink(lesInput.getLink());
                     lesson.setTime(lesInput.getTime());
@@ -267,7 +289,7 @@ public class CourseServiceImple implements CourseService {
                     continue;
                 }
                 lesson = lessonFromDB.get(lesInput.getLessonID());
-                lesson.setName(lesInput.getTitle());
+                lesson.setName(lesInput.getTitle().trim());
                 lesson.setDescription(lesInput.getDescription());
                 lesson.setLink(lesInput.getLink());
                 lesson.setTime(lesInput.getTime());
@@ -290,14 +312,14 @@ public class CourseServiceImple implements CourseService {
                             continue;
                         }
                         question = questionFromDB.get(quesDTO.getQuestionID());
-                        question.setQuestionContent(quesDTO.getTitle());
+                        question.setQuestionContent(quesDTO.getTitle().trim());
 
                         saveQuestion.add(question);
                         deleteAnswer.addAll(question.getAnswers());
                         for (String ans : quesDTO.getAnswers()){
                             answer = new Answer();
                             answer.setQuestion(question);
-                            answer.setAnswerContent(ans);
+                            answer.setAnswerContent(ans.trim());
 
                             saveAnswer.add(answer);
                         }
