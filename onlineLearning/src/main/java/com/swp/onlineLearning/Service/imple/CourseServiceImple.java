@@ -407,4 +407,9 @@ public class CourseServiceImple implements CourseService {
         json.put("type", true);
         return json;
     }
+
+    @Override
+    public HashMap<String, Object> findCourseById(int id) {
+        return null;
+    }
 }
