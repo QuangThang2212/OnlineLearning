@@ -46,6 +46,7 @@ public class Course implements Serializable {
     @Value("0")
     private int numberOfEnroll;
     @Column(nullable = false)
+    @Value("false")
     @NotNull(message = "Invalid Course status value")
     private boolean status;
 

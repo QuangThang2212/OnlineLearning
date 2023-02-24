@@ -94,6 +94,7 @@ public class CourseServiceImple implements CourseService {
             newCourse.setCourseType(courseType);
             newCourse.setExpertID(account);
             newCourse.setPrice(courseDTO.getPrice());
+            newCourse.setStatus(courseDTO.isStatus());
             newCourse.setImage(courseDTO.getImage());
             newCourse.setCourseName(courseDTO.getCourseName());
             newCourse.setDescription(courseDTO.getDescription());
@@ -369,7 +370,9 @@ public class CourseServiceImple implements CourseService {
             courseDTO.setCourseID(a.getCourseID());
             courseDTO.setCourseName(a.getCourseName());
             courseDTO.setPrice(a.getPrice());
+            courseDTO.setImage(a.getImage());
             courseDTO.setStatus(a.isStatus());
+            System.out.println(a.isStatus());
             courseDTO.setStarRated(0);
             courseDTO.setNumberOfEnroll(a.getNumberOfEnroll());
             courseDTO.setCourseExpert(a.getExpertID());

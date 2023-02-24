@@ -57,16 +57,15 @@ public class CourseManagementController {
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
     }
-    @PostMapping("/getAllCourse")
+    @GetMapping("/getAllCourse")
     public ResponseEntity<HashMap> getAllCourse(@RequestParam("limit") int limit, @RequestParam("page") int page){
-//        HashMap<String, Object> json = courseService.save(courseDTO);
-//
-//        String type = json.get("type").toString();
-//        if(type.equals("true")){
-//            return new ResponseEntity<>(json, HttpStatus.OK);
-//        }else{
-//            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
-//        }
-        return null;
+        HashMap<String, Object> json = courseService.findAll(page, limit);
+
+        String type = json.get("type").toString();
+        if(type.equals("true")){
+            return new ResponseEntity<>(json, HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
     }
 }
