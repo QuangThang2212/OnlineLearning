@@ -376,6 +376,7 @@ public class CourseServiceImple implements CourseService {
             courseDTO.setStarRated(0);
             courseDTO.setNumberOfEnroll(a.getNumberOfEnroll());
             courseDTO.setCourseExpert(a.getExpertID());
+            courseDTO.setTypeName(a.getCourseType().getCourseTypeName());
             courseDTOS.add(courseDTO);
         }
 

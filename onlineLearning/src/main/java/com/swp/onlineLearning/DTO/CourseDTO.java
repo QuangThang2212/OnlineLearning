@@ -41,4 +41,5 @@ public class CourseDTO {
     private float starRated;
     @Value("0")
     private int numberOfEnroll;
+    private String typeName;
 }
