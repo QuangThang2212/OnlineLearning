@@ -18,7 +18,7 @@ public class LessonDTO {
     @Length(min = 5)
     private String description;
     private String link;
-    private float time;
+    private double time;
     @NotNull
     private String type;
     private List<QuestionDTO> value;

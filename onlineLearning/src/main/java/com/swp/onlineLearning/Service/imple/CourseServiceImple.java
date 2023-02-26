@@ -6,7 +6,6 @@ import com.swp.onlineLearning.Repository.*;
 import com.swp.onlineLearning.Service.CourseService;
 import com.swp.onlineLearning.Service.QuestionService;
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -14,7 +13,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -81,42 +79,40 @@ public class CourseServiceImple implements CourseService {
             json.put("msg", "Account isn't exist in the system");
             return json;
         }
-        Course newCourse = new Course();
-        ModelMapper modelMapper = new ModelMapper();
-        Optional<Course> courseResult = courseRepo.findByCourseName(courseDTO.getCourseName());
-        if (courseResult.isPresent()) {
-            newCourse = courseResult.get();
-            if (newCourse.isStatus()) {
-                log.error("Course with " + newCourse.getCourseName() + " are in active status, not allow update");
-                json.put("msg", "Course with " + newCourse.getCourseName() + " are in active status, not allow update");
+        Course course = new Course();
+
+        if(courseDTO.getCourseID()!=null){
+            course = courseRepo.findByCourseID(courseDTO.getCourseID());
+            if (course == null ){
+                log.error("Course isn't found in system");
+                json.put("msg", "Course isn't found in system");
                 return json;
             }
-            newCourse.setCourseType(courseType);
-            newCourse.setExpertID(account);
-            newCourse.setPrice(courseDTO.getPrice());
-            newCourse.setStatus(courseDTO.isStatus());
-            newCourse.setImage(courseDTO.getImage());
-            newCourse.setCourseName(courseDTO.getCourseName());
-            newCourse.setDescription(courseDTO.getDescription());
-        } else {
-            courseDTO.setCreateDate(LocalDateTime.now());
-            modelMapper.map(courseDTO, newCourse);
-
-            newCourse.setExpertID(account);
-            newCourse.setCourseType(courseType);
+            if (course.isStatus()) {
+                log.error("This course with name " + course.getCourseName() + " is duplicate with name of other course on system");
+                json.put("msg", "This course with name " + course.getCourseName() + " is duplicate with name of other course on system \n please enter new name");
+                return json;
+            }
         }
+        course.setCourseType(courseType);
+        course.setExpertID(account);
+        course.setPrice(courseDTO.getPrice());
+        course.setStatus(courseDTO.isStatus());
+        course.setImage(courseDTO.getImage());
+        course.setCourseName(courseDTO.getCourseName());
+        course.setDescription(courseDTO.getDescription());
 
         try {
-            Course result = courseRepo.saveAndFlush(newCourse);
+            Course result = courseRepo.saveAndFlush(course);
             json.put("courseID", result.getCourseID());
         } catch (Exception e) {
-            log.error("Save course with name " + newCourse.getCourseName() + " fail\n" + e.getMessage());
-            json.put("msg", "Save course with name " + newCourse.getCourseName() + " fail");
+            log.error("Save course with name " + course.getCourseName() + " fail\n" + e.getMessage());
+            json.put("msg", "Save course with name " + course.getCourseName() + " fail");
             return json;
         }
 
-        log.info("Save course with name " + newCourse.getCourseName() + " successfully");
-        json.put("msg", "Save course with name " + newCourse.getCourseName() + " successfully");
+        log.info("Save course with name " + course.getCourseName() + " successfully");
+        json.put("msg", "Save course with name " + course.getCourseName() + " successfully");
         json.replace("type", true);
         return json;
     }
@@ -394,7 +390,6 @@ public class CourseServiceImple implements CourseService {
             courseDTO.setPrice(a.getPrice());
             courseDTO.setImage(a.getImage());
             courseDTO.setStatus(a.isStatus());
-            System.out.println(a.isStatus());
             courseDTO.setStarRated(0);
             courseDTO.setNumberOfEnroll(a.getNumberOfEnroll());
             courseDTO.setCourseExpert(a.getExpertID());
@@ -409,7 +404,102 @@ public class CourseServiceImple implements CourseService {
     }
 
     @Override
-    public HashMap<String, Object> findCourseById(int id) {
-        return null;
+    public HashMap<String, Object> findCourseByIdToUpdate(Integer id) {
+        HashMap<String, Object> json = new HashMap<>();
+        json.put("type",false);
+        if(id==null){
+            log.error("Not allow id have null value");
+            json.put("msg", "Not allow id have null value");
+            return json;
+        }
+        Course course = courseRepo.findByCourseID(id);
+        if(course==null){
+            log.error("Course with id "+id+" isn't exist in system");
+            json.put("msg", "Course with id "+id+" isn't exist in system");
+            return json;
+        }
+        CourseDTO courseDTO = new CourseDTO();
+        courseDTO.setCourseID(course.getCourseID());
+        courseDTO.setCourseName(course.getCourseName());
+        courseDTO.setDescription(course.getDescription());
+        courseDTO.setPrice(course.getPrice());
+        courseDTO.setImage(course.getImage());
+        courseDTO.setStatus(course.isStatus());
+
+        Account expert = course.getExpertID();
+        UserDTO courseExpertDTO = new UserDTO();
+        courseExpertDTO.setName(expert.getName());
+        courseExpertDTO.setGmail(expert.getGmail());
+        courseExpertDTO.setImage(expert.getImage());
+        courseExpertDTO.setAccountID(expert.getAccountID());
+
+        CourseType courseType = course.getCourseType();
+        CourseTypeDTO type = new CourseTypeDTO();
+        type.setCourseTypeID(courseType.getCourseTypeID());
+        type.setCourseTypeName(courseType.getCourseTypeName());
+
+        List<LessonPackage> lessonPackages = course.getLessonPackages();
+        List<LessonPackageDTO> lessonPackageDTOS = new ArrayList<>();
+        LessonPackageDTO lessonPackageDTO;
+        LessonDTO lessonDTO;
+        QuestionDTO questionDTO;
+        String lessonType;
+        List<String> answers;
+        List<LessonDTO> lessonDTOS;
+        List<QuestionDTO> questionDTOS;
+        int correctAnswer;
+        for(LessonPackage lessonPackage : lessonPackages){
+            lessonPackageDTO = new LessonPackageDTO();
+            lessonPackageDTO.setPackageID(lessonPackage.getPackageID());
+            lessonPackageDTO.setPackageTitle(lessonPackage.getName());
+
+            lessonDTOS = new ArrayList<>();
+            for(Lesson lesson : lessonPackage.getLessons()){
+                lessonDTO = new LessonDTO();
+                lessonDTO.setLessonID(lesson.getLessonID());
+                lessonDTO.setTitle(lesson.getName());
+                lessonDTO.setDescription(lesson.getDescription());
+                lessonDTO.setLink(lesson.getLink());
+                lessonDTO.setTime(lesson.getTime());
+                lessonType = lesson.getLessonType().getName();
+                lessonDTO.setType(lessonType);
+
+                if(lessonType.equals(typeQuiz)){
+                    questionDTOS = new ArrayList<>();
+                    for(Question question : lesson.getQuestions()){
+                        questionDTO = new QuestionDTO();
+                        questionDTO.setQuestionID(question.getQuestionID());
+                        questionDTO.setTitle(question.getQuestionContent());
+
+                        correctAnswer = 0;
+                        answers = new ArrayList<>();
+                        for (Answer answer : question.getAnswers()){
+                            answers.add(answer.getAnswerContent());
+                            if(answer.isRightAnswer()){
+                                questionDTO.setCorrectAnswer(correctAnswer);
+                            }
+                            correctAnswer++;
+                        }
+                        questionDTO.setAnswers(answers);
+                        questionDTOS.add(questionDTO);
+                    }
+                    lessonDTO.setValue(questionDTOS);
+                }else{
+                    lessonDTO.setValue(null);
+                }
+                lessonDTOS.add(lessonDTO);
+            }
+            lessonPackageDTO.setNumLesson(lessonDTOS);
+
+            lessonPackageDTOS.add(lessonPackageDTO);
+        }
+        courseDTO.setLessonPackages(lessonPackageDTOS);
+
+        json.put("course",courseDTO);
+        json.put("courseType",type);
+        json.put("courseExpert",courseExpertDTO);
+        json.put("msg", "Get course successfully");
+        json.put("type",true);
+        return json;
     }
 }

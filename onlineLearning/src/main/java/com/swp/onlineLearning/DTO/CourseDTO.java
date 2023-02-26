@@ -16,7 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CourseDTO {
-    private int courseID;
+    private Integer courseID;
     @Length(min = 5, max = 200, message = "Name length must in range from 5 to 200")
     private String courseName;
     @Length(min = 200, message = "Description length must greater than 200")
@@ -32,14 +32,17 @@ public class CourseDTO {
     private int numberOfQuiz;
     @Value("false")
     private boolean status;
-    @NotNull(message = "Not allow type of course null")
-    private int courseTypeID;
     private int accountID;
-    private List<LessonPackageDTO> lessonPackages;
     private Account courseExpert;
     @Value("0")
     private float starRated;
     @Value("0")
     private int numberOfEnroll;
+
+    @NotNull(message = "Not allow type of course null")
+    private int courseTypeID;
     private String typeName;
+    private List<LessonPackageDTO> lessonPackages;
+
+
 }
