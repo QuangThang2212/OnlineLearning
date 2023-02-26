@@ -493,10 +493,10 @@ public class CourseServiceImple implements CourseService {
 
             lessonPackageDTOS.add(lessonPackageDTO);
         }
-        courseDTO.setLessonPackages(lessonPackageDTOS);
 
         json.put("course",courseDTO);
         json.put("courseType",type);
+        json.put("lessonPackages",lessonPackageDTOS);
         json.put("courseExpert",courseExpertDTO);
         json.put("msg", "Get course successfully");
         json.put("type",true);
