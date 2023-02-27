@@ -346,7 +346,9 @@ public class CourseServiceImple implements CourseService {
             json.put("msg", "Update process for list of topic fail");
             return json;
         }
-        String msgDelete = "";
+
+
+        StringBuilder msgDelete = new StringBuilder();
         if (listOfPackageDTO.getDeleteQuestion() != null) {
             questionService.deleteQuestionAndAnswer(listOfPackageDTO.getDeleteQuestion());
         }
@@ -362,12 +364,12 @@ public class CourseServiceImple implements CourseService {
                     questionService.deleteQuestionObjectAndAnswer(lesson.getQuestions());
                 } else {
                     log.error("Lesson with id " + lesson.getLessonID() + " have user learning history, can't delete \n");
-                    msgDelete += "Lesson with id " + lesson.getLessonID() + " have user learning history, can't delete \n";
+                    msgDelete.append("Lesson with id ").append(lesson.getLessonID()).append(" have user learning history, can't delete \n");
                     continue;
                 }
                 if (typeListening.equals(lesson.getLessonType().getName()) && !lesson.getComments().isEmpty()) {
                     log.error("Lesson with id " + lesson.getLessonID() + " have user learning history, can't delete \n");
-                    msgDelete += "Lesson with id " + lesson.getLessonID() + " have user learning history, can't delete \n";
+                    msgDelete.append("Lesson with id ").append(lesson.getLessonID()).append(" have user learning history, can't delete \n");
                     continue;
                 }
                 lessonRepo.deleteByLessonID(lesson.getLessonID());
@@ -388,12 +390,12 @@ public class CourseServiceImple implements CourseService {
                 for (Lesson lessonDelete : fkPackage.getLessons()) {
                     if (typeQuiz.equals(lessonDelete.getLessonType().getName()) && !lessonDelete.getQuizResults().isEmpty()) {
                         log.error("Lesson with id " + lessonDelete.getLessonID() + " have user learning history, can't delete \n");
-                        msgDelete += "Lesson with id " + lessonDelete.getLessonID() + " have user learning history, can't delete \n";
+                        msgDelete.append("Lesson with id ").append(lessonDelete.getLessonID()).append(" have user learning history, can't delete \n");
                         deleteStatus = false;
                     }
                     if (typeListening.equals(lessonDelete.getLessonType().getName()) && !lessonDelete.getComments().isEmpty()) {
                         log.error("Lesson with id " + lessonDelete.getLessonID() + " have user learning history, can't delete \n");
-                        msgDelete += "Lesson with id " + lessonDelete.getLessonID() + " have user learning history, can't delete \n";
+                        msgDelete.append("Lesson with id ").append(lessonDelete.getLessonID()).append(" have user learning history, can't delete \n");
                         deleteStatus = false;
                     }
                 }
@@ -424,7 +426,7 @@ public class CourseServiceImple implements CourseService {
                     }
                 }
             }else{
-                json.put("msg", msgDelete);
+                json.put("msg", msgDelete.toString());
             }
         }
 
