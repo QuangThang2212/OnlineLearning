@@ -16,7 +16,8 @@ import java.util.List;
 @AllArgsConstructor
 public class Account implements Serializable {
     @Id
-    private String accountID;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int accountID;
     @Column(nullable = false)
     private String name;
     private String password;

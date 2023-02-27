@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserDTO {
-    private String accountID;
+    private int accountID;
     private String name;
     private String password;
     private String gmail;

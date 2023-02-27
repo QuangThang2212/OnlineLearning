@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.Range;
 
 import java.io.Serializable;
@@ -18,7 +17,8 @@ import java.util.List;
 @AllArgsConstructor
 public class Lesson implements Serializable {
     @Id
-    private String lessonID;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int lessonID;
     @Column(nullable = false)
     private String name;
     @Column(nullable = false, length = Integer.MAX_VALUE)
@@ -27,20 +27,24 @@ public class Lesson implements Serializable {
     @Column(nullable = false)
     private int lessonLocation;
     private String link;
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private double time;
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "PackageID", nullable = false)
     @JsonIgnore
     private LessonPackage lessonPackage;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "LessonTypeID", nullable = false)
     @JsonIgnore
     private LessonType lessonType;
 
-    @OneToOne(mappedBy = "lesson", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "lesson", cascade = CascadeType.ALL)
     @JsonIgnore
-    private Quiz quiz;
-    @OneToMany(mappedBy = "lesson",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Question> questions;
+    @OneToMany(mappedBy = "lesson",cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Comment> comments;
+    @OneToMany(mappedBy = "lesson",cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<QuizResult> quizResults;
 }

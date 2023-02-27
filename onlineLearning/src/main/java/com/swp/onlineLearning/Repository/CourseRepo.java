@@ -11,9 +11,9 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 @Repository
-public interface CourseRepo extends JpaRepository<Course, String> {
+public interface CourseRepo extends JpaRepository<Course, Integer> {
     Page<Course> findAll(Pageable pageable);
-    Optional<Course> findByCourseID(int courseID);
+    Course findByCourseID(int courseID);
     Optional<Course> findByCourseName(String name);
     List<Course> findByCourseType(CourseType courseType);
     void delete(Course course);

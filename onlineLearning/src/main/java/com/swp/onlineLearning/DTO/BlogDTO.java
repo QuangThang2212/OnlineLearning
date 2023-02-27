@@ -25,7 +25,6 @@ public class BlogDTO {
     private String gmail;
     private String courseType;
 
-    private String account;
 
 
 }

@@ -4,7 +4,6 @@ import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.validator.constraints.Range;
 
 import java.io.Serializable;
 import java.util.List;
@@ -15,12 +14,13 @@ import java.util.List;
 @AllArgsConstructor
 public class Question implements Serializable {
     @Id
-    private String questionID;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int questionID;
     private String questionContent;
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "QuizID", nullable = false)
-    private Quiz quiz;
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "LessonID", nullable = false)
+    private Lesson lesson;
 
-    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Answer> answers;
 }
