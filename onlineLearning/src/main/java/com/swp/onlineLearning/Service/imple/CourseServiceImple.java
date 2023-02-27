@@ -455,6 +455,32 @@ public class CourseServiceImple implements CourseService {
         return json;
     }
 
+    @Override
+    public HashMap<String, Object> changeCourseStatus(ListOfCourseDTO listOfCourseDTO) {
+        HashMap<String, Object> json = new HashMap<>();
+        List<Integer> listOfCourseId = listOfCourseDTO.getCourseID();
+        Course course;
+        List<Course> courses = new ArrayList<>();
+        boolean status = listOfCourseDTO.isStatus();
+        for(int id : listOfCourseId){
+            course = courseRepo.findByCourseID(id);
+            course.setStatus(status);
+
+            courses.add(course);
+        }
+        try{
+            courseRepo.saveAll(courses);
+        }catch (Exception e){
+            log.error("Update status for list of course fail, view log " + e.getMessage());
+            json.put("msg", "Update status for list of course fail, view log ");
+            return json;
+        }
+        log.error("Update status for list of course successfully");
+        json.put("msg", "Update status for list of course successfully");
+        json.put("type", true);
+        return json;
+    }
+
 
     @Override
     public HashMap<String, Object> findAll(int page, int size, String role) {

@@ -1,6 +1,7 @@
 package com.swp.onlineLearning.Controller;
 
 import com.swp.onlineLearning.DTO.CourseDTO;
+import com.swp.onlineLearning.DTO.ListOfCourseDTO;
 import com.swp.onlineLearning.DTO.ListOfPackageDTO;
 import com.swp.onlineLearning.Service.CourseService;
 import lombok.RequiredArgsConstructor;
@@ -53,6 +54,17 @@ public class CourseManagementController {
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
         json = courseService.saveLessonPackage(lessonPackageDTOS, id);
+
+        String type = json.get("type").toString();
+        if(type.equals("true")){
+            return new ResponseEntity<>(json, HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
+    }
+    @PostMapping("/change_status")
+    public ResponseEntity<HashMap> changeCourseStatus(@RequestBody ListOfCourseDTO ListOfCourseDTO){
+        HashMap<String, Object> json = courseService.changeCourseStatus(ListOfCourseDTO);
 
         String type = json.get("type").toString();
         if(type.equals("true")){
