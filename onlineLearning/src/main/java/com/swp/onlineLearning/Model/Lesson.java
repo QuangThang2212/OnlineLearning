@@ -28,23 +28,23 @@ public class Lesson implements Serializable {
     private int lessonLocation;
     private String link;
     private double time;
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "PackageID", nullable = false)
     @JsonIgnore
     private LessonPackage lessonPackage;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "LessonTypeID", nullable = false)
     @JsonIgnore
     private LessonType lessonType;
 
-    @OneToMany(mappedBy = "lesson", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "lesson", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Question> questions;
-    @OneToMany(mappedBy = "lesson",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "lesson",cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Comment> comments;
-    @OneToMany(mappedBy = "lesson",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "lesson",cascade = CascadeType.ALL)
     @JsonIgnore
     private List<QuizResult> quizResults;
 }

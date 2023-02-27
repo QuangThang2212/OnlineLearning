@@ -67,4 +67,60 @@ public class QuestionServiceImple implements QuestionService {
         json.put("type", true);
         return json;
     }
+
+    @Override
+    public HashMap<String, Object> deleteQuestionAndAnswer(List<Integer> questionDelete) {
+        HashMap<String, Object> json = new HashMap<>();
+        json.put("type", false);
+        Question question;
+        for (int questionID : questionDelete) {
+            question = questionRepo.findById(questionID).orElse(null);
+            if (question == null) {
+                log.error("Question with id " + questionID + " isn't exist in system");
+                json.put("msg", "Question with id " + questionID + " isn't exist in system");
+                return json;
+            }
+            for(Answer answer : question.getAnswers()){
+                try{
+                    answerRepo.deleteByAnswerID(answer.getAnswerID());
+                }catch(Exception e){
+                    log.error("Answer with id " + answer.getAnswerID() + " delete fail \n"+e.getMessage());
+                    return json;
+                }
+            }
+            try{
+                questionRepo.deleteByQuestionID(question.getQuestionID());
+            }catch(Exception e){
+                log.error("Question with id " + questionID + " delete fail \n"+e.getMessage());
+                return json;
+            }
+        }
+        json.put("type", true);
+        return json;
+    }
+
+    @Override
+    public HashMap<String, Object> deleteQuestionObjectAndAnswer(List<Question> questionDelete) {
+        HashMap<String, Object> json = new HashMap<>();
+        json.put("type", false);
+        for (Question question : questionDelete) {
+            for(Answer answer : question.getAnswers()){
+                try{
+                    answerRepo.deleteByAnswerID(answer.getAnswerID());
+                }catch(Exception e){
+                    log.error("Answer with id " + answer.getAnswerID() + " delete fail \n"+e.getMessage());
+                    return json;
+                }
+            }
+            try{
+                questionRepo.deleteByQuestionID(question.getQuestionID());
+            }catch(Exception e){
+                log.error("Question with id " + question.getAnswers() + " delete fail \n"+e.getMessage());
+                json.put("msg", "Question with id " + question.getAnswers() + " delete fail");
+                return json;
+            }
+        }
+        json.put("type", true);
+        return json;
+    }
 }

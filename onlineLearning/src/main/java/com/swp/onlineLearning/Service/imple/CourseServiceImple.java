@@ -13,6 +13,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -41,6 +42,8 @@ public class CourseServiceImple implements CourseService {
     private QuestionService questionService;
     @Value("${lessonType.quiz}")
     private String typeQuiz;
+    @Value("${lessonType.listening}")
+    private String typeListening;
     @Value("${role.courseExpert}")
     private String roleCourseExpert;
     @Value("${quiz.pass.condition}")
@@ -81,9 +84,9 @@ public class CourseServiceImple implements CourseService {
         }
         Course course = new Course();
 
-        if(courseDTO.getCourseID()!=null){
+        if (courseDTO.getCourseID() != null) {
             course = courseRepo.findByCourseID(courseDTO.getCourseID());
-            if (course == null ){
+            if (course == null) {
                 log.error("Course isn't found in system");
                 json.put("msg", "Course isn't found in system");
                 return json;
@@ -93,6 +96,8 @@ public class CourseServiceImple implements CourseService {
                 json.put("msg", "This course with name " + course.getCourseName() + " is duplicate with name of other course on system \n please enter new name");
                 return json;
             }
+        } else {
+            course.setCreateDate(LocalDateTime.now());
         }
         course.setCourseType(courseType);
         course.setExpertID(account);
@@ -128,7 +133,7 @@ public class CourseServiceImple implements CourseService {
             return json;
         }
         Course course = courseRepo.findByCourseID(id);
-        if (course==null) {
+        if (course == null) {
             log.error("Course with id " + id + " isn't exist in the system");
             json.put("msg", "Course with id " + id + " isn't exist in the system");
             return json;
@@ -146,32 +151,32 @@ public class CourseServiceImple implements CourseService {
         HashMap<Integer, Question> questionFromDB = new HashMap<>();
         for (LessonPackage db : fromDB) {
             packageFromDB.put(db.getPackageID(), db);
-            for(Lesson lesson: db.getLessons()){
+            for (Lesson lesson : db.getLessons()) {
                 lessonFromDB.put(lesson.getLessonID(), lesson);
-                if(lesson.getLessonType().getName().equals(typeQuiz)){
-                    for(Question question: lesson.getQuestions()){
+                if (lesson.getLessonType().getName().equals(typeQuiz)) {
+                    for (Question question : lesson.getQuestions()) {
                         questionFromDB.put(question.getQuestionID(), question);
                     }
                 }
             }
         }
         for (LessonPackageDTO inputPack : input) {
-            if(inputPack.getPackageTitle()==null || inputPack.getPackageTitle().trim().equals("")){
+            if (inputPack.getPackageTitle() == null || inputPack.getPackageTitle().trim().equals("")) {
                 log.error("Not allow name of topic empty or have null value");
                 json.put("msg", "Not allow name of topic empty or have null value");
                 return json;
             }
-            for(LessonDTO inputLesson: inputPack.getNumLesson()){
-                if(inputLesson.getTitle()==null || inputLesson.getTitle().trim().equals("")){
-                    log.error("Not allow name of lesson at topic "+inputPack.getPackageTitle()+" empty or have null value");
-                    json.put("msg", "Not allow name of lesson at topic "+inputPack.getPackageTitle()+" empty or have null value");
+            for (LessonDTO inputLesson : inputPack.getNumLesson()) {
+                if (inputLesson.getTitle() == null || inputLesson.getTitle().trim().equals("")) {
+                    log.error("Not allow name of lesson at topic " + inputPack.getPackageTitle() + " empty or have null value");
+                    json.put("msg", "Not allow name of lesson at topic " + inputPack.getPackageTitle() + " empty or have null value");
                     return json;
                 }
-                if(inputLesson.getType().equals(typeQuiz)){
-                    for(QuestionDTO inputQuestion: inputLesson.getValue()){
-                        if(inputQuestion.getTitle()==null || inputQuestion.getTitle().trim().equals("")){
-                            log.error("Not allow question in "+inputLesson.getTitle()+" empty or have null value");
-                            json.put("msg", "Not allow question in "+inputLesson.getTitle()+" empty or have null value");
+                if (inputLesson.getType().equals(typeQuiz)) {
+                    for (QuestionDTO inputQuestion : inputLesson.getValue()) {
+                        if (inputQuestion.getTitle() == null || inputQuestion.getTitle().trim().equals("")) {
+                            log.error("Not allow question in " + inputLesson.getTitle() + " empty or have null value");
+                            json.put("msg", "Not allow question in " + inputLesson.getTitle() + " empty or have null value");
                             return json;
                         }
                     }
@@ -201,10 +206,10 @@ public class CourseServiceImple implements CourseService {
                 fkPackage.setName(in.getPackageTitle().trim());
                 fkPackage.setPackageLocation(packCount);
 
-                try{
+                try {
                     returnLessonPackage = lessonPackageRepo.saveAndFlush(fkPackage);
-                }catch (Exception e) {
-                    log.error("Saving topics process fail \n"+e.getMessage());
+                } catch (Exception e) {
+                    log.error("Saving topics process fail \n" + e.getMessage());
                     json.put("msg", "Saving topics process fail");
                     return json;
                 }
@@ -226,10 +231,10 @@ public class CourseServiceImple implements CourseService {
                     lesson.setLessonPackage(returnLessonPackage);
                     lesson.setLessonType(lessonTypeDB);
 
-                    try{
+                    try {
                         returnLesson = lessonRepo.saveAndFlush(lesson);
-                    }catch (Exception e) {
-                        log.error("Saving topics process fail \n"+e.getMessage());
+                    } catch (Exception e) {
+                        log.error("Saving topics process fail \n" + e.getMessage());
                         json.put("msg", "Saving topics process fail");
                         return json;
                     }
@@ -237,7 +242,7 @@ public class CourseServiceImple implements CourseService {
                     lessCount++;
 
                     if (lessonDTO.getType().equalsIgnoreCase(typeQuiz) && !lessonDTO.getValue().isEmpty()) {
-                        for(QuestionDTO questionDTO : lessonDTO.getValue()) {
+                        for (QuestionDTO questionDTO : lessonDTO.getValue()) {
                             jsonCheck = questionService.saveQuestionAndAnswer(questionDTO, returnLesson);
                             if (jsonCheck.get("type").equals("false")) {
                                 log.error(jsonCheck.get("msg").toString());
@@ -255,25 +260,30 @@ public class CourseServiceImple implements CourseService {
             savePackage.add(fkPackage);
 
             lessCount = 1;
-            for(LessonDTO lesInput : in.getNumLesson()){
-                if(lesInput.getLessonID()==null){
+            for (LessonDTO lesInput : in.getNumLesson()) {
+                if (lesInput.getLessonID() == null) {
                     lesson = new Lesson();
+                    lessonTypeDB = lessonTypeRepo.findByName(lesInput.getType());
+
                     lesson.setName(lesInput.getTitle().trim());
                     lesson.setDescription(lesInput.getDescription());
                     lesson.setLink(lesInput.getLink());
                     lesson.setTime(lesInput.getTime());
                     lesson.setLessonLocation(lessCount);
 
-                    try{
+                    lesson.setLessonPackage(fkPackage);
+                    lesson.setLessonType(lessonTypeDB);
+
+                    try {
                         returnLesson = lessonRepo.saveAndFlush(lesson);
-                    }catch (Exception e) {
-                        log.error("Saving topics process fail \n"+e.getMessage());
+                    } catch (Exception e) {
+                        log.error("Saving topics process fail \n" + e.getMessage());
                         json.put("msg", "Saving topics process fail");
                         return json;
                     }
 
-                    if(lesInput.getType().equalsIgnoreCase(typeQuiz) && !lesInput.getValue().isEmpty()){
-                        for(QuestionDTO questionDTO : lesInput.getValue()) {
+                    if (lesInput.getType().equalsIgnoreCase(typeQuiz) && !lesInput.getValue().isEmpty()) {
+                        for (QuestionDTO questionDTO : lesInput.getValue()) {
                             jsonCheck = questionService.saveQuestionAndAnswer(questionDTO, returnLesson);
                             if (jsonCheck.get("type").equals("false")) {
                                 log.error(jsonCheck.get("msg").toString());
@@ -293,14 +303,14 @@ public class CourseServiceImple implements CourseService {
 
                 saveLesson.add(lesson);
 
-                if(lesInput.getType().equalsIgnoreCase(typeQuiz)
+                if (lesInput.getType().equalsIgnoreCase(typeQuiz)
                         && !lesInput.getValue().isEmpty()
                         && lesson.getLessonType().getName().equals(typeQuiz)) {
 
-                    for(QuestionDTO quesDTO : lesInput.getValue()){
-                        if(quesDTO.getQuestionID()==null){
+                    for (QuestionDTO quesDTO : lesInput.getValue()) {
+                        if (quesDTO.getQuestionID() == null) {
                             jsonCheck = questionService.saveQuestionAndAnswer(quesDTO, lesson);
-                            if(jsonCheck.get("type").equals("false")){
+                            if (jsonCheck.get("type").equals("false")) {
                                 log.error(jsonCheck.get("msg").toString());
                                 json.put("msg", jsonCheck.get("msg").toString());
                                 return json;
@@ -312,7 +322,7 @@ public class CourseServiceImple implements CourseService {
 
                         saveQuestion.add(question);
                         deleteAnswer.addAll(question.getAnswers());
-                        for (String ans : quesDTO.getAnswers()){
+                        for (String ans : quesDTO.getAnswers()) {
                             answer = new Answer();
                             answer.setQuestion(question);
                             answer.setAnswerContent(ans.trim());
@@ -326,15 +336,6 @@ public class CourseServiceImple implements CourseService {
             packCount++;
         }
         try {
-            if(listOfPackageDTO.getDeletePackage()!=null){
-                lessonPackageRepo.deleteAllByIdInBatch(listOfPackageDTO.getDeletePackage());
-            }
-            if(listOfPackageDTO.getDeleteLesson()!=null){
-                lessonRepo.deleteAllByIdInBatch(listOfPackageDTO.getDeleteLesson());
-            }
-            if(listOfPackageDTO.getDeleteQuestion()!=null){
-                questionRepo.deleteAllByIdInBatch(listOfPackageDTO.getDeleteQuestion());
-            }
             lessonPackageRepo.saveAll(savePackage);
             lessonRepo.saveAll(saveLesson);
             questionRepo.saveAll(saveQuestion);
@@ -344,6 +345,87 @@ public class CourseServiceImple implements CourseService {
             log.error("Update process for list of topic fail \n" + e.getMessage());
             json.put("msg", "Update process for list of topic fail");
             return json;
+        }
+        String msgDelete = "";
+        if (listOfPackageDTO.getDeleteQuestion() != null) {
+            questionService.deleteQuestionAndAnswer(listOfPackageDTO.getDeleteQuestion());
+        }
+        if (listOfPackageDTO.getDeleteLesson() != null) {
+            for (int lessonID : listOfPackageDTO.getDeleteLesson()) {
+                lesson = lessonRepo.findByLessonID(lessonID);
+                if (lesson == null) {
+                    log.error("Lesson with id " + lessonID + " isn't exist in system");
+                    json.put("msg", "Lesson with id " + lessonID + " isn't exist in system");
+                    return json;
+                }
+                if (typeQuiz.equals(lesson.getLessonType().getName()) && lesson.getQuizResults().isEmpty()) {
+                    questionService.deleteQuestionObjectAndAnswer(lesson.getQuestions());
+                } else {
+                    log.error("Lesson with id " + lesson.getLessonID() + " have user learning history, can't delete \n");
+                    msgDelete += "Lesson with id " + lesson.getLessonID() + " have user learning history, can't delete \n";
+                    continue;
+                }
+                if (typeListening.equals(lesson.getLessonType().getName()) && !lesson.getComments().isEmpty()) {
+                    log.error("Lesson with id " + lesson.getLessonID() + " have user learning history, can't delete \n");
+                    msgDelete += "Lesson with id " + lesson.getLessonID() + " have user learning history, can't delete \n";
+                    continue;
+                }
+                lessonRepo.deleteByLessonID(lesson.getLessonID());
+            }
+        }
+
+        boolean deleteStatus = true;
+        if (listOfPackageDTO.getDeletePackage() != null) {
+            List<LessonPackage> deletePackages = new ArrayList<>();
+            for (int packageID : listOfPackageDTO.getDeletePackage()) {
+                fkPackage = lessonPackageRepo.findByPackageID(packageID);
+                if (fkPackage == null) {
+                    log.error("lessonPackage with id " + packageID + " isn't exist in system");
+                    json.put("msg", "lessonPackage with id " + packageID + " isn't exist in system");
+                    return json;
+                }
+                deletePackages.add(fkPackage);
+                for (Lesson lessonDelete : fkPackage.getLessons()) {
+                    if (typeQuiz.equals(lessonDelete.getLessonType().getName()) && !lessonDelete.getQuizResults().isEmpty()) {
+                        log.error("Lesson with id " + lessonDelete.getLessonID() + " have user learning history, can't delete \n");
+                        msgDelete += "Lesson with id " + lessonDelete.getLessonID() + " have user learning history, can't delete \n";
+                        deleteStatus = false;
+                    }
+                    if (typeListening.equals(lessonDelete.getLessonType().getName()) && !lessonDelete.getComments().isEmpty()) {
+                        log.error("Lesson with id " + lessonDelete.getLessonID() + " have user learning history, can't delete \n");
+                        msgDelete += "Lesson with id " + lessonDelete.getLessonID() + " have user learning history, can't delete \n";
+                        deleteStatus = false;
+                    }
+                }
+            }
+            if (deleteStatus) {
+                for (LessonPackage lessonPackage : deletePackages) {
+                    System.out.println(lessonPackage.getPackageID() + " " + lessonPackage.getLessons().size()+"   kkkkk");
+                    for (Lesson lessonDelete : lessonPackage.getLessons()) {
+                        System.out.println(lessonDelete.getLessonID() + " " + lessonDelete.getLessonType().getName());
+                        if (typeQuiz.equals(lessonDelete.getLessonType().getName()) && lessonDelete.getQuizResults().isEmpty()) {
+                            questionService.deleteQuestionObjectAndAnswer(lessonDelete.getQuestions());
+                        }
+                        try {
+                            lessonRepo.deleteByLessonID(lessonDelete.getLessonID());
+                            System.out.println("delete");
+                        } catch (Exception e) {
+                            log.error("lesson with id " + lessonDelete.getLessonID() + " delete fail \n" + e.getMessage());
+                            json.put("msg", "lesson with id " + lessonDelete.getLessonID() + " delete fail");
+                            return json;
+                        }
+                    }
+                    try {
+                        lessonPackageRepo.deleteByLessonPackageID(lessonPackage.getPackageID());
+                    } catch (Exception e) {
+                        log.error("lessonPackage with id " + lessonPackage.getPackageID() + " isn't exist in system \n" + e.getMessage());
+                        json.put("msg", "lessonPackage with id " + lessonPackage.getPackageID() + " isn't exist in system");
+                        return json;
+                    }
+                }
+            }else{
+                json.put("msg", msgDelete);
+            }
         }
 
         log.error("Update process for list of topic successfully");
@@ -406,16 +488,16 @@ public class CourseServiceImple implements CourseService {
     @Override
     public HashMap<String, Object> findCourseByIdToUpdate(Integer id) {
         HashMap<String, Object> json = new HashMap<>();
-        json.put("type",false);
-        if(id==null){
+        json.put("type", false);
+        if (id == null) {
             log.error("Not allow id have null value");
             json.put("msg", "Not allow id have null value");
             return json;
         }
         Course course = courseRepo.findByCourseID(id);
-        if(course==null){
-            log.error("Course with id "+id+" isn't exist in system");
-            json.put("msg", "Course with id "+id+" isn't exist in system");
+        if (course == null) {
+            log.error("Course with id " + id + " isn't exist in system");
+            json.put("msg", "Course with id " + id + " isn't exist in system");
             return json;
         }
         CourseDTO courseDTO = new CourseDTO();
@@ -448,13 +530,13 @@ public class CourseServiceImple implements CourseService {
         List<LessonDTO> lessonDTOS;
         List<QuestionDTO> questionDTOS;
         int correctAnswer;
-        for(LessonPackage lessonPackage : lessonPackages){
+        for (LessonPackage lessonPackage : lessonPackages) {
             lessonPackageDTO = new LessonPackageDTO();
             lessonPackageDTO.setPackageID(lessonPackage.getPackageID());
             lessonPackageDTO.setPackageTitle(lessonPackage.getName());
 
             lessonDTOS = new ArrayList<>();
-            for(Lesson lesson : lessonPackage.getLessons()){
+            for (Lesson lesson : lessonPackage.getLessons()) {
                 lessonDTO = new LessonDTO();
                 lessonDTO.setLessonID(lesson.getLessonID());
                 lessonDTO.setTitle(lesson.getName());
@@ -464,18 +546,18 @@ public class CourseServiceImple implements CourseService {
                 lessonType = lesson.getLessonType().getName();
                 lessonDTO.setType(lessonType);
 
-                if(lessonType.equals(typeQuiz)){
+                if (lessonType.equals(typeQuiz)) {
                     questionDTOS = new ArrayList<>();
-                    for(Question question : lesson.getQuestions()){
+                    for (Question question : lesson.getQuestions()) {
                         questionDTO = new QuestionDTO();
                         questionDTO.setQuestionID(question.getQuestionID());
                         questionDTO.setTitle(question.getQuestionContent());
 
                         correctAnswer = 0;
                         answers = new ArrayList<>();
-                        for (Answer answer : question.getAnswers()){
+                        for (Answer answer : question.getAnswers()) {
                             answers.add(answer.getAnswerContent());
-                            if(answer.isRightAnswer()){
+                            if (answer.isRightAnswer()) {
                                 questionDTO.setCorrectAnswer(correctAnswer);
                             }
                             correctAnswer++;
@@ -484,7 +566,7 @@ public class CourseServiceImple implements CourseService {
                         questionDTOS.add(questionDTO);
                     }
                     lessonDTO.setValue(questionDTOS);
-                }else{
+                } else {
                     lessonDTO.setValue(null);
                 }
                 lessonDTOS.add(lessonDTO);
@@ -494,12 +576,12 @@ public class CourseServiceImple implements CourseService {
             lessonPackageDTOS.add(lessonPackageDTO);
         }
 
-        json.put("course",courseDTO);
-        json.put("courseType",type);
-        json.put("lessonPackages",lessonPackageDTOS);
-        json.put("courseExpert",courseExpertDTO);
+        json.put("course", courseDTO);
+        json.put("courseType", type);
+        json.put("lessonPackages", lessonPackageDTOS);
+        json.put("courseExpert", courseExpertDTO);
         json.put("msg", "Get course successfully");
-        json.put("type",true);
+        json.put("type", true);
         return json;
     }
 }

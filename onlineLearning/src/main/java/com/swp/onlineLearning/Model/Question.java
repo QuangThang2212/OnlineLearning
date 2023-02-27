@@ -21,6 +21,6 @@ public class Question implements Serializable {
     @JoinColumn(name = "LessonID", nullable = false)
     private Lesson lesson;
 
-    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Answer> answers;
 }
