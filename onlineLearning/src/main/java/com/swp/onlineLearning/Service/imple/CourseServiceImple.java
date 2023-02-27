@@ -46,6 +46,10 @@ public class CourseServiceImple implements CourseService {
     private String typeListening;
     @Value("${role.courseExpert}")
     private String roleCourseExpert;
+    @Value("${role.guest}")
+    private String roleGuest;
+    @Value("${role.admin}")
+    private String roleAdmin;
     @Value("${quiz.pass.condition}")
     private float passCondition;
 
@@ -136,6 +140,11 @@ public class CourseServiceImple implements CourseService {
         if (course == null) {
             log.error("Course with id " + id + " isn't exist in the system");
             json.put("msg", "Course with id " + id + " isn't exist in the system");
+            return json;
+        }
+        if (course.isStatus()) {
+            log.error("Course with id " + id + " isn't allow to update course by active status");
+            json.put("msg", "Course with id " + id + " isn't allow to update course by active status, set status to inactive to update course");
             return json;
         }
         List<LessonPackageDTO> input = listOfPackageDTO.getLessonPakages();
@@ -413,7 +422,7 @@ public class CourseServiceImple implements CourseService {
                 if (deleteStatus) {
                     deleteLessonPackage.add(fkPackage);
                     deleteLesson.addAll(fkPackage.getLessons());
-                    for(Lesson lesson1 : fkPackage.getLessons()){
+                    for (Lesson lesson1 : fkPackage.getLessons()) {
                         if (typeQuiz.equals(lesson1.getLessonType().getName()) && lesson1.getQuizResults().isEmpty()) {
                             jsonCheck = questionService.deleteQuestionObjectAndAnswer(lesson1.getQuestions());
                             if (jsonCheck.get("type").equals("false")) {
@@ -427,10 +436,10 @@ public class CourseServiceImple implements CourseService {
             }
         }
         try {
-            if(!deleteLesson.isEmpty()) {
+            if (!deleteLesson.isEmpty()) {
                 lessonRepo.deleteInBatch(deleteLesson);
             }
-            if(!deleteLessonPackage.isEmpty()) {
+            if (!deleteLessonPackage.isEmpty()) {
                 lessonPackageRepo.deleteInBatch(deleteLessonPackage);
             }
         } catch (Exception e) {
@@ -441,14 +450,14 @@ public class CourseServiceImple implements CourseService {
 
         log.error("Update process for list of topic successfully");
         json.put("msg", "Update process for list of topic successfully");
-        json.put("msg", msgDelete.toString());
+        json.put("msgProcess", msgDelete.toString());
         json.put("type", true);
         return json;
     }
 
 
     @Override
-    public HashMap<String, Object> findAll(int page, int size) {
+    public HashMap<String, Object> findAll(int page, int size, String role) {
         HashMap<String, Object> json = new HashMap<>();
         json.put("type", false);
         if (page < 1 || size < 1) {
@@ -457,6 +466,14 @@ public class CourseServiceImple implements CourseService {
             return json;
         }
 
+        boolean allowAccess = false;
+        if (!role.equals(roleGuest)) {
+            Account account = accountRepo.findByGmail(role);
+            String roleAccess = account.getRoleUser().getName();
+            if (roleAccess.equals(roleCourseExpert) || roleAccess.equals(roleAdmin)) {
+                allowAccess = true;
+            }
+        }
         int totalNumber = courseRepo.findAll(PageRequest.of(page - 1, size)).getTotalPages();
         if (totalNumber == 0) {
             log.error("0 course founded");
@@ -488,7 +505,14 @@ public class CourseServiceImple implements CourseService {
             courseDTO.setNumberOfEnroll(a.getNumberOfEnroll());
             courseDTO.setCourseExpert(a.getExpertID());
             courseDTO.setTypeName(a.getCourseType().getCourseTypeName());
-            courseDTOS.add(courseDTO);
+
+            if (allowAccess) {
+                courseDTOS.add(courseDTO);
+                continue;
+            }
+            if (a.isStatus()) {
+                courseDTOS.add(courseDTO);
+            }
         }
 
         json.put("courses", courseDTOS);

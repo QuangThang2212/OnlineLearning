@@ -9,6 +9,6 @@ public interface CourseService {
     HashMap<String, Object> getHomepageInfor();
     HashMap<String, Object> save(CourseDTO courseDTO);
     HashMap<String, Object> saveLessonPackage(ListOfPackageDTO listOfPackageDTO, int id);
-    HashMap<String, Object> findAll(int page, int size);
+    HashMap<String, Object> findAll(int page, int size, String role);
     HashMap<String, Object> findCourseByIdToUpdate(Integer id);
 }

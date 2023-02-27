@@ -5,6 +5,7 @@ import com.swp.onlineLearning.DTO.ListOfPackageDTO;
 import com.swp.onlineLearning.Service.CourseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -12,24 +13,27 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.security.Principal;
 import java.util.HashMap;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/course")
 public class CourseManagementController {
+    @Value("${role.guest}")
+    private String roleGuest;
     @Autowired
     private CourseService courseService;
     @PostMapping("/create")
     public ResponseEntity<HashMap> createNewCourse(@Valid @RequestBody CourseDTO courseDTO, BindingResult result){
         HashMap<String, Object> json = new HashMap<>();
-        StringBuffer stringBuffer = new StringBuffer();
+        StringBuilder stringBuilder = new StringBuilder();
         if (result.hasErrors()) {
             for (FieldError error : result.getFieldErrors()) {
-                stringBuffer.append(error.getDefaultMessage()) ;
-                stringBuffer.append("\n") ;
+                stringBuilder.append(error.getDefaultMessage()) ;
+                stringBuilder.append("<br>") ;
             }
-            json.put("msg",stringBuffer.toString());
+            json.put("msg",stringBuilder.toString());
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
         json = courseService.save(courseDTO);
@@ -42,7 +46,7 @@ public class CourseManagementController {
         }
     }
     @PostMapping("/update_pakage/id={id}")
-    public ResponseEntity<HashMap> createNewCourse(@RequestBody ListOfPackageDTO lessonPackageDTOS, @PathVariable("id") Integer id){
+    public ResponseEntity<HashMap> updatePackageOfTopic(@RequestBody ListOfPackageDTO lessonPackageDTOS, @PathVariable("id") Integer id){
         HashMap<String, Object> json = new HashMap<>();
         if(id==null){
             json.put("msg", "Not allow id course null");
@@ -58,8 +62,14 @@ public class CourseManagementController {
         }
     }
     @GetMapping("/getAllCourse")
-    public ResponseEntity<HashMap> getAllCourse(@RequestParam("limit") int limit, @RequestParam("page") int page){
-        HashMap<String, Object> json = courseService.findAll(page, limit);
+    public ResponseEntity<HashMap> getAllCourse(@RequestParam("limit") int limit, @RequestParam("page") int page, Principal principal){
+        String authoriry;
+        if(principal == null){
+            authoriry = roleGuest;
+        }else{
+            authoriry = principal.getName();
+        }
+        HashMap<String, Object> json = courseService.findAll(page, limit, authoriry);
 
         String type = json.get("type").toString();
         if(type.equals("true")){
