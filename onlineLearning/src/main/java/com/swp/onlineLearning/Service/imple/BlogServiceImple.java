@@ -133,6 +133,8 @@ public class BlogServiceImple implements BlogService {
     }
 
     public HashMap<String, Object> findAllBlog(int pageNumber, int size) {
+        System.out.println(pageNumber +" page");
+        System.out.println(size +" limit");
         HashMap<String, Object> json = new HashMap<>();
         json.put("type", false);
         if (pageNumber < 1 || size < 1) {
@@ -169,16 +171,18 @@ public class BlogServiceImple implements BlogService {
             blogDTO.setContent(a.getContent());
             blogDTO.setCourseTypeId(a.getCourseType().getCourseTypeID());
             blogDTO.setCourseType(a.getCourseType().getCourseTypeName());
-            blogDTO.setGmail(a.getAccount().getGmail());
-            blogDTO.setGmail(a.getAccount().getAccountID());
-            blogDTO.setGmail(a.getAccount().getAccountID());
-            blogDTO.setGmail(a.getAccount().getImage());
+            blogDTO.setAccount(a.getAccount().getAccountID());
+            blogDTO.setAccount(a.getAccount().getName());
+            blogDTO.setAccount(a.getAccount().getImage());
+
 
             blogDTOs.add(blogDTO);
-
         }
-            json.put("blogs", blogDTOs);
-            json.put("type",true);
+        System.out.println(totalNumber);
+        System.out.println(blogDTOs);
+        json.put("totalNumber", totalNumber);
+        json.put("blogs", blogDTOs);
+        json.put("type", true);
         return json;
     }
 }
