@@ -73,6 +73,8 @@ public class QuestionServiceImple implements QuestionService {
         HashMap<String, Object> json = new HashMap<>();
         json.put("type", false);
         Question question;
+        List<Answer> deleteAnswer = new ArrayList<>();
+        List<Question> deleteQuestion = new ArrayList<>();
         for (int questionID : questionDelete) {
             question = questionRepo.findById(questionID).orElse(null);
             if (question == null) {
@@ -81,20 +83,19 @@ public class QuestionServiceImple implements QuestionService {
                 return json;
             }
             for(Answer answer : question.getAnswers()){
-                try{
-                    answerRepo.deleteByAnswerID(answer.getAnswerID());
-                }catch(Exception e){
-                    log.error("Answer with id " + answer.getAnswerID() + " delete fail \n"+e.getMessage());
-                    return json;
-                }
+                deleteAnswer.add(answer);
             }
-            try{
-                questionRepo.deleteByQuestionID(question.getQuestionID());
-            }catch(Exception e){
-                log.error("Question with id " + questionID + " delete fail \n"+e.getMessage());
-                return json;
-            }
+            deleteQuestion.add(question);
         }
+        try{
+            answerRepo.deleteInBatch(deleteAnswer);
+            questionRepo.deleteInBatch(deleteQuestion);
+        }catch(Exception e){
+            log.error("Delete Question process fail \n"+e.getMessage());
+            json.put("msg", "Delete Question process fail \n");
+            return json;
+        }
+        log.info("Delete Question process successfully ");
         json.put("type", true);
         return json;
     }
@@ -103,23 +104,23 @@ public class QuestionServiceImple implements QuestionService {
     public HashMap<String, Object> deleteQuestionObjectAndAnswer(List<Question> questionDelete) {
         HashMap<String, Object> json = new HashMap<>();
         json.put("type", false);
+        List<Answer> deleteAnswer = new ArrayList<>();
+        List<Question> deleteQuestion = new ArrayList<>();
         for (Question question : questionDelete) {
             for(Answer answer : question.getAnswers()){
-                try{
-                    answerRepo.deleteByAnswerID(answer.getAnswerID());
-                }catch(Exception e){
-                    log.error("Answer with id " + answer.getAnswerID() + " delete fail \n"+e.getMessage());
-                    return json;
-                }
+                deleteAnswer.add(answer);
             }
-            try{
-                questionRepo.deleteByQuestionID(question.getQuestionID());
-            }catch(Exception e){
-                log.error("Question with id " + question.getAnswers() + " delete fail \n"+e.getMessage());
-                json.put("msg", "Question with id " + question.getAnswers() + " delete fail");
-                return json;
-            }
+            deleteQuestion.add(question);
         }
+        try{
+            answerRepo.deleteInBatch(deleteAnswer);
+            questionRepo.deleteInBatch(deleteQuestion);
+        }catch(Exception e){
+            log.error("Delete Question process fail \n"+e.getMessage());
+            json.put("msg", "Delete Question process fail \n");
+            return json;
+        }
+        log.info("Delete Question process successfully ");
         json.put("type", true);
         return json;
     }

@@ -196,6 +196,8 @@ public class CourseServiceImple implements CourseService {
         List<Question> saveQuestion = new ArrayList<>();
         List<Answer> saveAnswer = new ArrayList<>();
         List<Answer> deleteAnswer = new ArrayList<>();
+        List<Lesson> deleteLesson = new ArrayList<>();
+        List<LessonPackage> deleteLessonPackage = new ArrayList<>();
         HashMap<String, Object> jsonCheck;
         int packCount = 1;
         int lessCount;
@@ -339,21 +341,21 @@ public class CourseServiceImple implements CourseService {
             lessonPackageRepo.saveAll(savePackage);
             lessonRepo.saveAll(saveLesson);
             questionRepo.saveAll(saveQuestion);
-            answerRepo.deleteAll(deleteAnswer);
+            answerRepo.deleteInBatch(deleteAnswer);
             answerRepo.saveAll(saveAnswer);
         } catch (Exception e) {
             log.error("Update process for list of topic fail \n" + e.getMessage());
             json.put("msg", "Update process for list of topic fail");
             return json;
         }
-
-
+        boolean deleteStatus;
         StringBuilder msgDelete = new StringBuilder();
         if (listOfPackageDTO.getDeleteQuestion() != null) {
             questionService.deleteQuestionAndAnswer(listOfPackageDTO.getDeleteQuestion());
         }
         if (listOfPackageDTO.getDeleteLesson() != null) {
             for (int lessonID : listOfPackageDTO.getDeleteLesson()) {
+                deleteStatus = true;
                 lesson = lessonRepo.findByLessonID(lessonID);
                 if (lesson == null) {
                     log.error("Lesson with id " + lessonID + " isn't exist in system");
@@ -361,73 +363,89 @@ public class CourseServiceImple implements CourseService {
                     return json;
                 }
                 if (typeQuiz.equals(lesson.getLessonType().getName()) && lesson.getQuizResults().isEmpty()) {
-                    questionService.deleteQuestionObjectAndAnswer(lesson.getQuestions());
+                    jsonCheck = questionService.deleteQuestionObjectAndAnswer(lesson.getQuestions());
+                    if (jsonCheck.get("type").equals("false")) {
+                        log.error(jsonCheck.get("msg").toString());
+                        json.put("msg", jsonCheck.get("msg").toString());
+                        return json;
+                    }
                 } else {
                     log.error("Lesson with id " + lesson.getLessonID() + " have user learning history, can't delete \n");
                     msgDelete.append("Lesson with id ").append(lesson.getLessonID()).append(" have user learning history, can't delete \n");
-                    continue;
+                    deleteStatus = false;
                 }
                 if (typeListening.equals(lesson.getLessonType().getName()) && !lesson.getComments().isEmpty()) {
                     log.error("Lesson with id " + lesson.getLessonID() + " have user learning history, can't delete \n");
                     msgDelete.append("Lesson with id ").append(lesson.getLessonID()).append(" have user learning history, can't delete \n");
-                    continue;
+                    deleteStatus = false;
                 }
-                lessonRepo.deleteByLessonID(lesson.getLessonID());
+                if (deleteStatus) {
+                    deleteLesson.add(lesson);
+                }
+            }
+            try {
+                if(!deleteLesson.isEmpty()) {
+                    lessonRepo.deleteInBatch(deleteLesson);
+                }
+            } catch (Exception e) {
+                log.error("Delete lesson Process fail" + e.getMessage());
+                json.put("msg", "Delete Process fail");
+                return json;
             }
         }
 
-        boolean deleteStatus = true;
         if (listOfPackageDTO.getDeletePackage() != null) {
-            List<LessonPackage> deletePackages = new ArrayList<>();
             for (int packageID : listOfPackageDTO.getDeletePackage()) {
+                deleteStatus = true;
                 fkPackage = lessonPackageRepo.findByPackageID(packageID);
                 if (fkPackage == null) {
                     log.error("lessonPackage with id " + packageID + " isn't exist in system");
                     json.put("msg", "lessonPackage with id " + packageID + " isn't exist in system");
                     return json;
                 }
-                deletePackages.add(fkPackage);
                 for (Lesson lessonDelete : fkPackage.getLessons()) {
                     if (typeQuiz.equals(lessonDelete.getLessonType().getName()) && !lessonDelete.getQuizResults().isEmpty()) {
                         log.error("Lesson with id " + lessonDelete.getLessonID() + " have user learning history, can't delete \n");
                         msgDelete.append("Lesson with id ").append(lessonDelete.getLessonID()).append(" have user learning history, can't delete \n");
                         deleteStatus = false;
+                        break;
                     }
                     if (typeListening.equals(lessonDelete.getLessonType().getName()) && !lessonDelete.getComments().isEmpty()) {
                         log.error("Lesson with id " + lessonDelete.getLessonID() + " have user learning history, can't delete \n");
                         msgDelete.append("Lesson with id ").append(lessonDelete.getLessonID()).append(" have user learning history, can't delete \n");
                         deleteStatus = false;
+                        break;
+                    }
+                }
+                if (deleteStatus) {
+                    deleteLessonPackage.add(fkPackage);
+                    deleteLesson.addAll(fkPackage.getLessons());
+                    for(Lesson lesson1 : fkPackage.getLessons()){
+                        if (typeQuiz.equals(lesson1.getLessonType().getName()) && lesson1.getQuizResults().isEmpty()) {
+                            jsonCheck = questionService.deleteQuestionObjectAndAnswer(lesson1.getQuestions());
+                            if (jsonCheck.get("type").equals("false")) {
+                                log.error(jsonCheck.get("msg").toString());
+                                json.put("msg", jsonCheck.get("msg").toString());
+                                return json;
+                            }
+                        }
                     }
                 }
             }
-            if (deleteStatus) {
-                for (LessonPackage lessonPackage : deletePackages) {
-                    System.out.println(lessonPackage.getPackageID() + " " + lessonPackage.getLessons().size()+"   kkkkk");
-                    for (Lesson lessonDelete : lessonPackage.getLessons()) {
-                        System.out.println(lessonDelete.getLessonID() + " " + lessonDelete.getLessonType().getName());
-                        if (typeQuiz.equals(lessonDelete.getLessonType().getName()) && lessonDelete.getQuizResults().isEmpty()) {
-                            questionService.deleteQuestionObjectAndAnswer(lessonDelete.getQuestions());
-                        }
-                        try {
-                            lessonRepo.deleteByLessonID(lessonDelete.getLessonID());
-                            System.out.println("delete");
-                        } catch (Exception e) {
-                            log.error("lesson with id " + lessonDelete.getLessonID() + " delete fail \n" + e.getMessage());
-                            json.put("msg", "lesson with id " + lessonDelete.getLessonID() + " delete fail");
-                            return json;
-                        }
-                    }
-                    try {
-                        lessonPackageRepo.deleteByLessonPackageID(lessonPackage.getPackageID());
-                    } catch (Exception e) {
-                        log.error("lessonPackage with id " + lessonPackage.getPackageID() + " isn't exist in system \n" + e.getMessage());
-                        json.put("msg", "lessonPackage with id " + lessonPackage.getPackageID() + " isn't exist in system");
-                        return json;
-                    }
+            try {
+                if(!deleteLesson.isEmpty()) {
+                    lessonRepo.deleteInBatch(deleteLesson);
                 }
-            }else{
-                json.put("msg", msgDelete.toString());
+                if(!deleteLessonPackage.isEmpty()) {
+                    lessonPackageRepo.deleteInBatch(deleteLessonPackage);
+                }
+            } catch (Exception e) {
+                log.error("Delete lesson and lesson package Process fail" + e.getMessage());
+                json.put("msg", "Delete Process fail");
+                return json;
             }
+        } else {
+            json.put("msg", msgDelete.toString());
         }
 
         log.error("Update process for list of topic successfully");

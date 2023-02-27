@@ -14,7 +14,5 @@ import java.util.List;
 public interface LessonPackageRepo extends JpaRepository<LessonPackage,Integer> {
     List<LessonPackage> findByCourse(Course course);
     LessonPackage findByPackageID(int id);
-    @Modifying
-    @Query(nativeQuery = true, value = "DELETE FROM lesson_package l WHERE l.packageid = ?1")
-    void deleteByLessonPackageID(int id);
+    void deleteInBatch(Iterable<LessonPackage> lessonPackages);
 }
