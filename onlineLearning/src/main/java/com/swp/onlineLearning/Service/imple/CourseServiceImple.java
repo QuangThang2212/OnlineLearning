@@ -196,8 +196,6 @@ public class CourseServiceImple implements CourseService {
         List<Question> saveQuestion = new ArrayList<>();
         List<Answer> saveAnswer = new ArrayList<>();
         List<Answer> deleteAnswer = new ArrayList<>();
-        List<Lesson> deleteLesson = new ArrayList<>();
-        List<LessonPackage> deleteLessonPackage = new ArrayList<>();
         HashMap<String, Object> jsonCheck;
         int packCount = 1;
         int lessCount;
@@ -348,8 +346,12 @@ public class CourseServiceImple implements CourseService {
             json.put("msg", "Update process for list of topic fail");
             return json;
         }
+
+
         boolean deleteStatus;
         StringBuilder msgDelete = new StringBuilder();
+        List<Lesson> deleteLesson = new ArrayList<>();
+        List<LessonPackage> deleteLessonPackage = new ArrayList<>();
         if (listOfPackageDTO.getDeleteQuestion() != null) {
             questionService.deleteQuestionAndAnswer(listOfPackageDTO.getDeleteQuestion());
         }
@@ -382,15 +384,6 @@ public class CourseServiceImple implements CourseService {
                 if (deleteStatus) {
                     deleteLesson.add(lesson);
                 }
-            }
-            try {
-                if(!deleteLesson.isEmpty()) {
-                    lessonRepo.deleteInBatch(deleteLesson);
-                }
-            } catch (Exception e) {
-                log.error("Delete lesson Process fail" + e.getMessage());
-                json.put("msg", "Delete Process fail");
-                return json;
             }
         }
 
@@ -432,24 +425,23 @@ public class CourseServiceImple implements CourseService {
                     }
                 }
             }
-            try {
-                if(!deleteLesson.isEmpty()) {
-                    lessonRepo.deleteInBatch(deleteLesson);
-                }
-                if(!deleteLessonPackage.isEmpty()) {
-                    lessonPackageRepo.deleteInBatch(deleteLessonPackage);
-                }
-            } catch (Exception e) {
-                log.error("Delete lesson and lesson package Process fail" + e.getMessage());
-                json.put("msg", "Delete Process fail");
-                return json;
+        }
+        try {
+            if(!deleteLesson.isEmpty()) {
+                lessonRepo.deleteInBatch(deleteLesson);
             }
-        } else {
-            json.put("msg", msgDelete.toString());
+            if(!deleteLessonPackage.isEmpty()) {
+                lessonPackageRepo.deleteInBatch(deleteLessonPackage);
+            }
+        } catch (Exception e) {
+            log.error("Delete lesson and lesson package Process fail" + e.getMessage());
+            json.put("msg", "Delete Process fail");
+            return json;
         }
 
         log.error("Update process for list of topic successfully");
         json.put("msg", "Update process for list of topic successfully");
+        json.put("msg", msgDelete.toString());
         json.put("type", true);
         return json;
     }
