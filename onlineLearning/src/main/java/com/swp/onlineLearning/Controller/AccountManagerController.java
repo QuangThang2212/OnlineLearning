@@ -21,7 +21,7 @@ public class AccountManagerController {
     private AccountService accountService;
 
     @GetMapping()
-    public ResponseEntity<HashMap> getAllAccount(@RequestParam("page") int page, @RequestParam("limit") int limit, Principal principal) {
+    public ResponseEntity<HashMap<String, Object>> getAllAccount(@RequestParam("page") int page, @RequestParam("limit") int limit, Principal principal) {
 
         HashMap<String, Object> json = accountService.findAllExcept(principal.getName(), page, limit);
 
@@ -34,7 +34,7 @@ public class AccountManagerController {
     }
 
     @GetMapping("/course_expert")
-    public ResponseEntity<HashMap> getAllCourseExpert() {
+    public ResponseEntity<HashMap<String, Object>> getAllCourseExpert() {
         HashMap<String, Object> json = accountService.findBAllCourseExpert();
 
         String type = json.get("type").toString();
@@ -46,7 +46,7 @@ public class AccountManagerController {
     }
 
     @PostMapping("/change_role/id={id}")
-    public ResponseEntity<HashMap> changeRoleOfAccount(@PathVariable("id") int id, @RequestBody RoleDTO roleDTO) {
+    public ResponseEntity<HashMap<String, Object>> changeRoleOfAccount(@PathVariable("id") int id, @RequestBody RoleDTO roleDTO) {
         roleDTO.setAccountID(id);
         HashMap<String, Object> json = accountService.changRole(roleDTO);
 

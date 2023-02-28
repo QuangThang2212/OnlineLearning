@@ -1,6 +1,7 @@
 package com.swp.onlineLearning.Controller;
 
 import com.swp.onlineLearning.DTO.CourseDTO;
+import com.swp.onlineLearning.DTO.ListOfCourseDTO;
 import com.swp.onlineLearning.DTO.ListOfPackageDTO;
 import com.swp.onlineLearning.Service.CourseService;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +26,7 @@ public class CourseManagementController {
     @Autowired
     private CourseService courseService;
     @PostMapping("/create")
-    public ResponseEntity<HashMap> createNewCourse(@Valid @RequestBody CourseDTO courseDTO, BindingResult result){
+    public ResponseEntity<HashMap<String, Object>> createNewCourse(@Valid @RequestBody CourseDTO courseDTO, BindingResult result){
         HashMap<String, Object> json = new HashMap<>();
         StringBuilder stringBuilder = new StringBuilder();
         if (result.hasErrors()) {
@@ -46,7 +47,7 @@ public class CourseManagementController {
         }
     }
     @PostMapping("/update_pakage/id={id}")
-    public ResponseEntity<HashMap> updatePackageOfTopic(@RequestBody ListOfPackageDTO lessonPackageDTOS, @PathVariable("id") Integer id){
+    public ResponseEntity<HashMap<String, Object>> updatePackageOfTopic(@RequestBody ListOfPackageDTO lessonPackageDTOS, @PathVariable("id") Integer id){
         HashMap<String, Object> json = new HashMap<>();
         if(id==null){
             json.put("msg", "Not allow id course null");
@@ -61,15 +62,26 @@ public class CourseManagementController {
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
     }
-    @GetMapping("/getAllCourse")
-    public ResponseEntity<HashMap> getAllCourse(@RequestParam("limit") int limit, @RequestParam("page") int page, Principal principal){
-        String authoriry;
-        if(principal == null){
-            authoriry = roleGuest;
+    @PostMapping("/change_status")
+    public ResponseEntity<HashMap<String, Object>> changeCourseStatus(@RequestBody ListOfCourseDTO ListOfCourseDTO){
+        HashMap<String, Object> json = courseService.changeCourseStatus(ListOfCourseDTO);
+
+        String type = json.get("type").toString();
+        if(type.equals("true")){
+            return new ResponseEntity<>(json, HttpStatus.OK);
         }else{
-            authoriry = principal.getName();
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
-        HashMap<String, Object> json = courseService.findAll(page, limit, authoriry);
+    }
+    @GetMapping("/getAllCourse")
+    public ResponseEntity<HashMap<String, Object>> getAllCourse(@RequestParam("limit") int limit, @RequestParam("page") int page, Principal principal){
+        String authority;
+        if(principal == null){
+            authority = roleGuest;
+        }else{
+            authority = principal.getName();
+        }
+        HashMap<String, Object> json = courseService.findAll(page, limit, authority);
 
         String type = json.get("type").toString();
         if(type.equals("true")){
@@ -79,7 +91,7 @@ public class CourseManagementController {
         }
     }
     @GetMapping("/admin_get")
-    public ResponseEntity<HashMap> getCourseUpdate(@RequestParam("id") Integer id){
+    public ResponseEntity<HashMap<String, Object>> getCourseUpdate(@RequestParam("id") Integer id){
         HashMap<String, Object> json = courseService.findCourseByIdToUpdate(id);
 
         String type = json.get("type").toString();

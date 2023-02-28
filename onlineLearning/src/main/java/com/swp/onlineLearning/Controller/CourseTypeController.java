@@ -23,12 +23,12 @@ public class CourseTypeController {
     @Autowired
     private CourseTypeService courseTypeService;
     @GetMapping()
-    public ResponseEntity<HashMap> getAllCourseType() throws Exception {
+    public ResponseEntity<HashMap<String, Object>> getAllCourseType() throws Exception {
         HashMap<String, Object> json = courseTypeService.findAll();
         return new ResponseEntity<>(json, HttpStatus.OK);
     }
     @PostMapping("/create")
-    public ResponseEntity<HashMap> createCourseType(@Valid @RequestBody CourseTypeDTO courseTypeDTO, BindingResult result) throws Exception {
+    public ResponseEntity<HashMap<String, Object>> createCourseType(@Valid @RequestBody CourseTypeDTO courseTypeDTO, BindingResult result) {
         HashMap<String, Object> json = new HashMap<>();
         StringBuffer stringBuffer = new StringBuffer();
         if (result.hasErrors()) {
@@ -41,7 +41,7 @@ public class CourseTypeController {
         }
         json = courseTypeService.save(courseTypeDTO);
 
-        String type = type = json.get("type").toString();
+        String type = json.get("type").toString();
         if(type.equals("true")){
             return new ResponseEntity<>(json, HttpStatus.OK);
         }else{
@@ -49,15 +49,15 @@ public class CourseTypeController {
         }
     }
     @PostMapping("/update/id={id}")
-    public ResponseEntity<HashMap> updateCourseType(@Valid @RequestBody CourseTypeDTO courseTypeDTO, BindingResult result, @PathVariable("id") int id) throws Exception {
+    public ResponseEntity<HashMap<String, Object>> updateCourseType(@Valid @RequestBody CourseTypeDTO courseTypeDTO, BindingResult result, @PathVariable("id") int id) throws Exception {
         HashMap<String, Object> json = new HashMap<>();
-        StringBuffer stringBuffer = new StringBuffer();
+        StringBuilder stringBuilder = new StringBuilder();
         if (result.hasErrors()) {
             for (FieldError error : result.getFieldErrors()) {
-                stringBuffer.append(error.getDefaultMessage()) ;
-                stringBuffer.append("\n") ;
+                stringBuilder.append(error.getDefaultMessage()) ;
+                stringBuilder.append("\n") ;
             }
-            json.put("msg",stringBuffer.toString());
+            json.put("msg",stringBuilder.toString());
             return new ResponseEntity<>(json,HttpStatus.BAD_REQUEST);
         }
         courseTypeDTO.setCourseTypeID(id);
@@ -71,7 +71,7 @@ public class CourseTypeController {
         }
     }
     @PostMapping("/delete/id={id}")
-    public ResponseEntity<HashMap> deleteCourseType(@PathVariable("id") int id) throws Exception {
+    public ResponseEntity<HashMap<String, Object>> deleteCourseType(@PathVariable("id") int id){
         HashMap<String, Object> json = courseTypeService.delete(id);
 
         String type = json.get("type").toString();

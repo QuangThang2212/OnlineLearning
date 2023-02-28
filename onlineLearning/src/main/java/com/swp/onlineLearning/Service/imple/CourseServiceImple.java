@@ -97,7 +97,7 @@ public class CourseServiceImple implements CourseService {
             }
             if (course.isStatus()) {
                 log.error("This course with name " + course.getCourseName() + " is duplicate with name of other course on system");
-                json.put("msg", "This course with name " + course.getCourseName() + " is duplicate with name of other course on system \n please enter new name");
+                json.put("msg", "This course with name " + course.getCourseName() + " is duplicate with name of other course on system \n\n please enter new name");
                 return json;
             }
         } else {
@@ -451,6 +451,32 @@ public class CourseServiceImple implements CourseService {
         log.error("Update process for list of topic successfully");
         json.put("msg", "Update process for list of topic successfully");
         json.put("msgProcess", msgDelete.toString());
+        json.put("type", true);
+        return json;
+    }
+
+    @Override
+    public HashMap<String, Object> changeCourseStatus(ListOfCourseDTO listOfCourseDTO) {
+        HashMap<String, Object> json = new HashMap<>();
+        List<Integer> listOfCourseId = listOfCourseDTO.getCourseID();
+        Course course;
+        List<Course> courses = new ArrayList<>();
+        boolean status = listOfCourseDTO.isStatus();
+        for(int id : listOfCourseId){
+            course = courseRepo.findByCourseID(id);
+            course.setStatus(status);
+
+            courses.add(course);
+        }
+        try{
+            courseRepo.saveAll(courses);
+        }catch (Exception e){
+            log.error("Update status for list of course fail, view log " + e.getMessage());
+            json.put("msg", "Update status for list of course fail, view log ");
+            return json;
+        }
+        log.error("Update status for list of course successfully");
+        json.put("msg", "Update status for list of course successfully");
         json.put("type", true);
         return json;
     }

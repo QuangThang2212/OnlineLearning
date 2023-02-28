@@ -19,13 +19,13 @@ public class CommonActionController {
     @Autowired
     private CourseService courseService;
     @GetMapping()
-    public ResponseEntity<HashMap> homePage(){
+    public ResponseEntity<HashMap<String, Object>> homePage(){
         HashMap<String, Object> json = courseService.getHomepageInfor();
 
         return new ResponseEntity<>(json, HttpStatus.OK);
     }
     @GetMapping("/course?id={id}")
-    public ResponseEntity<HashMap> CourseDetail(@PathVariable String id){
+    public ResponseEntity<HashMap<String, Object>> CourseDetail(@PathVariable String id){
 
         return null;
     }

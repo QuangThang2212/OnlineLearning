@@ -31,7 +31,7 @@ public class UserAccountController {
 
 
     @PostMapping("/login")
-    public ResponseEntity<HashMap> login(@RequestBody UserDTO userDTO) {
+    public ResponseEntity<HashMap<String, Object>> login(@RequestBody UserDTO userDTO) {
         HashMap<String, Object> json = new HashMap<>();
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userDTO.getGmail(), userDTO.getPassword()));
@@ -54,7 +54,7 @@ public class UserAccountController {
         return new ResponseEntity<>(json, HttpStatus.OK);
     }
     @PostMapping("/register")
-    public ResponseEntity<HashMap> register(@RequestBody UserDTO userDTO) throws Exception {
+    public ResponseEntity<HashMap<String, Object>> register(@RequestBody UserDTO userDTO){
         HashMap<String, Object> json = accountService.save(userDTO);
 
         String type = json.get("type").toString();
