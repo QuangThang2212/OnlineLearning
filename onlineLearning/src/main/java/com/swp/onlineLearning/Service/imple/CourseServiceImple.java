@@ -54,13 +54,126 @@ public class CourseServiceImple implements CourseService {
     private float passCondition;
 
     @Override
-    public HashMap<String, Object> getHomepageInfor() {
+    public HashMap<String, Object> getHomepageInfor(String authority) {
         HashMap<String, Object> json = new HashMap<>();
+        boolean allowAccess = false;
+        if (!authority.equals(roleGuest)) {
+            Account account = accountRepo.findByGmail(authority);
+            String roleAccess = account.getRoleUser().getName();
+            if (roleAccess.equals(roleCourseExpert) || roleAccess.equals(roleAdmin)) {
+                allowAccess = true;
+            }
+        }
+        List<Course> courses = new ArrayList<>();
 
-        json.put("PopularCourse", courseRepo.findTop8PopularCourse());
-        json.put("FreePopularCourse", courseRepo.findTop8FreePopularCourse());
-        json.put("NewestCourse", courseRepo.findTop8NewestCourse());
-        json.put("FamousPaidCourses", courseRepo.findTop8FamousPaidCourses());
+        courses = courseRepo.findTop8PopularCourse();
+        if (courses.isEmpty()) {
+            log.error("0 Popular Course founded");
+        }
+        List<CourseDTO> popularCourse = new ArrayList<>();
+        for (Course a : courses) {
+            CourseDTO courseDTO = new CourseDTO();
+            courseDTO.setCourseID(a.getCourseID());
+            courseDTO.setCourseName(a.getCourseName());
+            courseDTO.setPrice(a.getPrice());
+            courseDTO.setNumberOfEnroll(a.getNumberOfEnroll());
+            courseDTO.setImage(a.getImage());
+            courseDTO.setStarRated(0);
+            courseDTO.setTypeName(a.getCourseType().getCourseTypeName());
+
+            if (allowAccess) {
+                courseDTO.setStatus(a.isStatus());
+                courseDTO.setCourseExpert(a.getExpertID());
+                popularCourse.add(courseDTO);
+                continue;
+            }
+            if (a.isStatus()) {
+                popularCourse.add(courseDTO);
+            }
+        }
+
+        courses = courseRepo.findTop8FreePopularCourse();
+        if (courses.isEmpty()) {
+            log.error("0 free popular Course founded");
+        }
+        List<CourseDTO> freePopularCourse = new ArrayList<>();
+        for (Course a : courses) {
+            CourseDTO courseDTO = new CourseDTO();
+            courseDTO.setCourseID(a.getCourseID());
+            courseDTO.setCourseName(a.getCourseName());
+            courseDTO.setPrice(a.getPrice());
+            courseDTO.setNumberOfEnroll(a.getNumberOfEnroll());
+            courseDTO.setImage(a.getImage());
+            courseDTO.setStarRated(0);
+            courseDTO.setTypeName(a.getCourseType().getCourseTypeName());
+
+            if (allowAccess) {
+                courseDTO.setStatus(a.isStatus());
+                courseDTO.setCourseExpert(a.getExpertID());
+                freePopularCourse.add(courseDTO);
+                continue;
+            }
+            if (a.isStatus()) {
+                freePopularCourse.add(courseDTO);
+            }
+        }
+
+        courses = courseRepo.findTop8NewestCourse();
+        if (courses.isEmpty()) {
+            log.error("0 new Course founded");
+        }
+        List<CourseDTO> newestCourse = new ArrayList<>();
+        for (Course a : courses) {
+            CourseDTO courseDTO = new CourseDTO();
+            courseDTO.setCourseID(a.getCourseID());
+            courseDTO.setCourseName(a.getCourseName());
+            courseDTO.setPrice(a.getPrice());
+            courseDTO.setNumberOfEnroll(a.getNumberOfEnroll());
+            courseDTO.setImage(a.getImage());
+            courseDTO.setStarRated(0);
+            courseDTO.setTypeName(a.getCourseType().getCourseTypeName());
+
+            if (allowAccess) {
+                courseDTO.setStatus(a.isStatus());
+                courseDTO.setCourseExpert(a.getExpertID());
+                newestCourse.add(courseDTO);
+                continue;
+            }
+            if (a.isStatus()) {
+                newestCourse.add(courseDTO);
+            }
+        }
+
+        courses = courseRepo.findTop8FamousPaidCourses();
+        if (courses.isEmpty()) {
+            log.error("0 famous paid Course founded");
+        }
+        List<CourseDTO> famousPaidCourses = new ArrayList<>();
+        for (Course a : courses) {
+            CourseDTO courseDTO = new CourseDTO();
+            courseDTO.setCourseID(a.getCourseID());
+            courseDTO.setCourseName(a.getCourseName());
+            courseDTO.setPrice(a.getPrice());
+            courseDTO.setNumberOfEnroll(a.getNumberOfEnroll());
+            courseDTO.setImage(a.getImage());
+            courseDTO.setStarRated(0);
+            courseDTO.setTypeName(a.getCourseType().getCourseTypeName());
+
+            if (allowAccess) {
+                courseDTO.setStatus(a.isStatus());
+                courseDTO.setCourseExpert(a.getExpertID());
+                famousPaidCourses.add(courseDTO);
+                continue;
+            }
+            if (a.isStatus()) {
+                famousPaidCourses.add(courseDTO);
+            }
+        }
+
+        json.put("PopularCourse", popularCourse);
+        json.put("FreePopularCourse", freePopularCourse);
+        json.put("NewestCourse", newestCourse);
+        json.put("FamousPaidCourses", famousPaidCourses);
 
         return json;
     }
@@ -525,14 +638,14 @@ public class CourseServiceImple implements CourseService {
             courseDTO.setCourseID(a.getCourseID());
             courseDTO.setCourseName(a.getCourseName());
             courseDTO.setPrice(a.getPrice());
-            courseDTO.setImage(a.getImage());
-            courseDTO.setStatus(a.isStatus());
-            courseDTO.setStarRated(0);
             courseDTO.setNumberOfEnroll(a.getNumberOfEnroll());
-            courseDTO.setCourseExpert(a.getExpertID());
+            courseDTO.setImage(a.getImage());
+            courseDTO.setStarRated(0);
             courseDTO.setTypeName(a.getCourseType().getCourseTypeName());
 
             if (allowAccess) {
+                courseDTO.setStatus(a.isStatus());
+                courseDTO.setCourseExpert(a.getExpertID());
                 courseDTOS.add(courseDTO);
                 continue;
             }
@@ -551,11 +664,6 @@ public class CourseServiceImple implements CourseService {
     public HashMap<String, Object> findCourseByIdToUpdate(Integer id) {
         HashMap<String, Object> json = new HashMap<>();
         json.put("type", false);
-        if (id == null) {
-            log.error("Not allow id have null value");
-            json.put("msg", "Not allow id have null value");
-            return json;
-        }
         Course course = courseRepo.findByCourseID(id);
         if (course == null) {
             log.error("Course with id " + id + " isn't exist in system");
@@ -645,5 +753,19 @@ public class CourseServiceImple implements CourseService {
         json.put("msg", "Get course successfully");
         json.put("type", true);
         return json;
+    }
+
+    @Override
+    public HashMap<String, Object> findCourseById(Integer id) {
+        HashMap<String, Object> json = new HashMap<>();
+        json.put("type", false);
+        Course course = courseRepo.findByCourseID(id);
+        if (course == null) {
+            log.error("Course with id " + id + " isn't exist in system");
+            json.put("msg", "Course with id " + id + " isn't exist in system");
+            return json;
+        }
+
+        return null;
     }
 }
