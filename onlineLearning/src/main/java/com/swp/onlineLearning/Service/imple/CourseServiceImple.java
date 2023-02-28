@@ -40,6 +40,8 @@ public class CourseServiceImple implements CourseService {
     private AnswerRepo answerRepo;
     @Autowired
     private QuestionService questionService;
+    @Autowired
+    private CourseRateRepo courseRateRepo;
     @Value("${lessonType.quiz}")
     private String typeQuiz;
     @Value("${lessonType.listening}")
@@ -50,6 +52,8 @@ public class CourseServiceImple implements CourseService {
     private String roleGuest;
     @Value("${role.admin}")
     private String roleAdmin;
+    @Value("${role.user}")
+    private String roleUser;
     @Value("${quiz.pass.condition}")
     private float passCondition;
 
@@ -756,9 +760,10 @@ public class CourseServiceImple implements CourseService {
     }
 
     @Override
-    public HashMap<String, Object> findCourseById(Integer id) {
+    public HashMap<String, Object> findCourseById(String authority, Integer id) {
         HashMap<String, Object> json = new HashMap<>();
         json.put("type", false);
+
         Course course = courseRepo.findByCourseID(id);
         if (course == null) {
             log.error("Course with id " + id + " isn't exist in system");
@@ -766,6 +771,54 @@ public class CourseServiceImple implements CourseService {
             return json;
         }
 
-        return null;
+        boolean enrolled = false;
+        if (!authority.equals(roleGuest)) {
+            Account account = accountRepo.findByGmail(authority);
+            if (account.getRoleUser().getName().equals(roleUser)) {
+                CourseRate courseRate = courseRateRepo.findByCourseAndAccount(course, account);
+                if(courseRate!=null){
+                    enrolled = true;
+                }
+            }
+        }
+
+        CourseDTO courseDTO = new CourseDTO();
+        courseDTO.setCourseID(course.getCourseID());
+        courseDTO.setCourseName(course.getCourseName());
+        courseDTO.setDescription(course.getDescription());
+        courseDTO.setCourseExpertName(course.getExpertID().getName());
+        courseDTO.setPrice(course.getPrice());
+        courseDTO.setTypeName(course.getCourseType().getCourseTypeName());
+        courseDTO.setImage(course.getImage());
+
+        List<LessonPackage> lessonPackages = course.getLessonPackages();
+        List<LessonPackageDTO> lessonPackageDTOS = new ArrayList<>();
+        LessonPackageDTO lessonPackageDTO;
+        LessonDTO lessonDTO;
+        List<LessonDTO> lessonDTOS;
+        for (LessonPackage lessonPackage : lessonPackages) {
+            lessonPackageDTO = new LessonPackageDTO();
+            lessonPackageDTO.setPackageID(lessonPackage.getPackageID());
+            lessonPackageDTO.setPackageTitle(lessonPackage.getName());
+
+            lessonDTOS = new ArrayList<>();
+            for (Lesson lesson : lessonPackage.getLessons()) {
+                lessonDTO = new LessonDTO();
+                lessonDTO.setLessonID(lesson.getLessonID());
+                lessonDTO.setTitle(lesson.getName());
+                lessonDTO.setTime(lesson.getTime());
+                lessonDTO.setType(lesson.getLessonType().getName());
+
+                lessonDTOS.add(lessonDTO);
+            }
+            lessonPackageDTO.setNumLesson(lessonDTOS);
+
+            lessonPackageDTOS.add(lessonPackageDTO);
+        }
+        json.put("enrolled", enrolled);
+        json.put("course", courseDTO);
+        json.put("lessonPackages", lessonPackageDTOS);
+        json.put("type", true);
+        return json;
     }
 }

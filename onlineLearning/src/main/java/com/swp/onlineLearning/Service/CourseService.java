@@ -13,5 +13,5 @@ public interface CourseService {
     HashMap<String, Object> changeCourseStatus(ListOfCourseDTO listOfCourseDTO);
     HashMap<String, Object> findAll(int page, int size, String role);
     HashMap<String, Object> findCourseByIdToUpdate(Integer id);
-    HashMap<String, Object> findCourseById(Integer id);
+    HashMap<String, Object> findCourseById(String authority, Integer id);
 }

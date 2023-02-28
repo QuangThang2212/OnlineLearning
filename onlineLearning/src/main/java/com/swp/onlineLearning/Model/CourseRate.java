@@ -17,9 +17,6 @@ import java.time.LocalDateTime;
 public class CourseRate implements Serializable {
     @Id
     private String courseRateID;
-    @NotNull
-    @Column(nullable = false)
-    private boolean enrollStatus;
     @Range(min = 1)
     private int lessonLocation;
     @NotNull

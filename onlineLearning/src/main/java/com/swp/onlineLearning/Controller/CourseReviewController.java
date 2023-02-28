@@ -21,9 +21,21 @@ public class CourseReviewController {
     private String roleGuest;
 
     @GetMapping()
-    public ResponseEntity<HashMap<String, Object>> CourseDetail(@RequestParam("id") Integer id){
+    public ResponseEntity<HashMap<String, Object>> CourseDetail(@RequestParam("id") Integer id, Principal principal){
+        String authority;
+        if(principal == null){
+            authority = roleGuest;
+        }else{
+            authority = principal.getName();
+        }
+        HashMap<String, Object> json = courseService.findCourseById(authority, id);
 
-        return null;
+        String type = json.get("type").toString();
+        if(type.equals("true")){
+            return new ResponseEntity<>(json, HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
     }
     @GetMapping("/get")
     public ResponseEntity<HashMap<String, Object>> findAllCourse(@RequestParam("page") int page, @RequestParam("limit") int limit, Principal principal){
