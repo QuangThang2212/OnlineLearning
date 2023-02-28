@@ -97,7 +97,7 @@ public class CourseServiceImple implements CourseService {
             }
             if (course.isStatus()) {
                 log.error("This course with name " + course.getCourseName() + " is duplicate with name of other course on system");
-                json.put("msg", "This course with name " + course.getCourseName() + " is duplicate with name of other course on system \n please enter new name");
+                json.put("msg", "This course with name " + course.getCourseName() + " is duplicate with name of other course on system \n\n please enter new name");
                 return json;
             }
         } else {
