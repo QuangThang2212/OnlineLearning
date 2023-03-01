@@ -175,7 +175,7 @@ public class LessonServiceImple implements LessonService {
         json.put("lessonPakages",lessonPakages);
         json.put("currentLearningLesson", currentLearningLesson);
         json.put("currentLearningPackage", currentLearningPackage);
-        json.put("lesson",lesson);
+        json.put("lesson",lessonDTO);
         json.put("type", true);
         log.info("Get lesson with id "+lessonID);
         return json;
