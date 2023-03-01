@@ -1,5 +1,6 @@
 package com.swp.onlineLearning.Repository;
 
+import com.swp.onlineLearning.Model.Blog;
 import com.swp.onlineLearning.Model.Course;
 import com.swp.onlineLearning.Model.CourseType;
 import org.springframework.data.domain.Page;
@@ -26,4 +27,5 @@ public interface CourseRepo extends JpaRepository<Course, Integer> {
     List<Course> findTop8FreePopularCourse();
     @Query(nativeQuery = true, value = "Select * From Course Where Price!=0 Order By number_of_enroll DESC LIMIT 8")
     List<Course> findTop8FamousPaidCourses();
+
 }

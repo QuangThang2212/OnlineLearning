@@ -96,4 +96,24 @@ public class CommonActionController {
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
     }
+    @GetMapping("/blog/blog_details")
+    public ResponseEntity<HashMap> getBlogDetail(@RequestParam("id") String id){
+        HashMap<String, Object> json = blogService.getBlogDetail(id);
+        String type = json.get("type").toString();
+        if(type.equals("true")){
+            return new ResponseEntity<>(json, HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
+    }
+    @GetMapping("/blog/blog_search")
+    public ResponseEntity<HashMap<String, Object>> searchByNameBlog(@RequestParam("page")int page, @RequestParam("limit")int limit, String search){
+        HashMap<String, Object> json = blogService.searchByNameBlog(page, limit, search);
+        String type = json.get("type").toString();
+        if(type.equals("true")){
+            return new ResponseEntity<>(json, HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
+    }
 }

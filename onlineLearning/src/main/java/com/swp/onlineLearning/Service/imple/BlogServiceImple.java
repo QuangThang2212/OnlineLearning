@@ -1,12 +1,15 @@
 package com.swp.onlineLearning.Service.imple;
 
 import com.swp.onlineLearning.DTO.BlogDTO;
+import com.swp.onlineLearning.DTO.CourseTypeDTO;
+import com.swp.onlineLearning.DTO.UserDTO;
 import com.swp.onlineLearning.Model.Account;
 import com.swp.onlineLearning.Model.Blog;
 import com.swp.onlineLearning.Model.CourseType;
 import com.swp.onlineLearning.Repository.*;
 import com.swp.onlineLearning.Service.BlogService;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.tool.schema.internal.exec.ScriptTargetOutputToFile;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -161,13 +164,95 @@ public class BlogServiceImple implements BlogService {
             blogDTO.setContent(a.getContent());
             blogDTO.setCourseTypeId(a.getCourseType().getCourseTypeID());
             blogDTO.setCourseType(a.getCourseType().getCourseTypeName());
-            blogDTO.setName(a.getAccount().getGmail());
+            blogDTO.setAccountID(a.getAccount().getAccountID());
+            blogDTO.setName(a.getAccount().getName());
+            blogDTO.setImage(a.getAccount().getImage());
+            blogDTO.setCreateDate(a.getCreateDate());
+
+
+            blogDTOs.add(blogDTO);
+
+        }
+        json.put("numPage", totalNumber);
+        json.put("blogs", blogDTOs);
+        json.put("type", true);
+        return json;
+    }
+
+    @Override
+    public HashMap<String, Object> searchByNameBlog(int pageNumber, int size, String name) {
+        HashMap<String, Object> json = new HashMap<>();
+        json.put("type", false);
+        if (pageNumber < 1 || size < 1) {
+            log.error("Invalid page " + pageNumber + " or size " + size);
+            json.put("msg", "Invalid page " + pageNumber + " or size " + size);
+            return json;
+        }
+
+        int totalNumber = blogRepo.searchByName(PageRequest.of(pageNumber - 1, size), name).getTotalPages();
+
+        if (totalNumber == 0) {
+            log.error("0 blog founded");
+            json.put("msg", "0 blog founded for page");
+            return json;
+        } else if (pageNumber > totalNumber) {
+            log.error("invalid page " + pageNumber);
+            json.put("msg", "invalid page " + pageNumber);
+            return json;
+        }
+
+        Page<Blog> blogs = blogRepo.searchByName(PageRequest.of(pageNumber - 1, size), name);
+        if (blogs.isEmpty()) {
+            log.error("0 blog founded for page " + pageNumber);
+            json.put("msg", "0 blog founded for page " + pageNumber);
+            return json;
+        }
+        List<Blog> list = blogs.stream().toList();
+
+        List<BlogDTO> blogDTOs = new ArrayList<>();
+        for (Blog a : list) {
+            BlogDTO blogDTO = new BlogDTO();
+            blogDTO.setBlogID(a.getBlogID());
+            blogDTO.setBlogName(a.getBlogName());
+            blogDTO.setBlogMeta(a.getBlogMeta());
+            blogDTO.setContent(a.getContent());
+            blogDTO.setCourseTypeId(a.getCourseType().getCourseTypeID());
+            blogDTO.setCourseType(a.getCourseType().getCourseTypeName());
+            blogDTO.setAccountID(a.getAccount().getAccountID());
+            blogDTO.setName(a.getAccount().getName());
             blogDTO.setImage(a.getAccount().getImage());
 
             blogDTOs.add(blogDTO);
         }
-            json.put("blogs", blogDTOs);
-            json.put("type",true);
+        json.put("numPage", totalNumber);
+        json.put("blogs", blogDTOs);
+        json.put("type", true);
         return json;
     }
+
+    @Override
+    public HashMap<String, Object> getBlogDetail(String id) {
+        HashMap<String, Object> json = new HashMap<>();
+        json.put("type", false);
+
+        Blog blog = blogRepo.findByBlogID(id);
+        if (blog == null) {
+            log.error("blogdetail with id " + id + " isn't found in system");
+            json.put("msg", "blogdetail with id " + id + " isn't found in system");
+            return json;
+        }
+        BlogDTO blogDTO = new BlogDTO();
+        blogDTO.setBlogName(blog.getBlogName());
+        blogDTO.setBlogMeta(blog.getBlogMeta());
+        blogDTO.setContent(blog.getContent());
+        blogDTO.setName(blog.getAccount().getName());
+        blogDTO.setImage(blog.getAccount().getImage());
+        blogDTO.setCourseTypeName(blog.getCourseType().getCourseTypeName());
+
+        json.put("blogDetail", blogDTO);
+        json.put("type", true);
+        return json;
+    }
+
+
 }
