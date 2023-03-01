@@ -36,8 +36,8 @@ public class AuthenticationFilter extends BasicAuthenticationFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         final String token = request.getHeader("token");
 
-        log.info("access token: "+token);
-        if(token==null){
+        log.info("access token: " + token);
+        if (token == null) {
             log.error("token unavailable");
             filterChain.doFilter(request, response);
             return;
@@ -51,12 +51,6 @@ public class AuthenticationFilter extends BasicAuthenticationFilter {
             return;
         }
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(gmail, null, new ArrayList<>());
-
-        try {
-            getAuthenticationManager().authenticate(authentication);
-        } catch (BadCredentialsException e) {
-            log.error("Incorrect username or password \n" + e.getMessage());
-        }
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         filterChain.doFilter(request, response);

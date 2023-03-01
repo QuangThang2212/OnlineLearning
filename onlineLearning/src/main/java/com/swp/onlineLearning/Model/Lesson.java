@@ -47,4 +47,7 @@ public class Lesson implements Serializable {
     @OneToMany(mappedBy = "lesson",cascade = CascadeType.ALL)
     @JsonIgnore
     private List<QuizResult> quizResults;
+    @OneToMany(mappedBy = "lesson",cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<CourseRate> courseRates;
 }

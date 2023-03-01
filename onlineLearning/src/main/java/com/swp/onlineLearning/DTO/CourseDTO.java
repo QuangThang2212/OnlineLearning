@@ -39,6 +39,8 @@ public class CourseDTO {
     @Value("0")
     private int numberOfEnroll;
 
+    private String courseExpertName;
+
     @NotNull(message = "Not allow type of course null")
     private int courseTypeID;
     private String typeName;

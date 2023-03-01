@@ -18,7 +18,8 @@ import java.util.List;
 @AllArgsConstructor
 public class Voucher implements Serializable {
     @Id
-    private String voucherID;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int voucherID;
     @Column(nullable = false, length = 70)
     @Length(min = 10, max = 70)
     private String name;

@@ -1,12 +1,12 @@
 package com.swp.onlineLearning.Model;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Range;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -18,13 +18,9 @@ public class CourseRate implements Serializable {
     @Id
     private String courseRateID;
     @NotNull
-    @Column(nullable = false)
-    private boolean enrollStatus;
-    @Range(min = 1)
-    private int lessonLocation;
-    @NotNull
-    @NotBlank
     private LocalDateTime enrollTime;
+    @Range(min = 0, max = 5)
+    private float starRate;
     private String content;
 
     @NotNull
@@ -36,4 +32,8 @@ public class CourseRate implements Serializable {
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "AccountID", nullable = false)
     private Account account;
+    @NotNull
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "LessonID", nullable = false)
+    private Lesson lesson;
 }

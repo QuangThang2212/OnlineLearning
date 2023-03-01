@@ -58,11 +58,6 @@ public class BlogServiceImple implements BlogService {
         }
 
         Account account = accountRepo.findByGmail(blogDTO.getGmail());
-        if (account == null) {
-            log.error("Account isn't exist in system");
-            json.put("msg", "Account isn't exist in system");
-            return json;
-        }
 
         Blog blogNameCheck = blogRepo.findByBlogName(blogDTO.getBlogName());
         if (blogNameCheck != null) {

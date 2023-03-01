@@ -22,8 +22,7 @@ public class Payment implements Serializable {
     @NotNull
     @Column(nullable = false)
     private LocalDateTime paymentAt;
-    @NotNull
-    @Column(nullable = false, length = 100)
+    @Column(length = 100)
     private String toPerson;
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "AccountID", nullable = false)
