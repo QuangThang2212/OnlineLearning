@@ -169,16 +169,71 @@ public class BlogServiceImple implements BlogService {
             blogDTO.setContent(a.getContent());
             blogDTO.setCourseTypeId(a.getCourseType().getCourseTypeID());
             blogDTO.setCourseType(a.getCourseType().getCourseTypeName());
-            blogDTO.setGmail(a.getAccount().getGmail());
-            blogDTO.setGmail(a.getAccount().getAccountID());
-            blogDTO.setGmail(a.getAccount().getAccountID());
-            blogDTO.setGmail(a.getAccount().getImage());
+            blogDTO.setAccountID(a.getAccount().getAccountID());
+            blogDTO.setName(a.getAccount().getName());
+            blogDTO.setImage(a.getAccount().getImage());
+            blogDTO.setCreateDate(a.getCreateDate());
+
 
             blogDTOs.add(blogDTO);
 
         }
-            json.put("blogs", blogDTOs);
-            json.put("type",true);
+        json.put("numPage", totalNumber);
+        json.put("blogs", blogDTOs);
+        json.put("type", true);
         return json;
     }
+
+    @Override
+    public HashMap<String, Object> searchByNameBlog(int pageNumber, int size,String name) {
+        HashMap<String, Object> json = new HashMap<>();
+        json.put("type", false);
+        if (pageNumber < 1 || size < 1) {
+            log.error("Invalid page " + pageNumber + " or size " + size);
+            json.put("msg", "Invalid page " + pageNumber + " or size " + size);
+            return json;
+        }
+
+        int totalNumber = blogRepo.searchByName(PageRequest.of(pageNumber - 1, size),name).getTotalPages();
+
+        if (totalNumber == 0) {
+            log.error("0 blog founded");
+            json.put("msg", "0 blog founded for page");
+            return json;
+        } else if (pageNumber > totalNumber) {
+            log.error("invalid page " + pageNumber);
+            json.put("msg", "invalid page " + pageNumber);
+            return json;
+        }
+
+        Page<Blog> blogs = blogRepo.searchByName(PageRequest.of(pageNumber - 1, size),name);
+        if (blogs.isEmpty()) {
+            log.error("0 blog founded for page " + pageNumber);
+            json.put("msg", "0 blog founded for page " + pageNumber);
+            return json;
+        }
+        List<Blog> list = blogs.stream().toList();
+
+        List<BlogDTO> blogDTOs = new ArrayList<>();
+        for (Blog a : list){
+            BlogDTO blogDTO = new BlogDTO();
+            blogDTO.setBlogID(a.getBlogID());
+            blogDTO.setBlogName(a.getBlogName());
+            blogDTO.setBlogMeta(a.getBlogMeta());
+            blogDTO.setContent(a.getContent());
+            blogDTO.setCourseTypeId(a.getCourseType().getCourseTypeID());
+            blogDTO.setCourseType(a.getCourseType().getCourseTypeName());
+            blogDTO.setAccountID(a.getAccount().getAccountID());
+            blogDTO.setName(a.getAccount().getName());
+            blogDTO.setImage(a.getAccount().getImage());
+
+            blogDTOs.add(blogDTO);
+        }
+        json.put("numPage", totalNumber);
+        json.put("blogs", blogDTOs);
+        json.put("type", true);
+        return json;
+    }
+
+
 }

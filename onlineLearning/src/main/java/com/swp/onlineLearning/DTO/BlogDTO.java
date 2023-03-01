@@ -1,5 +1,6 @@
 package com.swp.onlineLearning.DTO;
 
+import com.swp.onlineLearning.Model.Account;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,8 +24,12 @@ public class BlogDTO {
     private byte reportStatus;
     private int courseTypeId;
     private String gmail;
+    private String courseTypeName;
+    private String image;
+    private String name;
+    private int accountID;
     private String courseType;
 
 
+    }
 
-}
