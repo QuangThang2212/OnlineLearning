@@ -1,6 +1,8 @@
 package com.swp.onlineLearning.Controller;
 
+import com.swp.onlineLearning.DTO.EnrollInformationDTO;
 import com.swp.onlineLearning.Service.CourseService;
+import com.swp.onlineLearning.Service.LessonService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,18 +19,16 @@ import java.util.HashMap;
 public class CourseReviewController {
     @Autowired
     private CourseService courseService;
-    @Value("${role.guest}")
-    private String roleGuest;
-
-    @GetMapping()
-    public ResponseEntity<HashMap<String, Object>> CourseDetail(@RequestParam("id") Integer id, Principal principal){
-        String authority;
+    @Autowired
+    private LessonService lessonService;
+    @PostMapping("/enroll")
+    public ResponseEntity<HashMap<String, Object>> enrollCourse(@RequestBody EnrollInformationDTO enrollInformationDTO, Principal principal){
+        HashMap<String, Object> json = new HashMap<>();
         if(principal == null){
-            authority = roleGuest;
-        }else{
-            authority = principal.getName();
+            json.put("msg", "Invalid account information");
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
-        HashMap<String, Object> json = courseService.findCourseById(authority, id);
+        json = courseService.enrollCourse(principal.getName(), enrollInformationDTO);
 
         String type = json.get("type").toString();
         if(type.equals("true")){
@@ -37,15 +37,14 @@ public class CourseReviewController {
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
     }
-    @GetMapping("/get")
-    public ResponseEntity<HashMap<String, Object>> findAllCourse(@RequestParam("page") int page, @RequestParam("limit") int limit, Principal principal){
-        String authority;
+    @GetMapping("/lesson")
+    public ResponseEntity<HashMap<String, Object>> getLessonForUser(@RequestParam("courseid") Integer courseID, @RequestParam("lessonid") Integer lessonID, Principal principal){
+        HashMap<String, Object> json = new HashMap<>();
         if(principal == null){
-            authority = roleGuest;
-        }else{
-            authority = principal.getName();
+            json.put("msg", "Invalid account information");
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
-        HashMap<String, Object> json = courseService.findAll(page, limit, authority);
+        json = lessonService.getLessonForLearning(courseID,lessonID,principal.getName());
 
         String type = json.get("type").toString();
         if(type.equals("true")){

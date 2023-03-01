@@ -73,23 +73,7 @@ public class CourseManagementController {
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
     }
-    @GetMapping("/getAllCourse")
-    public ResponseEntity<HashMap<String, Object>> getAllCourse(@RequestParam("limit") int limit, @RequestParam("page") int page, Principal principal){
-        String authority;
-        if(principal == null){
-            authority = roleGuest;
-        }else{
-            authority = principal.getName();
-        }
-        HashMap<String, Object> json = courseService.findAll(page, limit, authority);
 
-        String type = json.get("type").toString();
-        if(type.equals("true")){
-            return new ResponseEntity<>(json, HttpStatus.OK);
-        }else{
-            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
-        }
-    }
     @GetMapping("/admin_get")
     public ResponseEntity<HashMap<String, Object>> getCourseUpdate(@RequestParam("id") Integer id){
         HashMap<String, Object> json = courseService.findCourseByIdToUpdate(id);

@@ -49,6 +49,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .addFilter(new AuthenticationFilter(authenticationManager()));
     }
+    //                .antMatchers("/api/admin/**","/api/type_course/**").hasRole(roleAdmin)
+//                .antMatchers("/api/blog/**").hasRole(roleCourseExpert)
+//                .antMatchers("/api/course/enroll","/api/blog/**").hasRole(roleUser)
+//                .antMatchers("/api/auth/**","/api/common/**").permitAll()
     @Bean
     @Override
     public AuthenticationManager authenticationManager() throws Exception {

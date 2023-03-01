@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.BindingResult;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
@@ -42,6 +43,10 @@ public class CourseServiceImple implements CourseService {
     private QuestionService questionService;
     @Autowired
     private CourseRateRepo courseRateRepo;
+    @Autowired
+    private VoucherRepo voucherRepo;
+    @Autowired
+    private PaymentRepo paymentRepo;
     @Value("${lessonType.quiz}")
     private String typeQuiz;
     @Value("${lessonType.listening}")
@@ -57,6 +62,31 @@ public class CourseServiceImple implements CourseService {
     @Value("${quiz.pass.condition}")
     private float passCondition;
 
+    private List<CourseDTO> getListCourseDTO(List<Course> courses, boolean allowAccess){
+        List<CourseDTO> courseDTOS = new ArrayList<>();
+        for (Course a : courses) {
+            CourseDTO courseDTO = new CourseDTO();
+            courseDTO.setCourseID(a.getCourseID());
+            courseDTO.setCourseName(a.getCourseName());
+            courseDTO.setPrice(a.getPrice());
+            courseDTO.setNumberOfEnroll(a.getNumberOfEnroll());
+            courseDTO.setImage(a.getImage());
+            courseDTO.setStarRated(a.getStarRated());
+            courseDTO.setTypeName(a.getCourseType().getCourseTypeName());
+
+            if (allowAccess) {
+                courseDTO.setStatus(a.isStatus());
+                courseDTO.setCourseExpert(a.getExpertID());
+                courseDTOS.add(courseDTO);
+                continue;
+            }
+            if (a.isStatus()) {
+                courseDTOS.add(courseDTO);
+            }
+        }
+        return courseDTOS;
+    }
+
     @Override
     public HashMap<String, Object> getHomepageInfor(String authority) {
         HashMap<String, Object> json = new HashMap<>();
@@ -68,111 +98,31 @@ public class CourseServiceImple implements CourseService {
                 allowAccess = true;
             }
         }
-        List<Course> courses = new ArrayList<>();
+        List<Course> courses;
 
         courses = courseRepo.findTop8PopularCourse();
         if (courses.isEmpty()) {
             log.error("0 Popular Course founded");
         }
-        List<CourseDTO> popularCourse = new ArrayList<>();
-        for (Course a : courses) {
-            CourseDTO courseDTO = new CourseDTO();
-            courseDTO.setCourseID(a.getCourseID());
-            courseDTO.setCourseName(a.getCourseName());
-            courseDTO.setPrice(a.getPrice());
-            courseDTO.setNumberOfEnroll(a.getNumberOfEnroll());
-            courseDTO.setImage(a.getImage());
-            courseDTO.setStarRated(0);
-            courseDTO.setTypeName(a.getCourseType().getCourseTypeName());
-
-            if (allowAccess) {
-                courseDTO.setStatus(a.isStatus());
-                courseDTO.setCourseExpert(a.getExpertID());
-                popularCourse.add(courseDTO);
-                continue;
-            }
-            if (a.isStatus()) {
-                popularCourse.add(courseDTO);
-            }
-        }
+        List<CourseDTO> popularCourse = getListCourseDTO(courses, allowAccess);
 
         courses = courseRepo.findTop8FreePopularCourse();
         if (courses.isEmpty()) {
             log.error("0 free popular Course founded");
         }
-        List<CourseDTO> freePopularCourse = new ArrayList<>();
-        for (Course a : courses) {
-            CourseDTO courseDTO = new CourseDTO();
-            courseDTO.setCourseID(a.getCourseID());
-            courseDTO.setCourseName(a.getCourseName());
-            courseDTO.setPrice(a.getPrice());
-            courseDTO.setNumberOfEnroll(a.getNumberOfEnroll());
-            courseDTO.setImage(a.getImage());
-            courseDTO.setStarRated(0);
-            courseDTO.setTypeName(a.getCourseType().getCourseTypeName());
-
-            if (allowAccess) {
-                courseDTO.setStatus(a.isStatus());
-                courseDTO.setCourseExpert(a.getExpertID());
-                freePopularCourse.add(courseDTO);
-                continue;
-            }
-            if (a.isStatus()) {
-                freePopularCourse.add(courseDTO);
-            }
-        }
+        List<CourseDTO> freePopularCourse = getListCourseDTO(courses, allowAccess);
 
         courses = courseRepo.findTop8NewestCourse();
         if (courses.isEmpty()) {
             log.error("0 new Course founded");
         }
-        List<CourseDTO> newestCourse = new ArrayList<>();
-        for (Course a : courses) {
-            CourseDTO courseDTO = new CourseDTO();
-            courseDTO.setCourseID(a.getCourseID());
-            courseDTO.setCourseName(a.getCourseName());
-            courseDTO.setPrice(a.getPrice());
-            courseDTO.setNumberOfEnroll(a.getNumberOfEnroll());
-            courseDTO.setImage(a.getImage());
-            courseDTO.setStarRated(0);
-            courseDTO.setTypeName(a.getCourseType().getCourseTypeName());
-
-            if (allowAccess) {
-                courseDTO.setStatus(a.isStatus());
-                courseDTO.setCourseExpert(a.getExpertID());
-                newestCourse.add(courseDTO);
-                continue;
-            }
-            if (a.isStatus()) {
-                newestCourse.add(courseDTO);
-            }
-        }
+        List<CourseDTO> newestCourse = getListCourseDTO(courses, allowAccess);
 
         courses = courseRepo.findTop8FamousPaidCourses();
         if (courses.isEmpty()) {
             log.error("0 famous paid Course founded");
         }
-        List<CourseDTO> famousPaidCourses = new ArrayList<>();
-        for (Course a : courses) {
-            CourseDTO courseDTO = new CourseDTO();
-            courseDTO.setCourseID(a.getCourseID());
-            courseDTO.setCourseName(a.getCourseName());
-            courseDTO.setPrice(a.getPrice());
-            courseDTO.setNumberOfEnroll(a.getNumberOfEnroll());
-            courseDTO.setImage(a.getImage());
-            courseDTO.setStarRated(0);
-            courseDTO.setTypeName(a.getCourseType().getCourseTypeName());
-
-            if (allowAccess) {
-                courseDTO.setStatus(a.isStatus());
-                courseDTO.setCourseExpert(a.getExpertID());
-                famousPaidCourses.add(courseDTO);
-                continue;
-            }
-            if (a.isStatus()) {
-                famousPaidCourses.add(courseDTO);
-            }
-        }
+        List<CourseDTO> famousPaidCourses = getListCourseDTO(courses, allowAccess);
 
         json.put("PopularCourse", popularCourse);
         json.put("FreePopularCourse", freePopularCourse);
@@ -208,8 +158,8 @@ public class CourseServiceImple implements CourseService {
         if (courseDTO.getCourseID() != null) {
             course = courseRepo.findByCourseID(courseDTO.getCourseID());
             if (course == null) {
-                log.error("Course isn't found in system");
-                json.put("msg", "Course isn't found in system");
+                log.error("Course with id: "+courseDTO.getCourseID()+" isn't found in system");
+                json.put("msg", "Course with id: "+courseDTO.getCourseID()+" isn't found in system");
                 return json;
             }
             if (course.isStatus()) {
@@ -325,6 +275,7 @@ public class CourseServiceImple implements CourseService {
         HashMap<String, Object> jsonCheck;
         int packCount = 1;
         int lessCount;
+        int quizCount=0;
         for (LessonPackageDTO in : input) {
             if (in.getPackageID() == null) {
                 fkPackage = new LessonPackage();
@@ -368,6 +319,7 @@ public class CourseServiceImple implements CourseService {
                     lessCount++;
 
                     if (lessonDTO.getType().equalsIgnoreCase(typeQuiz) && !lessonDTO.getValue().isEmpty()) {
+                        quizCount++;
                         for (QuestionDTO questionDTO : lessonDTO.getValue()) {
                             jsonCheck = questionService.saveQuestionAndAnswer(questionDTO, returnLesson);
                             if (jsonCheck.get("type").equals("false")) {
@@ -409,6 +361,7 @@ public class CourseServiceImple implements CourseService {
                     }
 
                     if (lesInput.getType().equalsIgnoreCase(typeQuiz) && !lesInput.getValue().isEmpty()) {
+                        quizCount++;
                         for (QuestionDTO questionDTO : lesInput.getValue()) {
                             jsonCheck = questionService.saveQuestionAndAnswer(questionDTO, returnLesson);
                             if (jsonCheck.get("type").equals("false")) {
@@ -432,6 +385,7 @@ public class CourseServiceImple implements CourseService {
                 if (lesInput.getType().equalsIgnoreCase(typeQuiz)
                         && !lesInput.getValue().isEmpty()
                         && lesson.getLessonType().getName().equals(typeQuiz)) {
+                    quizCount++;
 
                     for (QuestionDTO quesDTO : lesInput.getValue()) {
                         if (quesDTO.getQuestionID() == null) {
@@ -491,6 +445,7 @@ public class CourseServiceImple implements CourseService {
                     return json;
                 }
                 if (typeQuiz.equals(lesson.getLessonType().getName()) && lesson.getQuizResults().isEmpty()) {
+                    quizCount--;
                     jsonCheck = questionService.deleteQuestionObjectAndAnswer(lesson.getQuestions());
                     if (jsonCheck.get("type").equals("false")) {
                         log.error(jsonCheck.get("msg").toString());
@@ -541,6 +496,7 @@ public class CourseServiceImple implements CourseService {
                     deleteLesson.addAll(fkPackage.getLessons());
                     for (Lesson lesson1 : fkPackage.getLessons()) {
                         if (typeQuiz.equals(lesson1.getLessonType().getName()) && lesson1.getQuizResults().isEmpty()) {
+                            quizCount--;
                             jsonCheck = questionService.deleteQuestionObjectAndAnswer(lesson1.getQuestions());
                             if (jsonCheck.get("type").equals("false")) {
                                 log.error(jsonCheck.get("msg").toString());
@@ -552,6 +508,7 @@ public class CourseServiceImple implements CourseService {
                 }
             }
         }
+        course.setNumberOfQuiz(quizCount);
         try {
             if (!deleteLesson.isEmpty()) {
                 lessonRepo.deleteInBatch(deleteLesson);
@@ -559,6 +516,7 @@ public class CourseServiceImple implements CourseService {
             if (!deleteLessonPackage.isEmpty()) {
                 lessonPackageRepo.deleteInBatch(deleteLessonPackage);
             }
+            courseRepo.save(course);
         } catch (Exception e) {
             log.error("Delete lesson and lesson package Process fail" + e.getMessage());
             json.put("msg", "Delete Process fail");
@@ -579,15 +537,15 @@ public class CourseServiceImple implements CourseService {
         Course course;
         List<Course> courses = new ArrayList<>();
         boolean status = listOfCourseDTO.isStatus();
-        for(int id : listOfCourseId){
+        for (int id : listOfCourseId) {
             course = courseRepo.findByCourseID(id);
             course.setStatus(status);
 
             courses.add(course);
         }
-        try{
+        try {
             courseRepo.saveAll(courses);
-        }catch (Exception e){
+        } catch (Exception e) {
             log.error("Update status for list of course fail, view log " + e.getMessage());
             json.put("msg", "Update status for list of course fail, view log ");
             return json;
@@ -634,29 +592,8 @@ public class CourseServiceImple implements CourseService {
             json.put("msg", "0 course founded for page " + page);
             return json;
         }
-        List<Course> list = courses.stream().toList();
 
-        List<CourseDTO> courseDTOS = new ArrayList<>();
-        for (Course a : list) {
-            CourseDTO courseDTO = new CourseDTO();
-            courseDTO.setCourseID(a.getCourseID());
-            courseDTO.setCourseName(a.getCourseName());
-            courseDTO.setPrice(a.getPrice());
-            courseDTO.setNumberOfEnroll(a.getNumberOfEnroll());
-            courseDTO.setImage(a.getImage());
-            courseDTO.setStarRated(0);
-            courseDTO.setTypeName(a.getCourseType().getCourseTypeName());
-
-            if (allowAccess) {
-                courseDTO.setStatus(a.isStatus());
-                courseDTO.setCourseExpert(a.getExpertID());
-                courseDTOS.add(courseDTO);
-                continue;
-            }
-            if (a.isStatus()) {
-                courseDTOS.add(courseDTO);
-            }
-        }
+        List<CourseDTO> courseDTOS = getListCourseDTO(courses.stream().toList(), allowAccess);
 
         json.put("courses", courseDTOS);
         json.put("numPage", totalNumber);
@@ -776,7 +713,7 @@ public class CourseServiceImple implements CourseService {
             Account account = accountRepo.findByGmail(authority);
             if (account.getRoleUser().getName().equals(roleUser)) {
                 CourseRate courseRate = courseRateRepo.findByCourseAndAccount(course, account);
-                if(courseRate!=null){
+                if (courseRate != null) {
                     enrolled = true;
                 }
             }
@@ -818,6 +755,73 @@ public class CourseServiceImple implements CourseService {
         json.put("enrolled", enrolled);
         json.put("course", courseDTO);
         json.put("lessonPackages", lessonPackageDTOS);
+        json.put("type", true);
+        return json;
+    }
+
+    @Override
+    public HashMap<String, Object> enrollCourse(String authority, EnrollInformationDTO enrollInformationDTO) {
+        HashMap<String, Object> json = new HashMap<>();
+        json.put("type", false);
+
+        Course course = courseRepo.findByCourseID(enrollInformationDTO.getCourseID());
+        if (course == null) {
+            log.error("Course with id " + enrollInformationDTO.getCourseID() + " isn't exist in system");
+            json.put("msg", "Course with id " + enrollInformationDTO.getCourseID() + " isn't exist in system");
+            return json;
+        }
+        Account account = accountRepo.findByGmail(authority);
+        if (!account.getRoleUser().getName().equals(roleUser)) {
+            log.error("Account with gmail " + authority + " don't have authority to enroll course");
+            json.put("msg", "Account with gmail " + authority + " don't have authority to enroll course");
+            return json;
+        }
+
+        Payment payment = new Payment();
+        payment.setCourse(course);
+        payment.setAccount(account);
+        payment.setAmount(enrollInformationDTO.getPrice());
+        payment.setPaymentID(account.getAccountID()+course.getCourseID()+LocalDateTime.now().toString());
+        payment.setPaymentAt(LocalDateTime.now());
+
+        Voucher voucher;
+        if(enrollInformationDTO.getVoucherID()!=null){
+            voucher = voucherRepo.findByVoucherID(enrollInformationDTO.getVoucherID());
+            payment.setVoucher(voucher);
+        }
+        try{
+            paymentRepo.save(payment);
+        }catch (Exception e){
+            log.error("Enroll course "+course.getCourseName()+" process fail \n" + e.getMessage());
+            json.put("msg", "Enroll course "+course.getCourseName()+" process fail");
+            return json;
+        }
+
+        CourseRate courseRate = courseRateRepo.findByCourseAndAccount(course, account);
+        if (courseRate != null) {
+            log.error("Account with gmail " + authority + " enrolled course");
+            json.put("msg", "You already enrolled course, enjoy learning");
+            return json;
+        }
+        courseRate = new CourseRate();
+        courseRate.setCourse(course);
+        courseRate.setLesson(course.getLessonPackages().get(0).getLessons().get(0));
+        courseRate.setAccount(account);
+        courseRate.setEnrollTime(LocalDateTime.now());
+        courseRate.setCourseRateID(account.getAccountID()+course.getCourseID()+LocalDateTime.now().toString());
+
+        course.setNumberOfEnroll(course.getNumberOfEnroll()+1);
+        try{
+            courseRateRepo.save(courseRate);
+            courseRepo.save(course);
+        }catch (Exception e){
+            log.error("Enroll course "+course.getCourseName()+" process fail \n" + e.getMessage());
+            json.put("msg", "Enroll course "+course.getCourseName()+" process fail");
+            return json;
+        }
+
+        log.info("Enroll course "+course.getCourseName()+" process successfully");
+        json.put("msg", "Enroll course "+course.getCourseName()+" process successfully, \nEnjoy your learning process");
         json.put("type", true);
         return json;
     }

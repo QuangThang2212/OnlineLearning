@@ -38,12 +38,10 @@ public class Course implements Serializable {
     private LocalDateTime createDate;
 
     @Range(min = 0)
-    @Value("0")
     private double price;
     @Range(min = 0)
     private int numberOfQuiz;
     @Range(min = 0)
-    @Value("0")
     private int numberOfEnroll;
     @Column(nullable = false)
     @Value("false")
