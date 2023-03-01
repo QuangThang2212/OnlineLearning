@@ -98,6 +98,7 @@ public class LessonServiceImple implements LessonService {
         lessonDTO.setLessonID(lesson.getLessonID());
         lessonDTO.setTitle(lesson.getName());
         lessonDTO.setDescription(lesson.getDescription());
+        lessonDTO.setType(lesson.getLessonType().getName());
         lessonDTO.setTime(lesson.getTime());
         lessonDTO.setType(lesson.getLessonType().getName());
         lessonDTO.setLink(lesson.getLink());
