@@ -25,9 +25,6 @@ public class QuestionServiceImple implements QuestionService {
     @Autowired
     private AnswerRepo answerRepo;
 
-    public QuestionServiceImple() {
-    }
-
     @Override
     public HashMap<String, Object> saveQuestionAndAnswer(QuestionDTO questionDTO, Lesson returnLesson) {
         HashMap<String, Object> json = new HashMap<>();
@@ -48,12 +45,18 @@ public class QuestionServiceImple implements QuestionService {
             return json;
         }
         String rightAns = questionDTO.getAnswers().get(questionDTO.getCorrectAnswer());
+        String anr="";
         for(String ans : questionDTO.getAnswers()){
+            if(ans.equals(anr)){
+                continue;
+            }
             answer = new Answer();
             answer.setAnswerContent(ans);
             answer.setQuestion(returnQuestion);
             answer.setRightAnswer(rightAns.equals(ans));
             answers.add(answer);
+
+            anr=ans;
         }
         try{
             answerRepo.saveAll(answers);
@@ -82,9 +85,7 @@ public class QuestionServiceImple implements QuestionService {
                 json.put("msg", "Question with id " + questionID + " isn't exist in system");
                 return json;
             }
-            for(Answer answer : question.getAnswers()){
-                deleteAnswer.add(answer);
-            }
+            deleteAnswer.addAll(question.getAnswers());
             deleteQuestion.add(question);
         }
         try{
@@ -107,9 +108,7 @@ public class QuestionServiceImple implements QuestionService {
         List<Answer> deleteAnswer = new ArrayList<>();
         List<Question> deleteQuestion = new ArrayList<>();
         for (Question question : questionDelete) {
-            for(Answer answer : question.getAnswers()){
-                deleteAnswer.add(answer);
-            }
+            deleteAnswer.addAll(question.getAnswers());
             deleteQuestion.add(question);
         }
         try{

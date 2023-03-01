@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Data
@@ -15,7 +14,7 @@ public class QuestionDTO {
     private Integer questionID;
     @Length(min = 5, max=256)
     private String title;
-    @NotNull
     private int correctAnswer;
+    private String answer;
     private List<String> answers;
 }

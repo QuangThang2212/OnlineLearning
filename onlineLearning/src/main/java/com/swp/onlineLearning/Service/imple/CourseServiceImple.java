@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.BindingResult;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
@@ -59,8 +58,6 @@ public class CourseServiceImple implements CourseService {
     private String roleAdmin;
     @Value("${role.user}")
     private String roleUser;
-    @Value("${quiz.pass.condition}")
-    private float passCondition;
 
     private List<CourseDTO> getListCourseDTO(List<Course> courses, boolean allowAccess){
         List<CourseDTO> courseDTOS = new ArrayList<>();
@@ -276,6 +273,7 @@ public class CourseServiceImple implements CourseService {
         int packCount = 1;
         int lessCount;
         int quizCount=0;
+        String anr;
         for (LessonPackageDTO in : input) {
             if (in.getPackageID() == null) {
                 fkPackage = new LessonPackage();
@@ -402,12 +400,17 @@ public class CourseServiceImple implements CourseService {
 
                         saveQuestion.add(question);
                         deleteAnswer.addAll(question.getAnswers());
+                        anr="";
                         for (String ans : quesDTO.getAnswers()) {
+                            if(ans.equals(anr)){
+                                continue;
+                            }
                             answer = new Answer();
                             answer.setQuestion(question);
                             answer.setAnswerContent(ans.trim());
-
                             saveAnswer.add(answer);
+
+                            anr = ans;
                         }
                     }
                 }

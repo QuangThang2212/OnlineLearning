@@ -36,6 +36,8 @@ public class LessonServiceImple implements LessonService {
     private String typeQuiz;
     @Value("${lessonType.listening}")
     private String typeListening;
+    @Value("${quiz.pass.condition}")
+    private float passCondition;
 
     @Override
     public HashMap<String, Object> getLessonForLearning(Integer courseID, Integer lessonID, String gmail) {
@@ -178,6 +180,39 @@ public class LessonServiceImple implements LessonService {
         json.put("lesson",lessonDTO);
         json.put("type", true);
         log.info("Get lesson with id "+lessonID);
+        return json;
+    }
+
+    @Override
+    public HashMap<String, Object> calSubmitQuiz(QuizSubmitDTO submitDTO) {
+        HashMap<String, Object> json = new HashMap<>();
+        json.put("type", false);
+
+        Lesson lesson = lessonRepo.findByLessonID(submitDTO.getLessonID());
+        if(lesson==null || !lesson.getLessonType().getName().equals(typeQuiz)){
+            log.error("Invalid lessonID");
+            return json;
+        }
+        List<Question> questions = lesson.getQuestions();
+        String answer = null;
+        int countResult=0;
+        for(Question question : questions){
+            for(Answer answerCheck : question.getAnswers()){
+                if(answerCheck.isRightAnswer()){
+                    answer=answerCheck.getAnswerContent();
+                }
+            }
+            for(QuestionDTO questionDTO : submitDTO.getQuiz()){
+                if(questionDTO.getQuestionID() == question.getQuestionID() && questionDTO.getAnswer().equals(answer)){
+                    countResult++;
+                }
+            }
+        }
+        int result = Math.round(((float) countResult/questions.size())*100);
+        boolean passed = result > 80;
+        json.put("result", passed);
+        json.put("totalCorrectAnswer", countResult);
+
         return json;
     }
 }
