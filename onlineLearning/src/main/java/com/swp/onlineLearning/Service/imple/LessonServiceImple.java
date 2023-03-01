@@ -91,6 +91,18 @@ public class LessonServiceImple implements LessonService {
             lessonPakages.add(lessonPackageDTO);
         }
         CourseRate courseRate = courseRateRepo.findByCourseAndAccount(course, account);
+        if((courseRate.getLesson().getLessonPackage().getPackageID()==lesson.getLessonPackage().getPackageID()
+                && courseRate.getLesson().getLessonLocation()<lesson.getLessonLocation())
+                || courseRate.getLesson().getLessonPackage().getPackageLocation()<lesson.getLessonPackage().getPackageLocation()){
+            courseRate.setLesson(lesson);
+            try{
+                courseRate = courseRateRepo.saveAndFlush(courseRate);
+            }catch(Exception e){
+                log.error("Update learning process fail \n" +e.getMessage());
+                json.put("msg", "Update learning process fail");
+                return json;
+            }
+        }
         int currentLearningLesson = courseRate.getLesson().getLessonLocation();
         int currentLearningPackage = courseRate.getLesson().getLessonPackage().getPackageLocation();
 
