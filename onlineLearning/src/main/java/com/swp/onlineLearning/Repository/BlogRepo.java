@@ -18,5 +18,6 @@ public interface BlogRepo extends JpaRepository<Blog,Integer> {
     Page<Blog> findAll(Pageable pageable);
     @Query(nativeQuery = true, value = "select * from blog where blog_name like :name%")
     Page<Blog> searchByName(Pageable pageable,@Param("name")String name);
+    Blog findByBlogID(String id);
 
 }

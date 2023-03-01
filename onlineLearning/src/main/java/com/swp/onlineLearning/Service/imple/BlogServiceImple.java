@@ -230,5 +230,29 @@ public class BlogServiceImple implements BlogService {
         return json;
     }
 
+    @Override
+    public HashMap<String, Object> getBlogDetail(String id) {
+        HashMap<String, Object> json = new HashMap<>();
+        json.put("type", false);
+
+        Blog blog = blogRepo.findByBlogID(id);
+        if (blog == null) {
+            log.error("blogdetail with id " + id + " isn't found in system");
+            json.put("msg", "blogdetail with id " + id + " isn't found in system");
+            return json;
+        }
+            BlogDTO blogDTO = new BlogDTO();
+            blogDTO.setBlogName(blog.getBlogName());
+            blogDTO.setBlogMeta(blog.getBlogMeta());
+            blogDTO.setContent(blog.getContent());
+            blogDTO.setName(blogDTO.getName());
+            blogDTO.setImage(blogDTO.getImage());
+            blogDTO.setCourseTypeName(blogDTO.getCourseTypeName());
+
+            json.put("types", blogDTO);
+            json.put("type", true);
+            return json;
+        }
+
 
 }

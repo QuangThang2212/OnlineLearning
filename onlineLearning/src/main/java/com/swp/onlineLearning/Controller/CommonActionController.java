@@ -96,4 +96,15 @@ public class CommonActionController {
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
     }
+    @GetMapping("/blog/blog_detail={id}")
+    public ResponseEntity<HashMap> getBlogDetail(@PathVariable("id") String id){
+        System.out.println("ggggggggggggggggggggggggggg");
+        HashMap<String, Object> json = blogService.getBlogDetail(id);
+        String type = json.get("type").toString();
+        if(type.equals("true")){
+            return new ResponseEntity<>(json, HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
+    }
 }
