@@ -81,6 +81,8 @@ public class LessonServiceImple implements LessonService {
         LessonPackageDTO lessonPackageDTO;
         LessonDTO lessonDTO;
         List<LessonDTO> lessonDTOS;
+        QuizResult quizResult;
+        QuizResultDTO quizResultDTO;
         for (LessonPackage lessonPackage : course.getLessonPackages()) {
             lessonPackageDTO = new LessonPackageDTO();
             lessonPackageDTO.setPackageID(lessonPackage.getPackageID());
@@ -93,7 +95,16 @@ public class LessonServiceImple implements LessonService {
                 lessonDTO.setLessonID(lessonShow.getLessonID());
                 lessonDTO.setTime(lessonShow.getTime());
                 lessonDTO.setType(lessonShow.getLessonType().getName());
+                if (lesson.getLessonType().getName().equals(typeQuiz)) {
+                    quizResult = quizResultRepo.findByAccountAndLesson(account, lesson);
+                    if (quizResult != null) {
+                        quizResultDTO = new QuizResultDTO();
+                        quizResultDTO.setQuizStatus(quizResult.isStatus());
+                        lessonDTO.setQuizResultDTO(quizResultDTO);
 
+                        lessonDTO.setQuizResultDTO(quizResultDTO);
+                    }
+                }
                 lessonDTOS.add(lessonDTO);
             }
             lessonPackageDTO.setNumLesson(lessonDTOS);
@@ -129,9 +140,9 @@ public class LessonServiceImple implements LessonService {
         List<String> answers;
         List<QuestionDTO> questionDTOS;
         if (lesson.getLessonType().getName().equals(typeQuiz)) {
-            QuizResult quizResult = quizResultRepo.findByAccountAndLesson(account, lesson);
+            quizResult = quizResultRepo.findByAccountAndLesson(account, lesson);
             if(quizResult!=null){
-                QuizResultDTO quizResultDTO = new QuizResultDTO();
+                quizResultDTO = new QuizResultDTO();
                 quizResultDTO.setQuizStatus(quizResult.isStatus());
                 quizResultDTO.setResult(quizResult.getResult());
                 quizResultDTO.setNumberOfCorrectAnswer(quizResult.getNumberOfCorrectAnswer());
