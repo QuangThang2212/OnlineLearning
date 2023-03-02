@@ -101,8 +101,6 @@ public class LessonServiceImple implements LessonService {
                         quizResultDTO = new QuizResultDTO();
                         quizResultDTO.setQuizStatus(quizResult.isStatus());
                         lessonDTO.setQuizResultDTO(quizResultDTO);
-
-                        lessonDTO.setQuizResultDTO(quizResultDTO);
                     }
                 }
                 lessonDTOS.add(lessonDTO);
