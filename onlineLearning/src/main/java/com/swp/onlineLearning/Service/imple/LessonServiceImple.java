@@ -96,7 +96,7 @@ public class LessonServiceImple implements LessonService {
                 lessonDTO.setTime(lessonShow.getTime());
                 lessonDTO.setType(lessonShow.getLessonType().getName());
                 if (lesson.getLessonType().getName().equals(typeQuiz)) {
-                    quizResult = quizResultRepo.findByAccountAndLesson(account, lesson);
+                    quizResult = quizResultRepo.findByAccountAndLesson(account, lessonShow);
                     if (quizResult != null) {
                         quizResultDTO = new QuizResultDTO();
                         quizResultDTO.setQuizStatus(quizResult.isStatus());
