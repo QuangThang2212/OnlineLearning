@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -11,5 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 public class QuizSubmitDTO {
     private Integer lessonID;
+    private LocalDateTime enrollTime;
+    private LocalDateTime finishTime;
     private List<QuestionDTO> quiz;
 }

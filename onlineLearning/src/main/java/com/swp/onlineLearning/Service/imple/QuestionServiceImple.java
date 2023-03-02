@@ -44,19 +44,19 @@ public class QuestionServiceImple implements QuestionService {
             json.put("msg", "Saving topics process fail");
             return json;
         }
-        String rightAns = questionDTO.getAnswers().get(questionDTO.getCorrectAnswer());
+        String rightAns = questionDTO.getAnswers().get(questionDTO.getCorrectAnswer()).trim();
         String anr="";
         for(String ans : questionDTO.getAnswers()){
-            if(ans.equals(anr)){
+            if(ans.equals(anr.trim())){
                 continue;
             }
             answer = new Answer();
-            answer.setAnswerContent(ans);
+            answer.setAnswerContent(ans.trim());
             answer.setQuestion(returnQuestion);
-            answer.setRightAnswer(rightAns.equals(ans));
+            answer.setRightAnswer(rightAns.equals(ans.trim()));
             answers.add(answer);
 
-            anr=ans;
+            anr=ans.trim();
         }
         try{
             answerRepo.saveAll(answers);

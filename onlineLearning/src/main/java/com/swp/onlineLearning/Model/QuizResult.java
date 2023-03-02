@@ -16,10 +16,12 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class QuizResult implements Serializable {
     @Id
-    private String quizResult;
+    private String quizResultID;
     @Range(min = 0, max = 10)
     @Column(nullable = false)
     private float result;
+    @Range(min = 0)
+    private int numberOfCorrectAnswer;
     @NotNull
     @NotBlank
     @Column(nullable = false)

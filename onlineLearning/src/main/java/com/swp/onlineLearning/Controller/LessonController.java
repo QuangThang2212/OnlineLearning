@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.security.Principal;
 import java.util.HashMap;
 
 @RestController
@@ -22,8 +23,8 @@ public class LessonController {
     @Autowired
     private LessonService lessonService;
     @PostMapping("/quiz/submit")
-    public ResponseEntity<HashMap<String, Object>> submitQuiz(@RequestBody QuizSubmitDTO submitDTO) {
-        HashMap<String, Object> json = lessonService.calSubmitQuiz(submitDTO);
+    public ResponseEntity<HashMap<String, Object>> submitQuiz(@RequestBody QuizSubmitDTO submitDTO, Principal principal) {
+        HashMap<String, Object> json = lessonService.calSubmitQuiz(submitDTO, principal.getName());
 
         String type = json.get("type").toString();
         if(type.equals("true")){

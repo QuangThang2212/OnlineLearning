@@ -9,12 +9,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 @Service
 @Slf4j
+@Transactional
 public class LessonServiceImple implements LessonService {
     @Autowired
     private CourseRepo courseRepo;
@@ -184,7 +187,7 @@ public class LessonServiceImple implements LessonService {
     }
 
     @Override
-    public HashMap<String, Object> calSubmitQuiz(QuizSubmitDTO submitDTO) {
+    public HashMap<String, Object> calSubmitQuiz(QuizSubmitDTO submitDTO, String gmail) {
         HashMap<String, Object> json = new HashMap<>();
         json.put("type", false);
 
@@ -193,6 +196,8 @@ public class LessonServiceImple implements LessonService {
             log.error("Invalid lessonID");
             return json;
         }
+        Account account = accountRepo.findByGmail(gmail);
+
         List<Question> questions = lesson.getQuestions();
         String answer = null;
         int countResult=0;
@@ -210,9 +215,31 @@ public class LessonServiceImple implements LessonService {
         }
         int result = Math.round(((float) countResult/questions.size())*100);
         boolean passed = result > 80;
+
+        QuizResult quizResult = quizResultRepo.findByAccountAndLesson(account, lesson);
+        if(quizResult==null){
+            quizResult = new QuizResult();
+            quizResult.setQuizResultID(LocalDateTime.now().toString());
+            quizResult.setAccount(account);
+            quizResult.setLesson(lesson);
+        }
+        quizResult.setResult(result);
+        quizResult.setEnrollTime(submitDTO.getEnrollTime());
+        quizResult.setFinishTime(submitDTO.getFinishTime());
+        quizResult.setStatus(passed);
+        quizResult.setNumberOfCorrectAnswer(countResult);
+
+        try {
+            quizResultRepo.save(quizResult);
+        }catch (Exception e){
+            log.error("Storage result for user fail \n"+e.getMessage());
+            json.put("msg", "Storage result for user fail");
+            return json;
+        }
+
         json.put("result", passed);
         json.put("totalCorrectAnswer", countResult);
-
+        json.put("type", true);
         return json;
     }
 }

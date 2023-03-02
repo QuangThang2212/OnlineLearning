@@ -273,6 +273,7 @@ public class CourseServiceImple implements CourseService {
         int packCount = 1;
         int lessCount;
         int quizCount=0;
+        String correctAnswer;
         String anr;
         for (LessonPackageDTO in : input) {
             if (in.getPackageID() == null) {
@@ -408,6 +409,10 @@ public class CourseServiceImple implements CourseService {
                             answer = new Answer();
                             answer.setQuestion(question);
                             answer.setAnswerContent(ans.trim());
+                            correctAnswer = quesDTO.getAnswers().get(quesDTO.getCorrectAnswer()).trim();
+                            if(ans.trim().equals(correctAnswer)){
+                                answer.setRightAnswer(true);
+                            }
                             saveAnswer.add(answer);
 
                             anr = ans;
