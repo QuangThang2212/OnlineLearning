@@ -134,6 +134,7 @@ public class LessonServiceImple implements LessonService {
                 QuizResultDTO quizResultDTO = new QuizResultDTO();
                 quizResultDTO.setQuizStatus(quizResult.isStatus());
                 quizResultDTO.setResult(quizResult.getResult());
+                quizResultDTO.setNumberOfCorrectAnswer(quizResult.getNumberOfCorrectAnswer());
                 quizResultDTO.setEnrollTime(quizResult.getEnrollTime());
                 lessonDTO.setQuizResultDTO(quizResultDTO);
             }

@@ -745,12 +745,12 @@ public class CourseServiceImple implements CourseService {
             json.put("msg", "Course with id " + id + " isn't exist in system");
             return json;
         }
-        boolean enrolled = false;
         if(!course.isStatus()){
             log.error("Course with id " + id + " not allow access");
             json.put("msg", "Course with id " + id + " not allow access");
             return json;
         }
+        boolean enrolled = false;
         if (!authority.equals(roleGuest)) {
             Account account = accountRepo.findByGmail(authority);
             if (account.getRoleUser().getName().equals(roleUser)) {

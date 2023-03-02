@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class QuizResultDTO {
-    private String quizResult;
+    private int numberOfCorrectAnswer;
     private float result;
     private LocalDateTime enrollTime;
     private boolean quizStatus;
