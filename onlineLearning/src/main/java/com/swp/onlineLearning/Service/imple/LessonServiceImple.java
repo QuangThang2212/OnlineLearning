@@ -65,6 +65,11 @@ public class LessonServiceImple implements LessonService {
             json.put("msg", "Course with id: " + courseID + " isn't found in system");
             return json;
         }
+        if(!course.isStatus()){
+            log.error("Course with id " + courseID + " not allow access");
+            json.put("msg", "Course with id " + courseID + " not allow access");
+            return json;
+        }
         Lesson lesson = lessonRepo.findByLessonID(lessonID);
         if (lesson == null) {
             log.error("Lesson with id: " + lessonID + " isn't exist in the system");
@@ -239,6 +244,7 @@ public class LessonServiceImple implements LessonService {
 
         json.put("result", passed);
         json.put("totalCorrectAnswer", countResult);
+        json.put("percentCal", result);
         json.put("type", true);
         return json;
     }

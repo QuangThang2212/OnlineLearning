@@ -5,6 +5,7 @@ import com.swp.onlineLearning.Service.LessonService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,9 +23,17 @@ import java.util.HashMap;
 public class LessonController {
     @Autowired
     private LessonService lessonService;
+    @Value("${role.guest}")
+    private String roleGuest;
     @PostMapping("/quiz/submit")
     public ResponseEntity<HashMap<String, Object>> submitQuiz(@RequestBody QuizSubmitDTO submitDTO, Principal principal) {
-        HashMap<String, Object> json = lessonService.calSubmitQuiz(submitDTO, principal.getName());
+        String authority;
+        if(principal == null){
+            authority = roleGuest;
+        }else{
+            authority = principal.getName();
+        }
+        HashMap<String, Object> json = lessonService.calSubmitQuiz(submitDTO, authority);
 
         String type = json.get("type").toString();
         if(type.equals("true")){

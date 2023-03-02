@@ -17,17 +17,15 @@ import java.time.LocalDateTime;
 public class QuizResult implements Serializable {
     @Id
     private String quizResultID;
-    @Range(min = 0, max = 10)
+    @Range(min = 0, max = 100)
     @Column(nullable = false)
     private float result;
     @Range(min = 0)
     private int numberOfCorrectAnswer;
     @NotNull
-    @NotBlank
     @Column(nullable = false)
     private LocalDateTime enrollTime;
     @NotNull
-    @NotBlank
     @Column(nullable = false)
     private LocalDateTime finishTime;
     private boolean status;

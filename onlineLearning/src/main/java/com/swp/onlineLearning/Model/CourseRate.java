@@ -22,6 +22,8 @@ public class CourseRate implements Serializable {
     @Range(min = 0, max = 5)
     private float starRate;
     private String content;
+    @NotNull
+    private boolean status;
 
     @NotNull
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)

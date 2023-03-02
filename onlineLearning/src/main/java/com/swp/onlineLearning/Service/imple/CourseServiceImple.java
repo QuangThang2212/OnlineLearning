@@ -440,6 +440,7 @@ public class CourseServiceImple implements CourseService {
         StringBuilder msgDelete = new StringBuilder();
         List<Lesson> deleteLesson = new ArrayList<>();
         List<LessonPackage> deleteLessonPackage = new ArrayList<>();
+        CourseRate courseRate;
         if (listOfPackageDTO.getDeleteQuestion() != null) {
             questionService.deleteQuestionAndAnswer(listOfPackageDTO.getDeleteQuestion());
         }
@@ -544,9 +545,34 @@ public class CourseServiceImple implements CourseService {
         List<Integer> listOfCourseId = listOfCourseDTO.getCourseID();
         Course course;
         List<Course> courses = new ArrayList<>();
+        StringBuilder stringBuilder = new StringBuilder();
         boolean status = listOfCourseDTO.isStatus();
+
+        List<LessonPackage> lessonPackages;
+        List<Lesson> lessonLis;
+        boolean lessonCheck = false;
         for (int id : listOfCourseId) {
             course = courseRepo.findByCourseID(id);
+            if(status){
+                lessonPackages = course.getLessonPackages();
+                if(lessonPackages.size()<2){
+                    log.error("Course with id: "+course.getCourseID()+" have only "+lessonPackages.size()+" topic, not allow public");
+                    stringBuilder.append("Course with id: "+course.getCourseID()+" have only "+lessonPackages.size()+" topic, not allow public \n");
+                    continue;
+                }
+                for(LessonPackage lessonPackage : lessonPackages){
+                    lessonLis = lessonPackage.getLessons();
+                    if(lessonLis.size()<2){
+                        log.error("Topic with id: "+lessonPackage.getPackageID()+" have only "+lessonLis.size()+" lesson, not allow public");
+                        stringBuilder.append("Topic with id: "+lessonPackage.getPackageID()+" have only "+lessonLis.size()+" lesson, not allow public \n");
+                        lessonCheck = true;
+                        break;
+                    }
+                }
+                if(lessonCheck){
+                    continue;
+                }
+            }
             course.setStatus(status);
 
             courses.add(course);
@@ -558,8 +584,12 @@ public class CourseServiceImple implements CourseService {
             json.put("msg", "Update status for list of course fail, view log ");
             return json;
         }
-        log.error("Update status for list of course successfully");
-        json.put("msg", "Update status for list of course successfully");
+        if(stringBuilder.toString().isEmpty()){
+            log.error("Update status for list of course successfully");
+            json.put("msg", "Update status for list of course successfully");
+        }else{
+            json.put("msg", stringBuilder.toString());
+        }
         json.put("type", true);
         return json;
     }
@@ -715,8 +745,12 @@ public class CourseServiceImple implements CourseService {
             json.put("msg", "Course with id " + id + " isn't exist in system");
             return json;
         }
-
         boolean enrolled = false;
+        if(!course.isStatus()){
+            log.error("Course with id " + id + " not allow access");
+            json.put("msg", "Course with id " + id + " not allow access");
+            return json;
+        }
         if (!authority.equals(roleGuest)) {
             Account account = accountRepo.findByGmail(authority);
             if (account.getRoleUser().getName().equals(roleUser)) {
