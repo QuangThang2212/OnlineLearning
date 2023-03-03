@@ -39,6 +39,8 @@ public class LessonServiceImple implements LessonService {
     private String typeQuiz;
     @Value("${lessonType.listening}")
     private String typeListening;
+    @Value("${role.user}")
+    private String roleUser;
     @Value("${quiz.pass.condition}")
     private float passCondition;
 
@@ -50,11 +52,6 @@ public class LessonServiceImple implements LessonService {
         if (courseID == null || lessonID == null) {
             log.error("Invalid input courseID: " + courseID + " and lessonID: " + lessonID);
             json.put("msg", "Invalid input courseID and lessonID");
-            return json;
-        }
-        if (gmail == null) {
-            log.error("Invalid gmail with null value");
-            json.put("msg", "Invalid gmail value");
             return json;
         }
         Account account = accountRepo.findByGmail(gmail);
@@ -205,6 +202,7 @@ public class LessonServiceImple implements LessonService {
     public HashMap<String, Object> calSubmitQuiz(QuizSubmitDTO submitDTO, String gmail) {
         HashMap<String, Object> json = new HashMap<>();
         json.put("type", false);
+        json.put("courseFinish", false);
 
         Lesson lesson = lessonRepo.findByLessonID(submitDTO.getLessonID());
         if(lesson==null || !lesson.getLessonType().getName().equals(typeQuiz)){
@@ -212,6 +210,10 @@ public class LessonServiceImple implements LessonService {
             return json;
         }
         Account account = accountRepo.findByGmail(gmail);
+        if(!account.getRoleUser().getName().equals(roleUser)){
+            log.error("Invalid user role");
+            return json;
+        }
 
         List<Question> questions = lesson.getQuestions();
         String answer = null;
@@ -229,7 +231,7 @@ public class LessonServiceImple implements LessonService {
             }
         }
         int result = Math.round(((float) countResult/questions.size())*100);
-        boolean passed = result > 80;
+        boolean passed = result > passCondition;
 
         QuizResult quizResult = quizResultRepo.findByAccountAndLesson(account, lesson);
         if(quizResult==null){
@@ -250,6 +252,21 @@ public class LessonServiceImple implements LessonService {
             log.error("Storage result for user fail \n"+e.getMessage());
             json.put("msg", "Storage result for user fail");
             return json;
+        }
+
+        Course course = lesson.getLessonPackage().getCourse();
+        List<QuizResult> quizResults = quizResultRepo.findAllPassedQuizOfUser(account.getAccountID(), course.getCourseID());
+        CourseRate courseRate = courseRateRepo.findByCourseAndAccount(course, account);
+        if(quizResults.size()==course.getNumberOfQuiz() && courseRate != null){
+            courseRate.setStatus(true);
+            try{
+                courseRateRepo.save(courseRate);
+            }catch (Exception e){
+                log.error("Update course learning progress fail \n"+e.getMessage());
+                json.put("msg", "Update course learning progress fail");
+                return json;
+            }
+            json.put("courseFinish", true);
         }
 
         json.put("result", passed);

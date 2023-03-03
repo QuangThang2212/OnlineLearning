@@ -27,13 +27,12 @@ public class LessonController {
     private String roleGuest;
     @PostMapping("/quiz/submit")
     public ResponseEntity<HashMap<String, Object>> submitQuiz(@RequestBody QuizSubmitDTO submitDTO, Principal principal) {
-        String authority;
+        HashMap<String, Object> json = new HashMap<>();
         if(principal == null){
-            authority = roleGuest;
-        }else{
-            authority = principal.getName();
+            json.put("msg", "Not allow access");
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
-        HashMap<String, Object> json = lessonService.calSubmitQuiz(submitDTO, authority);
+        json = lessonService.calSubmitQuiz(submitDTO, principal.getName());
 
         String type = json.get("type").toString();
         if(type.equals("true")){

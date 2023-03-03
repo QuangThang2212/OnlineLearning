@@ -1,15 +1,19 @@
 package com.swp.onlineLearning.Controller;
 
+import com.swp.onlineLearning.DTO.CourseRateDTO;
 import com.swp.onlineLearning.DTO.EnrollInformationDTO;
+import com.swp.onlineLearning.Service.CommentService;
 import com.swp.onlineLearning.Service.CourseService;
 import com.swp.onlineLearning.Service.LessonService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.security.Principal;
 import java.util.HashMap;
 
@@ -21,6 +25,8 @@ public class CourseReviewController {
     private CourseService courseService;
     @Autowired
     private LessonService lessonService;
+    @Autowired
+    private CommentService commentService;
     @PostMapping("/enroll")
     public ResponseEntity<HashMap<String, Object>> enrollCourse(@RequestBody EnrollInformationDTO enrollInformationDTO, Principal principal){
         HashMap<String, Object> json = new HashMap<>();
@@ -45,6 +51,30 @@ public class CourseReviewController {
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
         json = lessonService.getLessonForLearning(courseID,lessonID,principal.getName());
+
+        String type = json.get("type").toString();
+        if(type.equals("true")){
+            return new ResponseEntity<>(json, HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
+    }
+    @PostMapping("/rating/create")
+    public ResponseEntity<HashMap<String, Object>> sendRatingOfUser(@Valid @RequestBody CourseRateDTO courseRateDTO, BindingResult result, Principal principal){
+        StringBuilder stringBuilder = new StringBuilder();
+        HashMap<String, Object> json = new HashMap<>();
+        if (result.hasErrors()) {
+            for (FieldError error : result.getFieldErrors()) {
+                stringBuilder.append(error.getDefaultMessage()).append("\n");
+            }
+            json.put("msg",stringBuilder.toString());
+            return new ResponseEntity<>(json,HttpStatus.BAD_REQUEST);
+        }
+        if(principal == null){
+            json.put("msg", "Invalid account information");
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
+        json = commentService.createCourseRate(courseRateDTO,principal.getName());
 
         String type = json.get("type").toString();
         if(type.equals("true")){

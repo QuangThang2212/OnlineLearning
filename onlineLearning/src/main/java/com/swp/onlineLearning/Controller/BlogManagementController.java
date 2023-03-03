@@ -1,7 +1,6 @@
 package com.swp.onlineLearning.Controller;
 
 import com.swp.onlineLearning.DTO.BlogDTO;
-import com.swp.onlineLearning.Model.Blog;
 import com.swp.onlineLearning.Service.BlogService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.HashMap;
-import java.util.List;
 
 @Slf4j
 @RestController
@@ -31,8 +29,7 @@ public class BlogManagementController {
         StringBuilder stringBuilder = new StringBuilder();
         if (result.hasErrors()) {
             for (FieldError error : result.getFieldErrors()) {
-                stringBuilder.append(error.getDefaultMessage()) ;
-                stringBuilder.append("\n") ;
+                stringBuilder.append(error.getDefaultMessage()+"\n") ;
             }
             json.put("msg",stringBuilder.toString());
             return new ResponseEntity<>(json,HttpStatus.BAD_REQUEST);
@@ -53,8 +50,7 @@ public class BlogManagementController {
         StringBuilder stringBuilder = new StringBuilder();
         if (result.hasErrors()) {
             for (FieldError error : result.getFieldErrors()) {
-                stringBuilder.append(error.getDefaultMessage()) ;
-                stringBuilder.append("\n") ;
+                stringBuilder.append(error.getDefaultMessage()).append("\n");
             }
             json.put("msg",stringBuilder.toString());
             return new ResponseEntity<>(json,HttpStatus.BAD_REQUEST);

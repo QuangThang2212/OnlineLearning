@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Range;
-import org.springframework.beans.factory.annotation.Value;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -20,7 +19,7 @@ public class CourseRate implements Serializable {
     @NotNull
     private LocalDateTime enrollTime;
     @Range(min = 0, max = 5)
-    private float starRate;
+    private int starRate;
     private String content;
     @NotNull
     private boolean status;

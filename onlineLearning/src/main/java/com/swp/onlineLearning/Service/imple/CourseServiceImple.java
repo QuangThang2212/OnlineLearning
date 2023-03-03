@@ -440,7 +440,6 @@ public class CourseServiceImple implements CourseService {
         StringBuilder msgDelete = new StringBuilder();
         List<Lesson> deleteLesson = new ArrayList<>();
         List<LessonPackage> deleteLessonPackage = new ArrayList<>();
-        CourseRate courseRate;
         if (listOfPackageDTO.getDeleteQuestion() != null) {
             questionService.deleteQuestionAndAnswer(listOfPackageDTO.getDeleteQuestion());
         }
@@ -557,14 +556,14 @@ public class CourseServiceImple implements CourseService {
                 lessonPackages = course.getLessonPackages();
                 if(lessonPackages.size()<2){
                     log.error("Course with id: "+course.getCourseID()+" have only "+lessonPackages.size()+" topic, not allow public");
-                    stringBuilder.append("Course with id: "+course.getCourseID()+" have only "+lessonPackages.size()+" topic, not allow public \n");
+                    stringBuilder.append("Course with id: ").append(course.getCourseID()).append(" have only ").append(lessonPackages.size()).append(" topic, not allow public \n");
                     continue;
                 }
                 for(LessonPackage lessonPackage : lessonPackages){
                     lessonLis = lessonPackage.getLessons();
                     if(lessonLis.size()<2){
                         log.error("Topic with id: "+lessonPackage.getPackageID()+" have only "+lessonLis.size()+" lesson, not allow public");
-                        stringBuilder.append("Topic with id: "+lessonPackage.getPackageID()+" have only "+lessonLis.size()+" lesson, not allow public \n");
+                        stringBuilder.append("Topic with id: ").append(lessonPackage.getPackageID()).append(" have only ").append(lessonLis.size()).append(" lesson, not allow public \n");
                         lessonCheck = true;
                         break;
                     }
@@ -794,6 +793,28 @@ public class CourseServiceImple implements CourseService {
 
             lessonPackageDTOS.add(lessonPackageDTO);
         }
+//        List<CourseRate> courseRates = courseRateRepo.findByCourse(course);
+//        CourseRateDTO courseRateDTO;
+//        List<CourseRateDTO> courseRateDTOS = new ArrayList<>();
+//        UserDTO userDTO;
+//        Account account;
+//        for(CourseRate rate : courseRates){
+//            courseRateDTO = new CourseRateDTO();
+//            courseRateDTO.setCourseRateID(rate.getCourseRateID());
+//            courseRateDTO.setStarRate(rate.getStarRate());
+//            courseRateDTO.setContent(rate.getContent());
+//
+//            userDTO = new UserDTO();
+//            account = rate.getAccount();
+//            userDTO.setAccountID(account.getAccountID());
+//            userDTO.setName(account.getName());
+//            userDTO.setImage(account.getImage());
+//
+//            courseRateDTO.setUserDTO(userDTO);
+//
+//            courseRateDTOS.add(courseRateDTO);
+//        }
+
         json.put("enrolled", enrolled);
         json.put("course", courseDTO);
         json.put("lessonPackages", lessonPackageDTOS);

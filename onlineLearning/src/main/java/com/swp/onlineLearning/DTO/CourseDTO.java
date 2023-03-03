@@ -36,6 +36,7 @@ public class CourseDTO {
     private boolean status;
     private int accountID;
     private Account courseExpert;
+    @Range(min = 0, max = 5)
     @Value("0")
     private float starRated;
     @Value("0")
