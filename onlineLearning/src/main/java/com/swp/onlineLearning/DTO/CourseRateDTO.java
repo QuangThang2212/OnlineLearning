@@ -11,7 +11,7 @@ import org.hibernate.validator.constraints.Range;
 public class CourseRateDTO {
     private String courseRateID;
     @Range(min = 0, max = 5)
-    private int starRate;
+    private int stars;
     private String content;
     private int courseID;
     private int userID;

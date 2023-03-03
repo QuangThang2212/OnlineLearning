@@ -48,7 +48,7 @@ public class CourseRateServiceImple implements CourseRateService {
             return json;
         }
         courseRate.setContent(courseRateDTO.getContent());
-        courseRate.setStarRate(courseRateDTO.getStarRate());
+        courseRate.setStarRate(courseRateDTO.getStars());
 
         try {
             courseRateRepo.save(courseRate);
@@ -58,14 +58,17 @@ public class CourseRateServiceImple implements CourseRateService {
             return json;
         }
 
-        List<CourseRate> courseRates = courseRateRepo.findByCourse(course);
+        List<CourseRate> courseRates = courseRateRepo.findByCourse(course.getCourseID());
         float starRate;
         int totalRate = 0;
-        for (CourseRate rate : courseRates) {
-            totalRate += rate.getStarRate();
+        if(!courseRates.isEmpty()){
+            for (CourseRate rate : courseRates) {
+                totalRate += rate.getStarRate();
+                System.out.println(rate.getStarRate()+" loop");
+            }
+            starRate = (float) totalRate / courseRates.size();
+            course.setStarRated(starRate);
         }
-        starRate = (float) totalRate / courseRates.size();
-        course.setStarRated(starRate);
 
         try {
             courseRepo.save(course);
@@ -104,7 +107,7 @@ public class CourseRateServiceImple implements CourseRateService {
             for(CourseRate rate : courseRates.stream().toList()){
                 courseRateDTO = new CourseRateDTO();
                 courseRateDTO.setCourseRateID(rate.getCourseRateID());
-                courseRateDTO.setStarRate(rate.getStarRate());
+                courseRateDTO.setStars(rate.getStarRate());
                 courseRateDTO.setContent(rate.getContent());
 
                 account = rate.getAccount();
