@@ -163,7 +163,6 @@ public class BlogServiceImple implements BlogService {
             blogDTO.setCourseType(a.getCourseType().getCourseTypeName());
             blogDTO.setName(a.getAccount().getGmail());
             blogDTO.setImage(a.getAccount().getImage());
-
             blogDTOs.add(blogDTO);
         }
             json.put("blogs", blogDTOs);

@@ -1,14 +1,17 @@
 package com.swp.onlineLearning.Controller;
 
 import com.swp.onlineLearning.DTO.RoleDTO;
+import com.swp.onlineLearning.DTO.UserDTO;
 import com.swp.onlineLearning.Service.AccountService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.security.Principal;
 import java.util.HashMap;
 
@@ -21,7 +24,7 @@ public class AccountManagerController {
     private AccountService accountService;
 
     @GetMapping()
-    public ResponseEntity<HashMap<String, Object>> getAllAccount(@RequestParam("page") int page, @RequestParam("limit") int limit, Principal principal) {
+    public ResponseEntity<HashMap> getAllAccount(@RequestParam("page") int page, @RequestParam("limit") int limit, Principal principal) {
 
         HashMap<String, Object> json = accountService.findAllExcept(principal.getName(), page, limit);
 
@@ -34,7 +37,7 @@ public class AccountManagerController {
     }
 
     @GetMapping("/course_expert")
-    public ResponseEntity<HashMap<String, Object>> getAllCourseExpert() {
+    public ResponseEntity<HashMap> getAllCourseExpert(){
         HashMap<String, Object> json = accountService.findBAllCourseExpert();
 
         String type = json.get("type").toString();
@@ -46,7 +49,7 @@ public class AccountManagerController {
     }
 
     @PostMapping("/change_role/id={id}")
-    public ResponseEntity<HashMap<String, Object>> changeRoleOfAccount(@PathVariable("id") int id, @RequestBody RoleDTO roleDTO) {
+    public ResponseEntity<HashMap> changeRoleOfAccount(@PathVariable("id") int id, @RequestBody RoleDTO roleDTO) {
         roleDTO.setAccountID(id);
         HashMap<String, Object> json = accountService.changRole(roleDTO);
 
@@ -56,5 +59,28 @@ public class AccountManagerController {
         } else {
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @GetMapping("/get_user")
+    public ResponseEntity<HashMap> getUser(Principal principal) {
+        HashMap<String, Object> json = accountService.findUser(principal.getName());
+        String type = json.get("type").toString();
+        if(type.equals("true")){
+            return new ResponseEntity<>(json, HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
+
+    }
+    @PostMapping("/update")
+    public ResponseEntity<HashMap> getUserInformation(@Valid @RequestBody UserDTO userDTO, BindingResult result,Principal principal) {
+        HashMap<String,Object> json = new HashMap<>();
+
+        json = accountService.update(userDTO, principal.getName());
+        String type = json.get("type").toString();
+        if(type.equals("true")){
+            return new ResponseEntity<>(json,HttpStatus.OK);
+        }else return new ResponseEntity<>(json,HttpStatus.BAD_REQUEST);
+
     }
 }
