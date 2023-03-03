@@ -6,6 +6,7 @@ import com.swp.onlineLearning.Model.CourseRate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -14,5 +15,6 @@ import java.util.List;
 public interface CourseRateRepo extends JpaRepository<CourseRate, String> {
     CourseRate findByCourseAndAccount(Course course, Account account);
     List<CourseRate> findByCourse(Course course);
-    Page<CourseRate> findByCourse(Course course, Pageable pageable);
+    @Query(nativeQuery = true, value = "select * from course_rate where courseid=?1 and content!=null")
+    Page<CourseRate> findByCourse(int courseid, Pageable pageable);
 }

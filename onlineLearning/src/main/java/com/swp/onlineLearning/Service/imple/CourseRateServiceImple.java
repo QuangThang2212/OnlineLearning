@@ -95,8 +95,8 @@ public class CourseRateServiceImple implements CourseRateService {
             json.put("msg", "Invalid course ID");
             return json;
         }
-        int totalNumber = courseRepo.findAll(PageRequest.of(page - 1, limit)).getTotalPages();
-        Page<CourseRate> courseRates = courseRateRepo.findByCourse(course,PageRequest.of(page - 1, limit));
+        int totalNumber = courseRateRepo.findByCourse(course.getCourseID(),PageRequest.of(page - 1, limit)).getTotalPages();
+        Page<CourseRate> courseRates = courseRateRepo.findByCourse(course.getCourseID(),PageRequest.of(page - 1, limit));
         if(!courseRates.isEmpty()){
             CourseRateDTO courseRateDTO;
             List<CourseRateDTO> courseRateDTOS = new ArrayList<>();
