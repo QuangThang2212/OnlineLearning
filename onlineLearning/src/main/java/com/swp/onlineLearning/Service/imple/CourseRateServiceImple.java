@@ -118,6 +118,6 @@ public class CourseRateServiceImple implements CourseRateService {
         }
         json.put("numPage", totalNumber);
         json.put("type", true);
-        return null;
+        return json;
     }
 }
