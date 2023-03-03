@@ -3,6 +3,7 @@ package com.swp.onlineLearning.Controller;
 import com.swp.onlineLearning.DTO.CourseRateDTO;
 import com.swp.onlineLearning.DTO.EnrollInformationDTO;
 import com.swp.onlineLearning.Service.CommentService;
+import com.swp.onlineLearning.Service.CourseRateService;
 import com.swp.onlineLearning.Service.CourseService;
 import com.swp.onlineLearning.Service.LessonService;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +27,7 @@ public class CourseReviewController {
     @Autowired
     private LessonService lessonService;
     @Autowired
-    private CommentService commentService;
+    private CourseRateService courseRateService;
     @PostMapping("/enroll")
     public ResponseEntity<HashMap<String, Object>> enrollCourse(@RequestBody EnrollInformationDTO enrollInformationDTO, Principal principal){
         HashMap<String, Object> json = new HashMap<>();
@@ -74,7 +75,7 @@ public class CourseReviewController {
             json.put("msg", "Invalid account information");
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
-        json = commentService.createCourseRate(courseRateDTO,principal.getName());
+        json = courseRateService.createCourseRate(courseRateDTO,principal.getName());
 
         String type = json.get("type").toString();
         if(type.equals("true")){

@@ -793,27 +793,6 @@ public class CourseServiceImple implements CourseService {
 
             lessonPackageDTOS.add(lessonPackageDTO);
         }
-//        List<CourseRate> courseRates = courseRateRepo.findByCourse(course);
-//        CourseRateDTO courseRateDTO;
-//        List<CourseRateDTO> courseRateDTOS = new ArrayList<>();
-//        UserDTO userDTO;
-//        Account account;
-//        for(CourseRate rate : courseRates){
-//            courseRateDTO = new CourseRateDTO();
-//            courseRateDTO.setCourseRateID(rate.getCourseRateID());
-//            courseRateDTO.setStarRate(rate.getStarRate());
-//            courseRateDTO.setContent(rate.getContent());
-//
-//            userDTO = new UserDTO();
-//            account = rate.getAccount();
-//            userDTO.setAccountID(account.getAccountID());
-//            userDTO.setName(account.getName());
-//            userDTO.setImage(account.getImage());
-//
-//            courseRateDTO.setUserDTO(userDTO);
-//
-//            courseRateDTOS.add(courseRateDTO);
-//        }
 
         json.put("enrolled", enrolled);
         json.put("course", courseDTO);

@@ -1,6 +1,7 @@
 package com.swp.onlineLearning.Controller;
 
 import com.swp.onlineLearning.Service.BlogService;
+import com.swp.onlineLearning.Service.CourseRateService;
 import com.swp.onlineLearning.Service.CourseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,8 @@ public class CommonActionController {
     private BlogService blogService;
     @Autowired
     private CourseService courseService;
+    @Autowired
+    private CourseRateService courseRateService;
     @GetMapping("/home")
     public ResponseEntity<HashMap<String, Object>> homePage(Principal principal){
         String authority;
@@ -107,8 +110,18 @@ public class CommonActionController {
         }
     }
     @GetMapping("/blog/blog_search")
-    public ResponseEntity<HashMap<String, Object>> searchByNameBlog(@RequestParam("page")int page, @RequestParam("limit")int limit, String search){
+    public ResponseEntity<HashMap<String, Object>> searchByNameBlog(@RequestParam("page")int page, @RequestParam("limit")int limit,@RequestParam("search") String search){
         HashMap<String, Object> json = blogService.searchByNameBlog(page, limit, search);
+        String type = json.get("type").toString();
+        if(type.equals("true")){
+            return new ResponseEntity<>(json, HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
+    }
+    @GetMapping("/course/rating")
+    public ResponseEntity<HashMap<String, Object>> getCourseRate(@RequestParam("id")int courseID, @RequestParam("page")int page, @RequestParam("limit")int limit){
+        HashMap<String, Object> json = courseRateService.getCourseRate(courseID,page, limit);
         String type = json.get("type").toString();
         if(type.equals("true")){
             return new ResponseEntity<>(json, HttpStatus.OK);

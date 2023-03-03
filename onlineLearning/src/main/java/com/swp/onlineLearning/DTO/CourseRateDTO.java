@@ -14,5 +14,7 @@ public class CourseRateDTO {
     private int starRate;
     private String content;
     private int courseID;
-    private UserDTO userDTO;
+    private int userID;
+    private String userName;
+    private String userImage;
 }
