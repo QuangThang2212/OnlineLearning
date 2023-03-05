@@ -14,5 +14,8 @@ public interface BlogService {
     HashMap<String, Object> searchByNameBlog(int pageNumber, int size,String name);
     HashMap<String, Object> getBlogDetail(String id);
 
+    HashMap<String, Object> findAll();
+
+
 }
 

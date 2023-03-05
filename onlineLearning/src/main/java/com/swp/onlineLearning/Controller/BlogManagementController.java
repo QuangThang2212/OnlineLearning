@@ -47,29 +47,8 @@ public class BlogManagementController {
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
     }
-    @PostMapping("/update/id={id}")
-    public ResponseEntity<HashMap<String, Object>> updateBlogType(@Valid @RequestBody BlogDTO blogDTO, BindingResult result, Principal principal,  @PathVariable("id") int id) {
-        HashMap<String, Object> json = new HashMap<>();
-        StringBuilder stringBuilder = new StringBuilder();
-        if (result.hasErrors()) {
-            for (FieldError error : result.getFieldErrors()) {
-                stringBuilder.append(error.getDefaultMessage()) ;
-                stringBuilder.append("\n") ;
-            }
-            json.put("msg",stringBuilder.toString());
-            return new ResponseEntity<>(json,HttpStatus.BAD_REQUEST);
-        }
-        blogDTO.setBlogID(blogDTO.getBlogID());
-        json = blogService.update(blogDTO);
 
-        String type = json.get("type").toString();
-        if(type.equals("true")){
-            return new ResponseEntity<>(json, HttpStatus.OK);
-        }else{
-            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
-        }
-    }
-    @GetMapping()
+    @GetMapping("/blog")
     public ResponseEntity<HashMap<String, Object>> getALlBlog(@RequestParam("page")int page, @RequestParam("limit")int limit){
         HashMap<String, Object> json = blogService.findAllBlog(page, limit);
 
@@ -80,9 +59,27 @@ public class BlogManagementController {
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
     }
-    @GetMapping("/blog_search")
-    public ResponseEntity<HashMap<String, Object>> searchByNameBlog(@RequestParam("page")int page, @RequestParam("limit")int limit, String search){
-        HashMap<String, Object> json = blogService.searchByNameBlog(page, limit, search);
+
+    @GetMapping("/my_blog")
+    public ResponseEntity<HashMap<String, Object>> getAllCourseType() throws Exception {
+        HashMap<String, Object> json = blogService.findAll();
+        return new ResponseEntity<>(json, HttpStatus.OK);
+    }
+
+    @PostMapping("/update")
+    public ResponseEntity<HashMap<String, Object>> updateMyBlog(@Valid @RequestBody BlogDTO blogDTO, @RequestParam("id") String id, BindingResult result) throws Exception {
+        HashMap<String, Object> json = new HashMap<>();
+        StringBuilder stringBuilder = new StringBuilder();
+        if (result.hasErrors()) {
+            for (FieldError error : result.getFieldErrors()) {
+                stringBuilder.append(error.getDefaultMessage()) ;
+                stringBuilder.append("\n") ;
+            }
+            json.put("msg",stringBuilder.toString());
+            return new ResponseEntity<>(json,HttpStatus.BAD_REQUEST);
+        }
+        blogDTO.setBlogID(id);
+        json = blogService.update(blogDTO);
 
         String type = json.get("type").toString();
         if(type.equals("true")){
@@ -91,4 +88,5 @@ public class BlogManagementController {
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
     }
+
 }
