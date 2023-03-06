@@ -6,4 +6,5 @@ import java.util.HashMap;
 
 public interface VoucherService {
     HashMap<String, Object> createVoucher(VoucherDTO voucherDTO);
+    HashMap<String, Object> getAllVoucher(int page, int size);
 }

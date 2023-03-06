@@ -9,10 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.HashMap;
@@ -43,5 +40,17 @@ public class VoucherController {
         }else{
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
+    }
+    @GetMapping("/sale_manager")
+    public ResponseEntity<HashMap<String, Object>> getAllVoucher(@RequestParam("page")int page, @RequestParam("limit")int limit){
+//        HashMap<String, Object> json = voucherService.createVoucher(voucherDTO);
+//
+//        String type = json.get("type").toString();
+//        if(type.equals("true")){
+//            return new ResponseEntity<>(json, HttpStatus.OK);
+//        }else{
+//            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+//        }
+        return null;
     }
 }
