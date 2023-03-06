@@ -11,7 +11,6 @@ public interface AccountService {
     HashMap<String, Object> findAllExcept(String gmail, int pageNumber, int size);
     HashMap<String, Object> save(UserDTO userDTO);
     HashMap<String, Object> activeAccount(UserDTO userDTO);
-
     HashMap<String, Object> update(UserDTO userDTO, String gmail);
 
     HashMap<String, Object> changRole(RoleDTO roleDTO);

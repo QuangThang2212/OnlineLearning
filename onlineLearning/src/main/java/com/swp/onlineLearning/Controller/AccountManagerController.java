@@ -75,7 +75,6 @@ public class AccountManagerController {
     @PostMapping("/update")
     public ResponseEntity<HashMap> getUserInformation(@Valid @RequestBody UserDTO userDTO, BindingResult result,Principal principal) {
         HashMap<String,Object> json = new HashMap<>();
-
         json = accountService.update(userDTO, principal.getName());
         String type = json.get("type").toString();
         if(type.equals("true")){

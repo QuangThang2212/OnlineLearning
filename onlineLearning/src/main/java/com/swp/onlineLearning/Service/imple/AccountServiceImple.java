@@ -194,6 +194,7 @@ public class AccountServiceImple implements AccountService, UserDetailsService {
     @Override
     public HashMap<String, Object> changRole(RoleDTO roleDTO) {
         HashMap<String, Object> json = new HashMap<>();
+        System.out.println();
         json.put("type", false);
         if (roleDTO == null) {
             log.error("Not allow null account to register");
