@@ -52,7 +52,7 @@ public class VoucherServiceImple implements VoucherService {
                 json.put("msg", "Voucher "+voucherDTO.getVoucherID()+" isn't exist in system to update");
                 return json;
             }
-            if(voucher.isStatus()==true){
+            if(voucher.isStatus()){
                 log.error("Voucher "+voucherDTO.getVoucherID()+" is set status active for user, not allow update");
                 json.put("msg", "Voucher "+voucherDTO.getVoucherID()+" is set status active for user, not allow update, please change status to inactive");
                 return json;
@@ -74,8 +74,8 @@ public class VoucherServiceImple implements VoucherService {
             }
             int coursePrice = Math.round((float)course.getPrice()/2);
             if(coursePrice<=voucherDTO.getAmount()){
-                log.error("Amount of this voucher isn't allow greater or equal than 50% price of course with id "+ course.getCourseID());
-                json.put("msg", "Amount of this voucher isn't allow greater or equal than 50% price of course with id "+ course.getCourseID());
+                log.error("Amount of this voucher isn't allow greater or equal than 50% price "+"("+coursePrice+")"+" of course with id "+ course.getCourseID());
+                json.put("msg", "Amount of this voucher isn't allow greater or equal than 50% price "+"("+coursePrice+")"+" of course with id "+ course.getCourseID());
                 return json;
             }
             voucher.setAmount(voucherDTO.getAmount());
