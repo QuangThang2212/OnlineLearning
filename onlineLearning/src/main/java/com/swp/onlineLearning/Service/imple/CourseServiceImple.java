@@ -151,6 +151,7 @@ public class CourseServiceImple implements CourseService {
             return json;
         }
         Course course = new Course();
+        Course courseCheck;
 
         if (courseDTO.getCourseID() != null) {
             course = courseRepo.findByCourseID(courseDTO.getCourseID());
@@ -160,12 +161,19 @@ public class CourseServiceImple implements CourseService {
                 return json;
             }
             if (course.isStatus()) {
-                log.error("This course with name " + course.getCourseName() + " is duplicate with name of other course on system");
-                json.put("msg", "This course with name " + course.getCourseName() + " is duplicate with name of other course on system \n\n please enter new name");
+                log.error("This course were inactive, not allow update");
+                json.put("msg", "This course were inactive, not allow update");
                 return json;
             }
+            courseCheck = courseRepo.findByCourseNameAndID(courseDTO.getCourseName(), courseDTO.getCourseID());
         } else {
+            courseCheck = courseRepo.findByCourseName(courseDTO.getCourseName());
             course.setCreateDate(LocalDateTime.now());
+        }
+        if(courseCheck!=null){
+            log.error("This course with name " + course.getCourseName() + " is duplicate with name of other course on system");
+            json.put("msg", "This course with name " + course.getCourseName() + " is duplicate with name of other course on system \n\n please enter new name");
+            return json;
         }
         course.setCourseType(courseType);
         course.setExpertID(account);

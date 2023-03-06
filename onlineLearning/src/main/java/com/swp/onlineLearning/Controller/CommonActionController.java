@@ -65,23 +65,6 @@ public class CommonActionController {
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
     }
-    @GetMapping("/course/get")
-    public ResponseEntity<HashMap<String, Object>> findAllCourse(@RequestParam("page") int page, @RequestParam("limit") int limit, Principal principal){
-        String authority;
-        if(principal == null){
-            authority = roleGuest;
-        }else{
-            authority = principal.getName();
-        }
-        HashMap<String, Object> json = courseService.findAll(page, limit, authority);
-
-        String type = json.get("type").toString();
-        if(type.equals("true")){
-            return new ResponseEntity<>(json, HttpStatus.OK);
-        }else{
-            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
-        }
-    }
     @GetMapping("/course")
     public ResponseEntity<HashMap<String, Object>> CourseDetail(@RequestParam("id") Integer id, Principal principal){
         String authority;

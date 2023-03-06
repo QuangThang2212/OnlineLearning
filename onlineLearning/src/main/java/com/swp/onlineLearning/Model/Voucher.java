@@ -2,6 +2,8 @@ package com.swp.onlineLearning.Model;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,11 +22,11 @@ public class Voucher implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int voucherID;
-    @Column(nullable = false, length = 70)
-    @Length(min = 10, max = 70)
+    @Column(nullable = false,unique = true, length = 70)
+    @Length(min = 5, max = 50)
     private String name;
     @Column(nullable = false, length = 250)
-    @Length(min = 40, max = 240, message = "Description length must in range from 40 to 240")
+    @Length(min = 20, max = 100, message = "Description length must in range from 20 to 100")
     private String description;
 
     @Range(min = 0)
@@ -42,12 +44,15 @@ public class Voucher implements Serializable {
     @NotNull
     @Column(nullable = false)
     private float duration;
-    @OneToMany(mappedBy = "voucher", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "voucher", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Payment> payments;
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JsonIgnore
     @JoinColumn(name = "CourseID")
     private Course course;
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JsonIgnore
     @JoinColumn(name = "CourseTypeID")
     private CourseType courseType;
 }

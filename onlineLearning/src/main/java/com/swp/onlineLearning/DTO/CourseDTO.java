@@ -18,7 +18,7 @@ import java.util.List;
 @AllArgsConstructor
 public class CourseDTO {
     private Integer courseID;
-    @Length(min = 5, max = 200, message = "Name length must in range from 5 to 200")
+    @Length(min = 5, max = 100, message = "Name length must in range from 5 to 100")
     @Pattern(regexp = "^[a-zA-Z0-9 ]+$", message = "Type name isn't in the right format, only allow character and number")
     private String courseName;
     @Length(min = 200, message = "Description length must greater than 200")

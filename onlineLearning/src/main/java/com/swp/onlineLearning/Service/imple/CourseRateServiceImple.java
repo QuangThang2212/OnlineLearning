@@ -1,7 +1,6 @@
 package com.swp.onlineLearning.Service.imple;
 
 import com.swp.onlineLearning.DTO.CourseRateDTO;
-import com.swp.onlineLearning.DTO.UserDTO;
 import com.swp.onlineLearning.Model.Account;
 import com.swp.onlineLearning.Model.Course;
 import com.swp.onlineLearning.Model.CourseRate;
