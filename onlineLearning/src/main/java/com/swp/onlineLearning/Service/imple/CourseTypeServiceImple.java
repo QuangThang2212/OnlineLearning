@@ -73,8 +73,8 @@ public class CourseTypeServiceImple implements CourseTypeService {
             json.put("msg", "Course type with id "+courseTypeDTO.getCourseTypeID()+" isn't found in system");
             return json;
         }
-        CourseType courseTypeCheck = courseTypeRepo.findByCourseTypeName(courseTypeDTO.getCourseTypeName());
-        if(courseTypeCheck != null ){
+        CourseType courseTypeCheck = courseTypeRepo.findByCourseTypeNameAndID(courseTypeDTO.getCourseTypeName(),courseTypeDTO.getCourseTypeID());
+        if(courseTypeCheck != null){
             log.error(courseTypeDTO.getCourseTypeName()+" name had already exist in system, can't update");
             json.put("msg", courseTypeDTO.getCourseTypeName()+" name had already exist in system, can't update");
             return json;

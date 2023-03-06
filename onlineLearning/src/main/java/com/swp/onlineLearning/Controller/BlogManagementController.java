@@ -29,8 +29,7 @@ public class BlogManagementController {
         StringBuilder stringBuilder = new StringBuilder();
         if (result.hasErrors()) {
             for (FieldError error : result.getFieldErrors()) {
-                stringBuilder.append(error.getDefaultMessage()) ;
-                stringBuilder.append("\n") ;
+                stringBuilder.append(error.getDefaultMessage()+"\n") ;
             }
             json.put("msg",stringBuilder.toString());
             return new ResponseEntity<>(json,HttpStatus.BAD_REQUEST);
@@ -51,8 +50,7 @@ public class BlogManagementController {
         StringBuilder stringBuilder = new StringBuilder();
         if (result.hasErrors()) {
             for (FieldError error : result.getFieldErrors()) {
-                stringBuilder.append(error.getDefaultMessage()) ;
-                stringBuilder.append("\n") ;
+                stringBuilder.append(error.getDefaultMessage()).append("\n");
             }
             json.put("msg",stringBuilder.toString());
             return new ResponseEntity<>(json,HttpStatus.BAD_REQUEST);

@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.BindingResult;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
@@ -59,8 +58,6 @@ public class CourseServiceImple implements CourseService {
     private String roleAdmin;
     @Value("${role.user}")
     private String roleUser;
-    @Value("${quiz.pass.condition}")
-    private float passCondition;
 
     private List<CourseDTO> getListCourseDTO(List<Course> courses, boolean allowAccess){
         List<CourseDTO> courseDTOS = new ArrayList<>();
@@ -154,6 +151,7 @@ public class CourseServiceImple implements CourseService {
             return json;
         }
         Course course = new Course();
+        Course courseCheck;
 
         if (courseDTO.getCourseID() != null) {
             course = courseRepo.findByCourseID(courseDTO.getCourseID());
@@ -163,12 +161,19 @@ public class CourseServiceImple implements CourseService {
                 return json;
             }
             if (course.isStatus()) {
-                log.error("This course with name " + course.getCourseName() + " is duplicate with name of other course on system");
-                json.put("msg", "This course with name " + course.getCourseName() + " is duplicate with name of other course on system \n\n please enter new name");
+                log.error("This course were inactive, not allow update");
+                json.put("msg", "This course were inactive, not allow update");
                 return json;
             }
+            courseCheck = courseRepo.findByCourseNameAndID(courseDTO.getCourseName(), courseDTO.getCourseID());
         } else {
+            courseCheck = courseRepo.findByCourseName(courseDTO.getCourseName());
             course.setCreateDate(LocalDateTime.now());
+        }
+        if(courseCheck!=null){
+            log.error("This course with name " + course.getCourseName() + " is duplicate with name of other course on system");
+            json.put("msg", "This course with name " + course.getCourseName() + " is duplicate with name of other course on system \n\n please enter new name");
+            return json;
         }
         course.setCourseType(courseType);
         course.setExpertID(account);
@@ -276,6 +281,8 @@ public class CourseServiceImple implements CourseService {
         int packCount = 1;
         int lessCount;
         int quizCount=0;
+        String correctAnswer;
+        String anr;
         for (LessonPackageDTO in : input) {
             if (in.getPackageID() == null) {
                 fkPackage = new LessonPackage();
@@ -402,12 +409,21 @@ public class CourseServiceImple implements CourseService {
 
                         saveQuestion.add(question);
                         deleteAnswer.addAll(question.getAnswers());
+                        anr="";
                         for (String ans : quesDTO.getAnswers()) {
+                            if(ans.equals(anr)){
+                                continue;
+                            }
                             answer = new Answer();
                             answer.setQuestion(question);
                             answer.setAnswerContent(ans.trim());
-
+                            correctAnswer = quesDTO.getAnswers().get(quesDTO.getCorrectAnswer()).trim();
+                            if(ans.trim().equals(correctAnswer)){
+                                answer.setRightAnswer(true);
+                            }
                             saveAnswer.add(answer);
+
+                            anr = ans;
                         }
                     }
                 }
@@ -536,9 +552,34 @@ public class CourseServiceImple implements CourseService {
         List<Integer> listOfCourseId = listOfCourseDTO.getCourseID();
         Course course;
         List<Course> courses = new ArrayList<>();
+        StringBuilder stringBuilder = new StringBuilder();
         boolean status = listOfCourseDTO.isStatus();
+
+        List<LessonPackage> lessonPackages;
+        List<Lesson> lessonLis;
+        boolean lessonCheck = false;
         for (int id : listOfCourseId) {
             course = courseRepo.findByCourseID(id);
+            if(status){
+                lessonPackages = course.getLessonPackages();
+                if(lessonPackages.size()<2){
+                    log.error("Course with id: "+course.getCourseID()+" have only "+lessonPackages.size()+" topic, not allow public");
+                    stringBuilder.append("Course with id: ").append(course.getCourseID()).append(" have only ").append(lessonPackages.size()).append(" topic, not allow public \n");
+                    continue;
+                }
+                for(LessonPackage lessonPackage : lessonPackages){
+                    lessonLis = lessonPackage.getLessons();
+                    if(lessonLis.size()<2){
+                        log.error("Topic with id: "+lessonPackage.getPackageID()+" have only "+lessonLis.size()+" lesson, not allow public");
+                        stringBuilder.append("Topic with id: ").append(lessonPackage.getPackageID()).append(" have only ").append(lessonLis.size()).append(" lesson, not allow public \n");
+                        lessonCheck = true;
+                        break;
+                    }
+                }
+                if(lessonCheck){
+                    continue;
+                }
+            }
             course.setStatus(status);
 
             courses.add(course);
@@ -550,8 +591,12 @@ public class CourseServiceImple implements CourseService {
             json.put("msg", "Update status for list of course fail, view log ");
             return json;
         }
-        log.error("Update status for list of course successfully");
-        json.put("msg", "Update status for list of course successfully");
+        if(stringBuilder.toString().isEmpty()){
+            log.error("Update status for list of course successfully");
+            json.put("msg", "Update status for list of course successfully");
+        }else{
+            json.put("msg", stringBuilder.toString());
+        }
         json.put("type", true);
         return json;
     }
@@ -707,7 +752,11 @@ public class CourseServiceImple implements CourseService {
             json.put("msg", "Course with id " + id + " isn't exist in system");
             return json;
         }
-
+        if(!course.isStatus()){
+            log.error("Course with id " + id + " not allow access");
+            json.put("msg", "Course with id " + id + " not allow access");
+            return json;
+        }
         boolean enrolled = false;
         if (!authority.equals(roleGuest)) {
             Account account = accountRepo.findByGmail(authority);
@@ -752,6 +801,7 @@ public class CourseServiceImple implements CourseService {
 
             lessonPackageDTOS.add(lessonPackageDTO);
         }
+
         json.put("enrolled", enrolled);
         json.put("course", courseDTO);
         json.put("lessonPackages", lessonPackageDTOS);

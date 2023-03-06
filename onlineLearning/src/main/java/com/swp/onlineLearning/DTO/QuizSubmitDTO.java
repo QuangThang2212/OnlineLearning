@@ -5,12 +5,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class QuizResultDTO {
-    private int numberOfCorrectAnswer;
-    private float result;
+public class QuizSubmitDTO {
+    private Integer lessonID;
     private LocalDateTime enrollTime;
-    private boolean quizStatus;
+    private LocalDateTime finishTime;
+    private List<QuestionDTO> quiz;
 }

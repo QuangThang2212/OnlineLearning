@@ -23,20 +23,19 @@ public class CourseTypeController {
     @Autowired
     private CourseTypeService courseTypeService;
     @GetMapping()
-    public ResponseEntity<HashMap<String, Object>> getAllCourseType() throws Exception {
+    public ResponseEntity<HashMap<String, Object>> getAllCourseType() {
         HashMap<String, Object> json = courseTypeService.findAll();
         return new ResponseEntity<>(json, HttpStatus.OK);
     }
     @PostMapping("/create")
     public ResponseEntity<HashMap<String, Object>> createCourseType(@Valid @RequestBody CourseTypeDTO courseTypeDTO, BindingResult result) {
         HashMap<String, Object> json = new HashMap<>();
-        StringBuffer stringBuffer = new StringBuffer();
+        StringBuilder stringBuilder = new StringBuilder();
         if (result.hasErrors()) {
             for (FieldError error : result.getFieldErrors()) {
-                stringBuffer.append(error.getDefaultMessage()) ;
-                stringBuffer.append("\n") ;
+                stringBuilder.append(error.getDefaultMessage()).append("\n");
             }
-            json.put("msg",stringBuffer.toString());
+            json.put("msg",stringBuilder.toString());
             return new ResponseEntity<>(json,HttpStatus.BAD_REQUEST);
         }
         json = courseTypeService.save(courseTypeDTO);
@@ -49,13 +48,12 @@ public class CourseTypeController {
         }
     }
     @PostMapping("/update/id={id}")
-    public ResponseEntity<HashMap<String, Object>> updateCourseType(@Valid @RequestBody CourseTypeDTO courseTypeDTO, BindingResult result, @PathVariable("id") int id) throws Exception {
+    public ResponseEntity<HashMap<String, Object>> updateCourseType(@Valid @RequestBody CourseTypeDTO courseTypeDTO, BindingResult result, @PathVariable("id") int id) {
         HashMap<String, Object> json = new HashMap<>();
         StringBuilder stringBuilder = new StringBuilder();
         if (result.hasErrors()) {
             for (FieldError error : result.getFieldErrors()) {
-                stringBuilder.append(error.getDefaultMessage()) ;
-                stringBuilder.append("\n") ;
+                stringBuilder.append(error.getDefaultMessage()).append("\n");
             }
             json.put("msg",stringBuilder.toString());
             return new ResponseEntity<>(json,HttpStatus.BAD_REQUEST);

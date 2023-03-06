@@ -13,8 +13,11 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.HashMap;
 
 @RestController
@@ -54,8 +57,17 @@ public class UserAccountController {
         return new ResponseEntity<>(json, HttpStatus.OK);
     }
     @PostMapping("/register")
-    public ResponseEntity<HashMap<String, Object>> register(@RequestBody UserDTO userDTO){
-        HashMap<String, Object> json = accountService.save(userDTO);
+    public ResponseEntity<HashMap<String, Object>> register(@Valid @RequestBody UserDTO userDTO, BindingResult result){
+        HashMap<String, Object> json = new HashMap<>();
+        StringBuilder stringBuilder = new StringBuilder();
+        if (result.hasErrors()) {
+            for (FieldError error : result.getFieldErrors()) {
+                stringBuilder.append(error.getDefaultMessage()).append("\n");
+            }
+            json.put("msg",stringBuilder.toString());
+            return new ResponseEntity<>(json,HttpStatus.BAD_REQUEST);
+        }
+        json = accountService.save(userDTO);
 
         String type = json.get("type").toString();
         if(type.equals("true")){

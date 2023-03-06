@@ -9,12 +9,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 @Service
 @Slf4j
+@Transactional
 public class LessonServiceImple implements LessonService {
     @Autowired
     private CourseRepo courseRepo;
@@ -36,6 +39,10 @@ public class LessonServiceImple implements LessonService {
     private String typeQuiz;
     @Value("${lessonType.listening}")
     private String typeListening;
+    @Value("${role.user}")
+    private String roleUser;
+    @Value("${quiz.pass.condition}")
+    private float passCondition;
 
     @Override
     public HashMap<String, Object> getLessonForLearning(Integer courseID, Integer lessonID, String gmail) {
@@ -47,17 +54,17 @@ public class LessonServiceImple implements LessonService {
             json.put("msg", "Invalid input courseID and lessonID");
             return json;
         }
-        if (gmail == null) {
-            log.error("Invalid gmail with null value");
-            json.put("msg", "Invalid gmail value");
-            return json;
-        }
         Account account = accountRepo.findByGmail(gmail);
 
         Course course = courseRepo.findByCourseID(courseID);
         if (course == null) {
             log.error("Course with id: " + courseID + " isn't found in system");
             json.put("msg", "Course with id: " + courseID + " isn't found in system");
+            return json;
+        }
+        if(!course.isStatus()){
+            log.error("Course with id " + courseID + " not allow access");
+            json.put("msg", "Course with id " + courseID + " not allow access");
             return json;
         }
         Lesson lesson = lessonRepo.findByLessonID(lessonID);
@@ -71,6 +78,8 @@ public class LessonServiceImple implements LessonService {
         LessonPackageDTO lessonPackageDTO;
         LessonDTO lessonDTO;
         List<LessonDTO> lessonDTOS;
+        QuizResult quizResult;
+        QuizResultDTO quizResultDTO;
         for (LessonPackage lessonPackage : course.getLessonPackages()) {
             lessonPackageDTO = new LessonPackageDTO();
             lessonPackageDTO.setPackageID(lessonPackage.getPackageID());
@@ -83,7 +92,14 @@ public class LessonServiceImple implements LessonService {
                 lessonDTO.setLessonID(lessonShow.getLessonID());
                 lessonDTO.setTime(lessonShow.getTime());
                 lessonDTO.setType(lessonShow.getLessonType().getName());
-
+                if (lessonShow.getLessonType().getName().equals(typeQuiz)) {
+                    quizResult = quizResultRepo.findByAccountAndLesson(account, lessonShow);
+                    if (quizResult != null) {
+                        quizResultDTO = new QuizResultDTO();
+                        quizResultDTO.setQuizStatus(quizResult.isStatus());
+                        lessonDTO.setQuizResultDTO(quizResultDTO);
+                    }
+                }
                 lessonDTOS.add(lessonDTO);
             }
             lessonPackageDTO.setNumLesson(lessonDTOS);
@@ -91,6 +107,18 @@ public class LessonServiceImple implements LessonService {
             lessonPakages.add(lessonPackageDTO);
         }
         CourseRate courseRate = courseRateRepo.findByCourseAndAccount(course, account);
+        if((courseRate.getLesson().getLessonPackage().getPackageID()==lesson.getLessonPackage().getPackageID()
+                && courseRate.getLesson().getLessonLocation()<lesson.getLessonLocation())
+                || courseRate.getLesson().getLessonPackage().getPackageLocation()<lesson.getLessonPackage().getPackageLocation()){
+            courseRate.setLesson(lesson);
+            try{
+                courseRate = courseRateRepo.saveAndFlush(courseRate);
+            }catch(Exception e){
+                log.error("Update learning process fail \n" +e.getMessage());
+                json.put("msg", "Update learning process fail");
+                return json;
+            }
+        }
         int currentLearningLesson = courseRate.getLesson().getLessonLocation();
         int currentLearningPackage = courseRate.getLesson().getLessonPackage().getPackageLocation();
 
@@ -98,6 +126,7 @@ public class LessonServiceImple implements LessonService {
         lessonDTO.setLessonID(lesson.getLessonID());
         lessonDTO.setTitle(lesson.getName());
         lessonDTO.setDescription(lesson.getDescription());
+        lessonDTO.setType(lesson.getLessonType().getName());
         lessonDTO.setTime(lesson.getTime());
         lessonDTO.setType(lesson.getLessonType().getName());
         lessonDTO.setLink(lesson.getLink());
@@ -106,11 +135,12 @@ public class LessonServiceImple implements LessonService {
         List<String> answers;
         List<QuestionDTO> questionDTOS;
         if (lesson.getLessonType().getName().equals(typeQuiz)) {
-            QuizResult quizResult = quizResultRepo.findByAccountAndLesson(account, lesson);
+            quizResult = quizResultRepo.findByAccountAndLesson(account, lesson);
             if(quizResult!=null){
-                QuizResultDTO quizResultDTO = new QuizResultDTO();
+                quizResultDTO = new QuizResultDTO();
                 quizResultDTO.setQuizStatus(quizResult.isStatus());
                 quizResultDTO.setResult(quizResult.getResult());
+                quizResultDTO.setNumberOfCorrectAnswer(quizResult.getNumberOfCorrectAnswer());
                 quizResultDTO.setEnrollTime(quizResult.getEnrollTime());
                 lessonDTO.setQuizResultDTO(quizResultDTO);
             }
@@ -162,9 +192,87 @@ public class LessonServiceImple implements LessonService {
         json.put("lessonPakages",lessonPakages);
         json.put("currentLearningLesson", currentLearningLesson);
         json.put("currentLearningPackage", currentLearningPackage);
-        json.put("lesson",lesson);
+        json.put("lesson",lessonDTO);
         json.put("type", true);
         log.info("Get lesson with id "+lessonID);
+        return json;
+    }
+
+    @Override
+    public HashMap<String, Object> calSubmitQuiz(QuizSubmitDTO submitDTO, String gmail) {
+        HashMap<String, Object> json = new HashMap<>();
+        json.put("type", false);
+        json.put("courseFinish", false);
+
+        Lesson lesson = lessonRepo.findByLessonID(submitDTO.getLessonID());
+        if(lesson==null || !lesson.getLessonType().getName().equals(typeQuiz)){
+            log.error("Invalid lessonID");
+            return json;
+        }
+        Account account = accountRepo.findByGmail(gmail);
+        if(!account.getRoleUser().getName().equals(roleUser)){
+            log.error("Invalid user role");
+            return json;
+        }
+
+        List<Question> questions = lesson.getQuestions();
+        String answer = null;
+        int countResult=0;
+        for(Question question : questions){
+            for(Answer answerCheck : question.getAnswers()){
+                if(answerCheck.isRightAnswer()){
+                    answer=answerCheck.getAnswerContent();
+                }
+            }
+            for(QuestionDTO questionDTO : submitDTO.getQuiz()){
+                if(questionDTO.getQuestionID() == question.getQuestionID() && questionDTO.getAnswer().equals(answer)){
+                    countResult++;
+                }
+            }
+        }
+        int result = Math.round(((float) countResult/questions.size())*100);
+        boolean passed = result > passCondition;
+
+        QuizResult quizResult = quizResultRepo.findByAccountAndLesson(account, lesson);
+        if(quizResult==null){
+            quizResult = new QuizResult();
+            quizResult.setQuizResultID(LocalDateTime.now().toString());
+            quizResult.setAccount(account);
+            quizResult.setLesson(lesson);
+        }
+        quizResult.setResult(result);
+        quizResult.setEnrollTime(submitDTO.getEnrollTime());
+        quizResult.setFinishTime(submitDTO.getFinishTime());
+        quizResult.setStatus(passed);
+        quizResult.setNumberOfCorrectAnswer(countResult);
+
+        try {
+            quizResultRepo.save(quizResult);
+        }catch (Exception e){
+            log.error("Storage result for user fail \n"+e.getMessage());
+            json.put("msg", "Storage result for user fail");
+            return json;
+        }
+
+        Course course = lesson.getLessonPackage().getCourse();
+        List<QuizResult> quizResults = quizResultRepo.findAllPassedQuizOfUser(account.getAccountID(), course.getCourseID());
+        CourseRate courseRate = courseRateRepo.findByCourseAndAccount(course, account);
+        if(quizResults.size()==course.getNumberOfQuiz() && courseRate != null){
+            courseRate.setStatus(true);
+            try{
+                courseRateRepo.save(courseRate);
+            }catch (Exception e){
+                log.error("Update course learning progress fail \n"+e.getMessage());
+                json.put("msg", "Update course learning progress fail");
+                return json;
+            }
+            json.put("courseFinish", true);
+        }
+
+        json.put("result", passed);
+        json.put("totalCorrectAnswer", countResult);
+        json.put("percentCal", result);
+        json.put("type", true);
         return json;
     }
 }
