@@ -22,11 +22,9 @@ public class VoucherDTO {
     private double amount;
     private boolean status;
     @NotNull(message = "Apply day isn't allow null value")
-    @NotBlank(message = "Apply day isn't allow empty")
     @Range(min = 0, message = "Apply day must greater than 0")
     private float startApply;
     @NotNull(message = "Duration of voucher isn't allow null value")
-    @NotBlank(message = "Duration of voucher isn't allow empty")
     @Range(min = 0, message = "Duration of voucher must greater than 0")
     private float duration;
     @NotNull
