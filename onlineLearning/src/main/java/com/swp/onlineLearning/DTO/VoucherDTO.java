@@ -34,4 +34,6 @@ public class VoucherDTO {
     private String type;
     private Integer courseID;
     private Integer courseTypeID;
+    private CourseDTO courseDTO;
+    private CourseTypeDTO courseTypeDTO;
 }

@@ -1,6 +1,8 @@
 package com.swp.onlineLearning.Service.imple;
 
 import com.swp.onlineLearning.DTO.ChangeStatusVoucherDTO;
+import com.swp.onlineLearning.DTO.CourseDTO;
+import com.swp.onlineLearning.DTO.CourseTypeDTO;
 import com.swp.onlineLearning.DTO.VoucherDTO;
 import com.swp.onlineLearning.Model.Course;
 import com.swp.onlineLearning.Model.CourseType;
@@ -245,12 +247,21 @@ public class VoucherServiceImple implements VoucherService {
         voucherDTO.setStartApply(voucher.getStartApply());
         voucherDTO.setDescription(voucher.getDescription());
 
-        if(voucher.getCourseType()!=null){
+        CourseType courseType = voucher.getCourseType();
+        Course course = voucher.getCourse();
+        if(courseType!=null){
             voucherDTO.setType(voucherTypeCourse);
-            voucherDTO.setCourseTypeID(voucher.getCourseType().getCourseTypeID());
-        }else if(voucher.getCourse()!=null){
+            CourseTypeDTO courseTypeDTO = new CourseTypeDTO();
+            courseTypeDTO.setCourseTypeName(courseType.getCourseTypeName());
+            courseTypeDTO.setCourseTypeID(courseType.getCourseTypeID());
+            voucherDTO.setCourseTypeDTO(courseTypeDTO);
+        }else if(course!=null){
             voucherDTO.setType(voucherCourse);
-            voucherDTO.setCourseID(voucher.getCourse().getCourseID());
+            CourseDTO courseDTO = new CourseDTO();
+            courseDTO.setImage(course.getImage());
+            courseDTO.setCourseName(course.getCourseName());
+            courseDTO.setCourseID(course.getCourseID());
+            voucherDTO.setCourseDTO(courseDTO);
         }else{
             log.error("Invalid voucher type");
             json.put("msg", "Invalid voucher type");
