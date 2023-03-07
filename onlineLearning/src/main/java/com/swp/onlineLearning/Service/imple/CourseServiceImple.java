@@ -58,8 +58,10 @@ public class CourseServiceImple implements CourseService {
     private String roleAdmin;
     @Value("${role.user}")
     private String roleUser;
+    @Value("${voucher.price.apply.limit}")
+    private double priceLimit;
 
-    private List<CourseDTO> getListCourseDTO(List<Course> courses, boolean allowAccess){
+    private List<CourseDTO> getListCourseDTO(List<Course> courses, boolean allowAccess) {
         List<CourseDTO> courseDTOS = new ArrayList<>();
         for (Course a : courses) {
             CourseDTO courseDTO = new CourseDTO();
@@ -156,8 +158,8 @@ public class CourseServiceImple implements CourseService {
         if (courseDTO.getCourseID() != null) {
             course = courseRepo.findByCourseID(courseDTO.getCourseID());
             if (course == null) {
-                log.error("Course with id: "+courseDTO.getCourseID()+" isn't found in system");
-                json.put("msg", "Course with id: "+courseDTO.getCourseID()+" isn't found in system");
+                log.error("Course with id: " + courseDTO.getCourseID() + " isn't found in system");
+                json.put("msg", "Course with id: " + courseDTO.getCourseID() + " isn't found in system");
                 return json;
             }
             if (course.isStatus()) {
@@ -170,7 +172,7 @@ public class CourseServiceImple implements CourseService {
             courseCheck = courseRepo.findByCourseName(courseDTO.getCourseName());
             course.setCreateDate(LocalDateTime.now());
         }
-        if(courseCheck!=null){
+        if (courseCheck != null) {
             log.error("This course with name " + course.getCourseName() + " is duplicate with name of other course on system");
             json.put("msg", "This course with name " + course.getCourseName() + " is duplicate with name of other course on system \n\n please enter new name");
             return json;
@@ -196,6 +198,11 @@ public class CourseServiceImple implements CourseService {
         json.put("msg", "Save course with name " + course.getCourseName() + " successfully");
         json.replace("type", true);
         return json;
+    }
+
+    @Override
+    public HashMap<String, Object> delete(Integer id) {
+        return null;
     }
 
     @Override
@@ -280,7 +287,7 @@ public class CourseServiceImple implements CourseService {
         HashMap<String, Object> jsonCheck;
         int packCount = 1;
         int lessCount;
-        int quizCount=0;
+        int quizCount = 0;
         String correctAnswer;
         String anr;
         for (LessonPackageDTO in : input) {
@@ -409,16 +416,16 @@ public class CourseServiceImple implements CourseService {
 
                         saveQuestion.add(question);
                         deleteAnswer.addAll(question.getAnswers());
-                        anr="";
+                        anr = "";
                         for (String ans : quesDTO.getAnswers()) {
-                            if(ans.equals(anr)){
+                            if (ans.equals(anr)) {
                                 continue;
                             }
                             answer = new Answer();
                             answer.setQuestion(question);
                             answer.setAnswerContent(ans.trim());
                             correctAnswer = quesDTO.getAnswers().get(quesDTO.getCorrectAnswer()).trim();
-                            if(ans.trim().equals(correctAnswer)){
+                            if (ans.trim().equals(correctAnswer)) {
                                 answer.setRightAnswer(true);
                             }
                             saveAnswer.add(answer);
@@ -460,18 +467,22 @@ public class CourseServiceImple implements CourseService {
                     json.put("msg", "Lesson with id " + lessonID + " isn't exist in system");
                     return json;
                 }
-                if (typeQuiz.equals(lesson.getLessonType().getName()) && lesson.getQuizResults().isEmpty()) {
-                    quizCount--;
-                    jsonCheck = questionService.deleteQuestionObjectAndAnswer(lesson.getQuestions());
-                    if (jsonCheck.get("type").equals("false")) {
-                        log.error(jsonCheck.get("msg").toString());
-                        json.put("msg", jsonCheck.get("msg").toString());
-                        return json;
+                if (typeQuiz.equals(lesson.getLessonType().getName())) {
+                    if (!lesson.getQuizResults().isEmpty()) {
+                        log.error("Lesson with id " + lesson.getLessonID() + " have user learning history, can't delete \n");
+                        msgDelete.append("Lesson with id ").append(lesson.getLessonID()).append(" have user learning history, can't delete \n");
+                        deleteStatus = false;
+                    } else {
+                        if(quizCount>0){
+                            quizCount--;
+                        }
+                        jsonCheck = questionService.deleteQuestionObjectAndAnswer(lesson.getQuestions());
+                        if (jsonCheck.get("type").equals("false")) {
+                            log.error(jsonCheck.get("msg").toString());
+                            json.put("msg", jsonCheck.get("msg").toString());
+                            return json;
+                        }
                     }
-                } else {
-                    log.error("Lesson with id " + lesson.getLessonID() + " have user learning history, can't delete \n");
-                    msgDelete.append("Lesson with id ").append(lesson.getLessonID()).append(" have user learning history, can't delete \n");
-                    deleteStatus = false;
                 }
                 if (typeListening.equals(lesson.getLessonType().getName()) && !lesson.getComments().isEmpty()) {
                     log.error("Lesson with id " + lesson.getLessonID() + " have user learning history, can't delete \n");
@@ -512,7 +523,9 @@ public class CourseServiceImple implements CourseService {
                     deleteLesson.addAll(fkPackage.getLessons());
                     for (Lesson lesson1 : fkPackage.getLessons()) {
                         if (typeQuiz.equals(lesson1.getLessonType().getName()) && lesson1.getQuizResults().isEmpty()) {
-                            quizCount--;
+                            if(quizCount>0){
+                                quizCount--;
+                            }
                             jsonCheck = questionService.deleteQuestionObjectAndAnswer(lesson1.getQuestions());
                             if (jsonCheck.get("type").equals("false")) {
                                 log.error(jsonCheck.get("msg").toString());
@@ -525,6 +538,7 @@ public class CourseServiceImple implements CourseService {
             }
         }
         course.setNumberOfQuiz(quizCount);
+        System.out.println(quizCount+" quiz count");
         try {
             if (!deleteLesson.isEmpty()) {
                 lessonRepo.deleteInBatch(deleteLesson);
@@ -560,23 +574,23 @@ public class CourseServiceImple implements CourseService {
         boolean lessonCheck = false;
         for (int id : listOfCourseId) {
             course = courseRepo.findByCourseID(id);
-            if(status){
+            if (status) {
                 lessonPackages = course.getLessonPackages();
-                if(lessonPackages.size()<2){
-                    log.error("Course with id: "+course.getCourseID()+" have only "+lessonPackages.size()+" topic, not allow public");
+                if (lessonPackages.size() < 2) {
+                    log.error("Course with id: " + course.getCourseID() + " have only " + lessonPackages.size() + " topic, not allow public");
                     stringBuilder.append("Course with id: ").append(course.getCourseID()).append(" have only ").append(lessonPackages.size()).append(" topic, not allow public \n");
                     continue;
                 }
-                for(LessonPackage lessonPackage : lessonPackages){
+                for (LessonPackage lessonPackage : lessonPackages) {
                     lessonLis = lessonPackage.getLessons();
-                    if(lessonLis.size()<2){
-                        log.error("Topic with id: "+lessonPackage.getPackageID()+" have only "+lessonLis.size()+" lesson, not allow public");
+                    if (lessonLis.size() < 2) {
+                        log.error("Topic with id: " + lessonPackage.getPackageID() + " have only " + lessonLis.size() + " lesson, not allow public");
                         stringBuilder.append("Topic with id: ").append(lessonPackage.getPackageID()).append(" have only ").append(lessonLis.size()).append(" lesson, not allow public \n");
                         lessonCheck = true;
                         break;
                     }
                 }
-                if(lessonCheck){
+                if (lessonCheck) {
                     continue;
                 }
             }
@@ -591,10 +605,10 @@ public class CourseServiceImple implements CourseService {
             json.put("msg", "Update status for list of course fail, view log ");
             return json;
         }
-        if(stringBuilder.toString().isEmpty()){
+        if (stringBuilder.toString().isEmpty()) {
             log.error("Update status for list of course successfully");
             json.put("msg", "Update status for list of course successfully");
-        }else{
+        } else {
             json.put("msg", stringBuilder.toString());
         }
         json.put("type", true);
@@ -742,6 +756,49 @@ public class CourseServiceImple implements CourseService {
     }
 
     @Override
+    public HashMap<String, Object> findAllPurchaseCourse(int page, int size, String search) {
+        HashMap<String, Object> json = new HashMap<>();
+        json.put("type", false);
+        if (page < 1 || size < 1) {
+            log.error("Invalid page " + page + " or size " + size);
+            json.put("msg", "Invalid page " + page + " or size " + size);
+            return json;
+        }
+        int totalNumber;
+        if (search != null) {
+            totalNumber = courseRepo.findAllPurchaseCourseByKeyWord(priceLimit, search, PageRequest.of(page - 1, size)).getTotalPages();
+        } else {
+            totalNumber = courseRepo.findAllPurchaseCourse(priceLimit, PageRequest.of(page - 1, size)).getTotalPages();
+        }
+        if (totalNumber == 0) {
+            log.error("0 Course founded");
+            json.put("msg", "0 Course founded for page");
+            return json;
+        } else if (page > totalNumber) {
+            log.error("invalid page " + page);
+            json.put("msg", "invalid page " + page);
+            return json;
+        }
+        Page<Course> courses;
+        if (search != null) {
+            courses = courseRepo.findAllPurchaseCourseByKeyWord(priceLimit, search, PageRequest.of(page - 1, size));
+        } else {
+            courses = courseRepo.findAllPurchaseCourse(priceLimit, PageRequest.of(page - 1, size));
+        }
+        if (courses.isEmpty()) {
+            log.error("0 Course founded for page " + page);
+            json.put("msg", "0 Course founded for page " + page);
+            return json;
+        }
+        List<CourseDTO> courseDTOS = getListCourseDTO(courses.stream().toList(), true);
+        json.put("courses", courseDTOS);
+        json.put("numPage", totalNumber);
+        json.put("type", true);
+
+        return json;
+    }
+
+    @Override
     public HashMap<String, Object> findCourseById(String authority, Integer id) {
         HashMap<String, Object> json = new HashMap<>();
         json.put("type", false);
@@ -752,7 +809,7 @@ public class CourseServiceImple implements CourseService {
             json.put("msg", "Course with id " + id + " isn't exist in system");
             return json;
         }
-        if(!course.isStatus()){
+        if (!course.isStatus()) {
             log.error("Course with id " + id + " not allow access");
             json.put("msg", "Course with id " + id + " not allow access");
             return json;
@@ -831,19 +888,19 @@ public class CourseServiceImple implements CourseService {
         payment.setCourse(course);
         payment.setAccount(account);
         payment.setAmount(enrollInformationDTO.getPrice());
-        payment.setPaymentID(account.getAccountID()+course.getCourseID()+LocalDateTime.now().toString());
+        payment.setPaymentID(account.getAccountID() + course.getCourseID() + LocalDateTime.now().toString());
         payment.setPaymentAt(LocalDateTime.now());
 
         Voucher voucher;
-        if(enrollInformationDTO.getVoucherID()!=null){
+        if (enrollInformationDTO.getVoucherID() != null) {
             voucher = voucherRepo.findByVoucherID(enrollInformationDTO.getVoucherID());
             payment.setVoucher(voucher);
         }
-        try{
+        try {
             paymentRepo.save(payment);
-        }catch (Exception e){
-            log.error("Enroll course "+course.getCourseName()+" process fail \n" + e.getMessage());
-            json.put("msg", "Enroll course "+course.getCourseName()+" process fail");
+        } catch (Exception e) {
+            log.error("Enroll course " + course.getCourseName() + " process fail \n" + e.getMessage());
+            json.put("msg", "Enroll course " + course.getCourseName() + " process fail");
             return json;
         }
 
@@ -858,20 +915,20 @@ public class CourseServiceImple implements CourseService {
         courseRate.setLesson(course.getLessonPackages().get(0).getLessons().get(0));
         courseRate.setAccount(account);
         courseRate.setEnrollTime(LocalDateTime.now());
-        courseRate.setCourseRateID(account.getAccountID()+course.getCourseID()+LocalDateTime.now().toString());
+        courseRate.setCourseRateID(account.getAccountID() + course.getCourseID() + LocalDateTime.now().toString());
 
-        course.setNumberOfEnroll(course.getNumberOfEnroll()+1);
-        try{
+        course.setNumberOfEnroll(course.getNumberOfEnroll() + 1);
+        try {
             courseRateRepo.save(courseRate);
             courseRepo.save(course);
-        }catch (Exception e){
-            log.error("Enroll course "+course.getCourseName()+" process fail \n" + e.getMessage());
-            json.put("msg", "Enroll course "+course.getCourseName()+" process fail");
+        } catch (Exception e) {
+            log.error("Enroll course " + course.getCourseName() + " process fail \n" + e.getMessage());
+            json.put("msg", "Enroll course " + course.getCourseName() + " process fail");
             return json;
         }
 
-        log.info("Enroll course "+course.getCourseName()+" process successfully");
-        json.put("msg", "Enroll course "+course.getCourseName()+" process successfully, \nEnjoy your learning process");
+        log.info("Enroll course " + course.getCourseName() + " process successfully");
+        json.put("msg", "Enroll course " + course.getCourseName() + " process successfully, \nEnjoy your learning process");
         json.put("type", true);
         return json;
     }

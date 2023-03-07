@@ -16,6 +16,10 @@ public interface CourseRepo extends JpaRepository<Course, Integer> {
     @Query(nativeQuery = true, value = "SELECT * FROM course a where course_name=?1 and courseid != ?2")
     Course findByCourseNameAndID(String name, int course);
     Course findByCourseName(String name);
+    @Query(nativeQuery = true, value = "SELECT * FROM course a where price>=?1")
+    Page<Course> findAllPurchaseCourse(double price, Pageable pageable);
+    @Query(nativeQuery = true, value = "SELECT * FROM course a where price>=?1 and course_name like %?2%")
+    Page<Course> findAllPurchaseCourseByKeyWord(double price, String search, Pageable pageable);
     List<Course> findByCourseType(CourseType courseType);
     void delete(Course course);
     @Query(nativeQuery = true, value = "Select * From Course Order By number_of_enroll DESC LIMIT 8")

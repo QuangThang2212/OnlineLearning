@@ -8,6 +8,7 @@ import org.hibernate.validator.constraints.Range;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 @Data
 @NoArgsConstructor
@@ -15,6 +16,7 @@ import javax.validation.constraints.NotNull;
 public class VoucherDTO {
     private Integer voucherID;
     @Length(min = 5, max = 50, message = "Name length must in range from 5 to 50")
+    @Pattern(regexp = "^[a-zA-Z0-9 ]+$", message = "Name isn't in the right format, only allow character and number")
     private String name;
     @Length(min = 20, max = 100, message = "Description length must in range from 20 to 100")
     private String description;

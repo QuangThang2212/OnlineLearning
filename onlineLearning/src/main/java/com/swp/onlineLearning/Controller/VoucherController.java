@@ -1,5 +1,6 @@
 package com.swp.onlineLearning.Controller;
 
+import com.swp.onlineLearning.DTO.ChangeStatusVoucherDTO;
 import com.swp.onlineLearning.DTO.VoucherDTO;
 import com.swp.onlineLearning.Service.VoucherService;
 import lombok.RequiredArgsConstructor;
@@ -43,14 +44,35 @@ public class VoucherController {
     }
     @GetMapping("/sale_manager")
     public ResponseEntity<HashMap<String, Object>> getAllVoucher(@RequestParam("page")int page, @RequestParam("limit")int limit){
-//        HashMap<String, Object> json = voucherService.createVoucher(voucherDTO);
-//
-//        String type = json.get("type").toString();
-//        if(type.equals("true")){
-//            return new ResponseEntity<>(json, HttpStatus.OK);
-//        }else{
-//            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
-//        }
-        return null;
+        HashMap<String, Object> json = voucherService.getAllVoucher(page, limit);
+
+        String type = json.get("type").toString();
+        if(type.equals("true")){
+            return new ResponseEntity<>(json, HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
+    }
+    @PostMapping("change_status")
+    public ResponseEntity<HashMap<String, Object>> changeStatus(@RequestBody ChangeStatusVoucherDTO changeStatusVoucherDTO){
+        HashMap<String, Object> json = voucherService.changeVoucherStatus(changeStatusVoucherDTO);
+
+        String type = json.get("type").toString();
+        if(type.equals("true")){
+            return new ResponseEntity<>(json, HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
+    }
+    @GetMapping("/update")
+    public ResponseEntity<HashMap<String, Object>> getVoucherForUpdate(@RequestParam("id")Integer id){
+        HashMap<String, Object> json = voucherService.getVoucherForUpdate(id);
+
+        String type = json.get("type").toString();
+        if(type.equals("true")){
+            return new ResponseEntity<>(json, HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
     }
 }

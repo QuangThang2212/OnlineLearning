@@ -3,6 +3,8 @@ package com.swp.onlineLearning.Service.imple;
 import com.swp.onlineLearning.DTO.RoleDTO;
 import com.swp.onlineLearning.DTO.UserDTO;
 import com.swp.onlineLearning.Model.Account;
+import com.swp.onlineLearning.Model.Blog;
+import com.swp.onlineLearning.Model.CourseRate;
 import com.swp.onlineLearning.Model.RoleUser;
 import com.swp.onlineLearning.Repository.AccountRepo;
 import com.swp.onlineLearning.Repository.RoleRepo;
@@ -33,7 +35,7 @@ public class AccountServiceImple implements AccountService, UserDetailsService {
     @Autowired
     private RoleRepo roleRepo;
     @Value("${role.user}")
-    private String roleUserName;
+    private String roleUser;
     @Value("${role.courseExpert}")
     private String roleCourseExpert;
     @Autowired
@@ -131,10 +133,10 @@ public class AccountServiceImple implements AccountService, UserDetailsService {
         Account account = new Account();
         modelMapper.map(userDTO, account);
 
-        RoleUser role = roleRepo.findByName(roleUserName);
+        RoleUser role = roleRepo.findByName(roleUser);
         if(role==null){
-            log.error("Role "+roleUserName+" isn't exist");
-            json.put("msg", "Role "+roleUserName+" isn't exist");
+            log.error("Role "+roleUser+" isn't exist");
+            json.put("msg", "Role "+roleUser+" isn't exist");
             return json;
         }else{
             account.setRoleUser(role);
@@ -204,6 +206,12 @@ public class AccountServiceImple implements AccountService, UserDetailsService {
         if(account == null){
             log.error("Account with id="+roleDTO.getAccountID()+" not exist in the system");
             json.put("msg", "Account with id="+roleDTO.getAccountID()+" not exist in the system");
+            return json;
+        }
+        List<CourseRate> courseRate = account.getCourseRates();
+        if(!courseRate.isEmpty()){
+            log.error("Account with id="+roleDTO.getAccountID()+" had enrolled course on system, not allow change role to "+roleDTO.getName());
+            json.put("msg", "Account with id="+roleDTO.getAccountID()+" had enrolled course on system, not allow change role to "+roleDTO.getName());
             return json;
         }
 

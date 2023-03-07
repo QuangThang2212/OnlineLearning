@@ -37,6 +37,7 @@ public class AuthenticationFilter extends BasicAuthenticationFilter {
         final String token = request.getHeader("token");
 
         log.info("access token: " + token);
+        log.info("Context path: " + request.getRequestURI());
         if (token == null) {
             log.error("token unavailable");
             filterChain.doFilter(request, response);

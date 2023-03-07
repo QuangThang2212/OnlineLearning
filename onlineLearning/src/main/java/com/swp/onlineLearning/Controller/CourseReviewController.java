@@ -84,4 +84,16 @@ public class CourseReviewController {
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
     }
+    @GetMapping("/get_purchase_course")
+    public ResponseEntity<HashMap<String, Object>> getPurchaseCourse(@RequestParam("page") Integer page, @RequestParam("limit") Integer limit, @RequestParam("search") String search){
+        HashMap<String, Object> json = courseService.findAllPurchaseCourse(page,limit,search);
+
+        String type = json.get("type").toString();
+        if(type.equals("true")){
+            return new ResponseEntity<>(json, HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
+    }
+
 }

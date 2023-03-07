@@ -1,5 +1,6 @@
 package com.swp.onlineLearning.Service.imple;
 
+import com.swp.onlineLearning.DTO.ChangeStatusVoucherDTO;
 import com.swp.onlineLearning.DTO.VoucherDTO;
 import com.swp.onlineLearning.Model.Course;
 import com.swp.onlineLearning.Model.CourseType;
@@ -33,6 +34,8 @@ public class VoucherServiceImple implements VoucherService {
     private String voucherCourse;
     @Value("${voucher.type.typeCourse}")
     private String voucherTypeCourse;
+    @Value("${voucher.price.apply.limit}")
+    private double priceLimit;
     @Override
     public HashMap<String, Object> createVoucher(VoucherDTO voucherDTO) {
         HashMap<String, Object> json = new HashMap<>();
@@ -72,6 +75,11 @@ public class VoucherServiceImple implements VoucherService {
                 json.put("msg", "course with id "+voucherDTO.getCourseID()+" isn't exist in system");
                 return json;
             }
+            if(course.getPrice()<priceLimit){
+                log.error("course with id "+voucherDTO.getCourseID()+" have price 0");
+                json.put("msg", "course with id "+voucherDTO.getCourseID()+" have price 0");
+                return json;
+            }
             int coursePrice = Math.round((float)course.getPrice()/2);
             if(coursePrice<=voucherDTO.getAmount()){
                 log.error("Amount of this voucher isn't allow greater or equal than 50% price "+"("+coursePrice+")"+" of course with id "+ course.getCourseID());
@@ -88,14 +96,22 @@ public class VoucherServiceImple implements VoucherService {
                 json.put("msg", "course type with id "+voucherDTO.getCourseTypeID()+" isn't exist in system");
                 return json;
             }
-            int coursePrice;
+            double coursePrice=0;
             for(Course course : courseType.getCourses()){
-                coursePrice = Math.round((float) course.getPrice() / 2);
-                if (coursePrice <= voucherDTO.getAmount()) {
-                    log.error("Amount of this voucher isn't allow greater or equal than 50% price of course with id " + course.getCourseID());
-                    json.put("msg", "Amount of this voucher isn't allow greater or equal than 50% price of course with id " + course.getCourseID());
-                    return json;
+                if(coursePrice<course.getPrice()){
+                    coursePrice=course.getPrice();
                 }
+            }
+            if(coursePrice<priceLimit){
+                log.error("All course with type "+courseType.getCourseTypeName()+" isn't satisfied voucher base rule (course with largest price "+coursePrice+" < "+priceLimit+")");
+                json.put("msg", "All course with type "+courseType.getCourseTypeName()+" isn't satisfied voucher base rule (course with largest price "+coursePrice+" < "+priceLimit+")");
+                return json;
+            }
+            double coursePriceUpperLimit = Math.round((float) coursePrice / 2);
+            if (coursePriceUpperLimit <= voucherDTO.getAmount() ) {
+                log.error("Amount of this voucher isn't allow greater or equal than 50% price (" +coursePriceUpperLimit+")");
+                json.put("msg", "Amount of this voucher isn't allow greater or equal than 50% price of course with id (" +coursePriceUpperLimit+")");
+                return json;
             }
             voucher.setAmount(voucherDTO.getAmount());
             voucher.setCourseType(courseType);
@@ -149,7 +165,119 @@ public class VoucherServiceImple implements VoucherService {
             return json;
         }
 
-        List<VoucherDTO> voucherList = new ArrayList<>();
+        List<Voucher> voucherList = vouchers.stream().toList();
+        List<VoucherDTO> voucherDTOS = new ArrayList<>();
+        VoucherDTO voucherDTO;
+        for(Voucher voucher : voucherList){
+            voucherDTO = new VoucherDTO();
+            voucherDTO.setVoucherID(voucher.getVoucherID());
+            voucherDTO.setAmount(voucher.getAmount());
+            voucherDTO.setDuration(voucher.getDuration());
+            voucherDTO.setName(voucher.getName());
+            voucherDTO.setStartApply(voucher.getStartApply());
+            voucherDTO.setStatus(voucher.isStatus());
+
+            voucherDTOS.add(voucherDTO);
+        }
+        if(voucherDTOS.isEmpty()){
+            json.put("msg", "0 voucher found on system");
+        }else{
+            json.put("msg", "Get voucher for page "+page);
+        }
+        json.put("msg", "Save Voucher successfully");
+        json.put("type",true);
+        log.info("get voucher successfully");
+        return json;
+    }
+
+    @Override
+    public HashMap<String, Object> changeVoucherStatus(ChangeStatusVoucherDTO changeStatusVoucherDTO) {
+        HashMap<String, Object> json = new HashMap<>();
+        json.put("type", false);
+
+        if(changeStatusVoucherDTO==null || changeStatusVoucherDTO.getVoucherID()==null) {
+            log.error("Invalid voucher value");
+            json.put("msg", "Invalid voucher value");
+            return json;
+        }
+        Voucher voucher = voucherRepo.findByVoucherID(changeStatusVoucherDTO.getVoucherID());
+        if(voucher==null){
+            log.error("voucher with id "+changeStatusVoucherDTO.getVoucherID()+" isn't exist in system");
+            json.put("msg", "voucher with id "+changeStatusVoucherDTO.getVoucherID()+" isn't exist in system");
+            return json;
+        }
+        voucher.setStatus(changeStatusVoucherDTO.getStatus());
+
+        try{
+          voucherRepo.save(voucher);
+        }catch (Exception e){
+            log.error("voucher with id "+changeStatusVoucherDTO.getVoucherID()+" save fail \n"+e.getMessage());
+            json.put("msg", "voucher with id "+changeStatusVoucherDTO.getVoucherID()+" save fail ");
+            return json;
+        }
+        json.put("msg", "Change Status successfully");
+        json.put("type",true);
+        log.info("Change Status successfully");
+        return json;
+    }
+
+    @Override
+    public HashMap<String, Object> getVoucherForUpdate(Integer voucherID) {
+        HashMap<String, Object> json = new HashMap<>();
+        json.put("type", false);
+        if(voucherID==null){
+            log.error("Invalid voucher value");
+            json.put("msg", "Invalid voucher value");
+            return json;
+        }
+        Voucher voucher = voucherRepo.findByVoucherID(voucherID);
+        if(voucher==null){
+            log.error("voucher with id "+voucherID+" isn't exist in system");
+            json.put("msg", "voucher with id "+voucherID+" isn't exist in system");
+            return json;
+        }
+        VoucherDTO voucherDTO = new VoucherDTO();
+        voucherDTO.setVoucherID(voucher.getVoucherID());
+        voucherDTO.setAmount(voucher.getAmount());
+        voucherDTO.setDuration(voucher.getDuration());
+        voucherDTO.setName(voucher.getName());
+        voucherDTO.setStartApply(voucher.getStartApply());
+        voucherDTO.setDescription(voucher.getDescription());
+
+        if(voucher.getCourseType()!=null){
+            voucherDTO.setType(voucherTypeCourse);
+            voucherDTO.setCourseTypeID(voucher.getCourseType().getCourseTypeID());
+        }else if(voucher.getCourse()!=null){
+            voucherDTO.setType(voucherCourse);
+            voucherDTO.setCourseID(voucher.getCourse().getCourseID());
+        }else{
+            log.error("Invalid voucher type");
+            json.put("msg", "Invalid voucher type");
+            return json;
+        }
+
+        json.put("msg", "Get voucher successfully");
+        json.put("voucher", voucherDTO);
+        json.put("type",true);
+        log.info("Get voucher successfully");
+        return json;
+    }
+
+    @Override
+    public HashMap<String, Object> getVoucherForUser(Integer courseID) {
+        HashMap<String, Object> json = new HashMap<>();
+        json.put("type", false);
+        if(courseID==null){
+            log.error("Invalid course id value");
+            json.put("msg", "Invalid course id value");
+            return json;
+        }
+        Course course = courseRepo.findByCourseID(courseID);
+        if(course==null){
+            log.error("course with id "+courseID+" isn't exist in system");
+            json.put("msg", "course with id "+courseID+" isn't exist in system");
+            return json;
+        }
         return null;
     }
 }
