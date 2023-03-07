@@ -184,7 +184,8 @@ public class VoucherServiceImple implements VoucherService {
         }else{
             json.put("msg", "Get voucher for page "+page);
         }
-        json.put("msg", "Save Voucher successfully");
+        json.put("vouchers", voucherDTOS);
+        json.put("numPage",totalNumber);
         json.put("type",true);
         log.info("get voucher successfully");
         return json;
