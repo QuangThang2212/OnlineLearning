@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,6 +30,7 @@ public class CourseRateServiceImple implements CourseRateService {
     private CourseRepo courseRepo;
 
     @Override
+    @Transactional
     public HashMap<String, Object> createCourseRate(CourseRateDTO courseRateDTO, String authority) {
         HashMap<String, Object> json = new HashMap<>();
         json.put("type", false);
