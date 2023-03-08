@@ -18,7 +18,6 @@ import java.util.List;
 
 @Service
 @Slf4j
-@Transactional
 public class QuestionServiceImple implements QuestionService {
     @Autowired
     private QuestionRepo questionRepo;
@@ -26,6 +25,7 @@ public class QuestionServiceImple implements QuestionService {
     private AnswerRepo answerRepo;
 
     @Override
+    @Transactional
     public HashMap<String, Object> saveQuestionAndAnswer(QuestionDTO questionDTO, Lesson returnLesson) {
         HashMap<String, Object> json = new HashMap<>();
         json.put("type", false);
@@ -72,6 +72,7 @@ public class QuestionServiceImple implements QuestionService {
     }
 
     @Override
+    @Transactional
     public HashMap<String, Object> deleteQuestionAndAnswer(List<Integer> questionDelete) {
         HashMap<String, Object> json = new HashMap<>();
         json.put("type", false);
@@ -102,6 +103,7 @@ public class QuestionServiceImple implements QuestionService {
     }
 
     @Override
+    @Transactional
     public HashMap<String, Object> deleteQuestionObjectAndAnswer(List<Question> questionDelete) {
         HashMap<String, Object> json = new HashMap<>();
         json.put("type", false);

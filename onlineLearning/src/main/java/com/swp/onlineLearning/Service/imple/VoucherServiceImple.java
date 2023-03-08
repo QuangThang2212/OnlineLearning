@@ -20,6 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -45,6 +46,7 @@ public class VoucherServiceImple implements VoucherService {
     private double priceLimit;
 
     @Override
+    @Transactional
     public HashMap<String, Object> createVoucher(VoucherDTO voucherDTO) {
         HashMap<String, Object> json = new HashMap<>();
         json.put("type", false);
@@ -198,6 +200,7 @@ public class VoucherServiceImple implements VoucherService {
     }
 
     @Override
+    @Transactional
     public HashMap<String, Object> changeVoucherStatus(ChangeStatusVoucherDTO changeStatusVoucherDTO) {
         HashMap<String, Object> json = new HashMap<>();
         json.put("type", false);

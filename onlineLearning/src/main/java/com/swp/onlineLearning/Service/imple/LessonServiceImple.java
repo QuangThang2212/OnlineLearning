@@ -17,7 +17,6 @@ import java.util.List;
 
 @Service
 @Slf4j
-@Transactional
 public class LessonServiceImple implements LessonService {
     @Autowired
     private CourseRepo courseRepo;
@@ -199,6 +198,7 @@ public class LessonServiceImple implements LessonService {
     }
 
     @Override
+    @Transactional
     public HashMap<String, Object> calSubmitQuiz(QuizSubmitDTO submitDTO, String gmail) {
         HashMap<String, Object> json = new HashMap<>();
         json.put("type", false);

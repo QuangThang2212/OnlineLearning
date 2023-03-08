@@ -3,7 +3,6 @@ package com.swp.onlineLearning.Service.imple;
 import com.swp.onlineLearning.DTO.RoleDTO;
 import com.swp.onlineLearning.DTO.UserDTO;
 import com.swp.onlineLearning.Model.Account;
-import com.swp.onlineLearning.Model.Blog;
 import com.swp.onlineLearning.Model.CourseRate;
 import com.swp.onlineLearning.Model.RoleUser;
 import com.swp.onlineLearning.Repository.AccountRepo;
@@ -114,6 +113,7 @@ public class AccountServiceImple implements AccountService, UserDetailsService {
     }
 
     @Override
+    @Transactional
     public HashMap<String, Object> save(UserDTO userDTO){
         HashMap<String, Object> json = new HashMap<>();
         json.put("type",false);
@@ -188,6 +188,7 @@ public class AccountServiceImple implements AccountService, UserDetailsService {
     }
 
     @Override
+    @Transactional
     public HashMap<String, Object> changRole(RoleDTO roleDTO) {
         HashMap<String, Object> json = new HashMap<>();
         json.put("type",false);

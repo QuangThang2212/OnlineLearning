@@ -12,13 +12,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transaction;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
 @Slf4j
-@Transactional
 public class CourseServiceImple implements CourseService {
     @Autowired
     private CourseRepo courseRepo;
@@ -132,6 +132,7 @@ public class CourseServiceImple implements CourseService {
     }
 
     @Override
+    @Transactional
     public HashMap<String, Object> save(CourseDTO courseDTO) {
         HashMap<String, Object> json = new HashMap<>();
         json.put("type", false);
@@ -206,6 +207,7 @@ public class CourseServiceImple implements CourseService {
     }
 
     @Override
+    @Transactional
     public HashMap<String, Object> saveLessonPackage(ListOfPackageDTO listOfPackageDTO, int id) {
         HashMap<String, Object> json = new HashMap<>();
 
@@ -561,6 +563,7 @@ public class CourseServiceImple implements CourseService {
     }
 
     @Override
+    @Transactional
     public HashMap<String, Object> changeCourseStatus(ListOfCourseDTO listOfCourseDTO) {
         HashMap<String, Object> json = new HashMap<>();
         List<Integer> listOfCourseId = listOfCourseDTO.getCourseID();
@@ -867,6 +870,7 @@ public class CourseServiceImple implements CourseService {
     }
 
     @Override
+    @Transactional
     public HashMap<String, Object> enrollCourse(String authority, EnrollInformationDTO enrollInformationDTO) {
         HashMap<String, Object> json = new HashMap<>();
         json.put("type", false);
@@ -891,9 +895,8 @@ public class CourseServiceImple implements CourseService {
         payment.setPaymentID(account.getAccountID() + course.getCourseID() + LocalDateTime.now().toString());
         payment.setPaymentAt(LocalDateTime.now());
 
-        Voucher voucher;
         if (enrollInformationDTO.getVoucherID() != null) {
-            voucher = voucherRepo.findByVoucherID(enrollInformationDTO.getVoucherID());
+            Voucher voucher = voucherRepo.findByVoucherID(enrollInformationDTO.getVoucherID());
             payment.setVoucher(voucher);
         }
         try {

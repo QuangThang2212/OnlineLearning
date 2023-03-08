@@ -1,15 +1,12 @@
 package com.swp.onlineLearning.Service.imple;
 
 import com.swp.onlineLearning.DTO.BlogDTO;
-import com.swp.onlineLearning.DTO.CourseTypeDTO;
-import com.swp.onlineLearning.DTO.UserDTO;
 import com.swp.onlineLearning.Model.Account;
 import com.swp.onlineLearning.Model.Blog;
 import com.swp.onlineLearning.Model.CourseType;
 import com.swp.onlineLearning.Repository.*;
 import com.swp.onlineLearning.Service.BlogService;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.tool.schema.internal.exec.ScriptTargetOutputToFile;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -25,7 +22,6 @@ import java.util.List;
 
 @Slf4j
 @Service
-@Transactional
 public class BlogServiceImple implements BlogService {
     @Autowired
     private CourseRepo courseRepo;
@@ -41,6 +37,7 @@ public class BlogServiceImple implements BlogService {
     private AccountRepo accountRepo;
 
     @Override
+    @Transactional
     public HashMap<String, Object> save(BlogDTO blogDTO) {
         HashMap<String, Object> json = new HashMap<>();
         json.put("type", false);
@@ -93,6 +90,7 @@ public class BlogServiceImple implements BlogService {
     }
 
     @Override
+    @Transactional
     public HashMap<String, Object> update(BlogDTO blogDTO) {
         HashMap<String, Object> json = new HashMap<>();
         json.put("type", false);
@@ -127,6 +125,7 @@ public class BlogServiceImple implements BlogService {
         return json;
     }
 
+    @Override
     public HashMap<String, Object> findAllBlog(int pageNumber, int size) {
         HashMap<String, Object> json = new HashMap<>();
         json.put("type", false);

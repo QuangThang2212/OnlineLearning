@@ -18,7 +18,6 @@ import java.util.HashMap;
 import java.util.List;
 @Slf4j
 @Service
-@Transactional
 public class CourseTypeServiceImple implements CourseTypeService {
     @Autowired
     private CourseTypeRepo courseTypeRepo;
@@ -27,6 +26,7 @@ public class CourseTypeServiceImple implements CourseTypeService {
     @Autowired
     private BlogRepo blogRepo;
     @Override
+    @Transactional
     public HashMap<String, Object> save(CourseTypeDTO courseTypeDTO){
         HashMap<String, Object> json = new HashMap<>();
         json.put("type",false);
@@ -63,6 +63,7 @@ public class CourseTypeServiceImple implements CourseTypeService {
     }
 
     @Override
+    @Transactional
     public HashMap<String, Object> update(CourseTypeDTO courseTypeDTO) {
         HashMap<String, Object> json = new HashMap<>();
         json.put("type",false);
@@ -98,6 +99,7 @@ public class CourseTypeServiceImple implements CourseTypeService {
     }
 
     @Override
+    @Transactional
     public HashMap<String, Object> delete(int id) {
         HashMap<String, Object> json = new HashMap<>();
         json.put("type",false);
