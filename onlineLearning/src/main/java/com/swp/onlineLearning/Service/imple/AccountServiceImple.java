@@ -257,4 +257,49 @@ public class AccountServiceImple implements AccountService, UserDetailsService {
         return json;
     }
 
+    @Override
+    public HashMap<String, Object> findUser(String gmail) {
+        HashMap<String, Object> json = new HashMap<>();
+        json.put("type", false);
+        if (gmail == null) {
+            log.error("account not allow null value");
+            json.put("msg", "account not allow null value");
+            return json;
+        }
+        Account account = accountRepo.findByGmail(gmail);
+        if (account == null) {
+            log.error("account doesn't exist in system");
+            json.put("msg", "account doesn't exist in system");
+            return json;
+        }
+        UserDTO userDTO = new UserDTO();
+        userDTO.setAccountID(account.getAccountID());
+        userDTO.setName(account.getName());
+        userDTO.setImage(account.getImage());
+        userDTO.setGmail(account.getGmail());
+
+
+        log.info("successfully");
+        json.put("msg","successfully");
+        json.put("type", true);
+        return json;
+    }
+    @Override
+    public HashMap<String, Object> update(UserDTO userDTO, String gmail) {
+        HashMap<String, Object> json = new HashMap<>();
+        json.put("type", false);
+        Account account = accountRepo.findByGmail(gmail);
+        account.setName(userDTO.getName());
+        account.setImage(userDTO.getImage());
+        try{
+            accountRepo.save(account);
+        }catch (Exception e){
+            log.error("Update user information fail");
+            json.put("msg","Update user information fail");
+            return json;
+        }
+        json.put("msg","Update user information successfully");
+        json.put("type",true);
+        return json;
+    }
 }
