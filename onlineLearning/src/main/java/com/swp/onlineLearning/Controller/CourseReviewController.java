@@ -2,10 +2,7 @@ package com.swp.onlineLearning.Controller;
 
 import com.swp.onlineLearning.DTO.CourseRateDTO;
 import com.swp.onlineLearning.DTO.EnrollInformationDTO;
-import com.swp.onlineLearning.Service.CommentService;
-import com.swp.onlineLearning.Service.CourseRateService;
-import com.swp.onlineLearning.Service.CourseService;
-import com.swp.onlineLearning.Service.LessonService;
+import com.swp.onlineLearning.Service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,6 +25,8 @@ public class CourseReviewController {
     private LessonService lessonService;
     @Autowired
     private CourseRateService courseRateService;
+    @Autowired
+    private VoucherService voucherService;
     @PostMapping("/enroll")
     public ResponseEntity<HashMap<String, Object>> enrollCourse(@RequestBody EnrollInformationDTO enrollInformationDTO, Principal principal){
         HashMap<String, Object> json = new HashMap<>();
@@ -95,5 +94,20 @@ public class CourseReviewController {
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
     }
+    @GetMapping("/getAllVoucherForUser")
+    public ResponseEntity<HashMap<String, Object>> getVoucherForUser(@RequestParam("id") Integer id, Principal principal){
+        HashMap<String, Object> json = new HashMap<>();
+        if(principal == null){
+            json.put("msg", "Invalid account information");
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
+        json = voucherService.getVoucherForUser(id, principal.getName());
 
+        String type = json.get("type").toString();
+        if(type.equals("true")){
+            return new ResponseEntity<>(json, HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
+    }
 }

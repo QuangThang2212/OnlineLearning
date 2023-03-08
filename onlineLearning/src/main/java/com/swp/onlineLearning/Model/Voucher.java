@@ -40,10 +40,10 @@ public class Voucher implements Serializable {
     private boolean status;
     @NotNull
     @Column(nullable = false)
-    private float startApply;
+    private int startApply;
     @NotNull
     @Column(nullable = false)
-    private float duration;
+    private int duration;
     @OneToMany(mappedBy = "voucher", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Payment> payments;

@@ -9,6 +9,7 @@ import org.hibernate.validator.constraints.Range;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import java.time.LocalDate;
 
 @Data
 @NoArgsConstructor
@@ -25,10 +26,10 @@ public class VoucherDTO {
     private boolean status;
     @NotNull(message = "Apply day isn't allow null value")
     @Range(min = 0, message = "Apply day must greater than 0")
-    private float startApply;
+    private Integer startApply;
     @NotNull(message = "Duration of voucher isn't allow null value")
     @Range(min = 0, message = "Duration of voucher must greater than 0")
-    private float duration;
+    private Integer duration;
     @NotNull
     @NotBlank
     private String type;
@@ -36,4 +37,5 @@ public class VoucherDTO {
     private Integer courseTypeID;
     private CourseDTO courseDTO;
     private CourseTypeDTO courseTypeDTO;
+    private LocalDate validUntil;
 }
