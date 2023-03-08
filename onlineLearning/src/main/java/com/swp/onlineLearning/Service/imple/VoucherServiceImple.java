@@ -72,6 +72,7 @@ public class VoucherServiceImple implements VoucherService {
             }
             voucherCheck = voucherRepo.findByNameAndVoucherID(voucherDTO.getName(), voucherDTO.getVoucherID());
         }
+        voucherDTO.setAmount(Math.round(voucherDTO.getAmount()*10));
         if (voucherCheck != null) {
             log.error("Name of voucher " + voucherDTO.getName() + " had already exist in system");
             json.put("msg", "Name of voucher " + voucherDTO.getName() + " had already exist in system");
@@ -332,7 +333,7 @@ public class VoucherServiceImple implements VoucherService {
                 voucherDTO.setVoucherID(voucher.getVoucherID());
                 voucherDTO.setAmount(voucher.getAmount());
                 voucherDTO.setName(voucher.getName());
-                voucherDTO.setValidUntil(voucher.getStartDate().toLocalDate().plusDays((long) (voucher.getStartApply() + voucher.getDuration())));
+                voucherDTO.setValidUntil(voucher.getStartDate().toLocalDate().plusDays(voucher.getStartApply() + voucher.getDuration()));
                 voucherDTOS.add(voucherDTO);
             }
         }
