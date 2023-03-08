@@ -6,7 +6,6 @@ import com.swp.onlineLearning.DTO.ListOfPackageDTO;
 import com.swp.onlineLearning.Service.CourseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -20,8 +19,6 @@ import java.util.HashMap;
 @RequiredArgsConstructor
 @RequestMapping("/api/course")
 public class CourseManagementController {
-    @Value("${role.guest}")
-    private String roleGuest;
     @Autowired
     private CourseService courseService;
     @PostMapping("/create")

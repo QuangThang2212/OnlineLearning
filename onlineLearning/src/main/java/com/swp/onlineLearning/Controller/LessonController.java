@@ -23,8 +23,6 @@ import java.util.HashMap;
 public class LessonController {
     @Autowired
     private LessonService lessonService;
-    @Value("${role.guest}")
-    private String roleGuest;
     @PostMapping("/quiz/submit")
     public ResponseEntity<HashMap<String, Object>> submitQuiz(@RequestBody QuizSubmitDTO submitDTO, Principal principal) {
         HashMap<String, Object> json = new HashMap<>();

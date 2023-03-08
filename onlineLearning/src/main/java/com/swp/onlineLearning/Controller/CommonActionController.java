@@ -83,7 +83,7 @@ public class CommonActionController {
         }
     }
     @GetMapping("/blog/blog_details")
-    public ResponseEntity<HashMap> getBlogDetail(@RequestParam("id") String id){
+    public ResponseEntity<HashMap<String, Object>> getBlogDetail(@RequestParam("id") String id){
         HashMap<String, Object> json = blogService.getBlogDetail(id);
         String type = json.get("type").toString();
         if(type.equals("true")){
