@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -67,6 +68,35 @@ public class MarketingServicImple implements MarketingService {
         log.info("Get list of image successfully");
         json.put("msg","Get list of image successfully");
         json.put("marketingImage", marketingDTOS);
+        json.replace("type", true);
+        return json;
+    }
+
+    @Override
+    public HashMap<String, Object> delete(Integer id) {
+        HashMap<String, Object> json = new HashMap<>();
+        json.put("type", false);
+
+        if(id==null){
+            log.error("Invalid image id");
+            json.put("msg", "Invalid image id");
+            return json;
+        }
+        Optional<MarketingImage> marketingImage = marketingRepo.findById(id);
+        if(marketingImage.isEmpty()){
+            log.error("Invalid image id");
+            json.put("msg", "Invalid image id");
+            return json;
+        }
+        try{
+            marketingRepo.delete(marketingImage.get());
+        }catch (Exception e){
+            log.error("Delete image with id "+id+"\n"+e.getMessage());
+            json.put("msg", "Delete image with id "+id);
+            return json;
+        }
+        log.info("Delete successfully");
+        json.put("msg","Delete successfully");
         json.replace("type", true);
         return json;
     }

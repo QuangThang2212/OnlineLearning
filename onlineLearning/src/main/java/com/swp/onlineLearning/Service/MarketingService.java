@@ -8,4 +8,5 @@ import java.util.HashMap;
 public interface MarketingService {
     HashMap<String, Object> save(MarketingDTO marketingDTO);
     HashMap<String, Object> findAll();
+    HashMap<String, Object> delete(Integer id);
 }

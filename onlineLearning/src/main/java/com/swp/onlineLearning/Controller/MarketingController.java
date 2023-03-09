@@ -41,6 +41,18 @@ public class MarketingController {
 
         }
     }
+    @PostMapping("/delete/{id}")
+    public ResponseEntity<HashMap<String, Object>> deleteMarketing(@PathVariable("id")Integer id) {
+        HashMap<String, Object> json = marketingService.delete(id);
+
+        String type = json.get("type").toString();
+        if (type.equals("true")) {
+            return new ResponseEntity<>(json, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+
+        }
+    }
 }
 
 
