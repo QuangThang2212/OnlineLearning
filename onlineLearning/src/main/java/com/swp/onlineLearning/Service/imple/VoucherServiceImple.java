@@ -269,6 +269,7 @@ public class VoucherServiceImple implements VoucherService {
             courseDTO.setImage(course.getImage());
             courseDTO.setCourseName(course.getCourseName());
             courseDTO.setCourseID(course.getCourseID());
+            courseDTO.setPrice(course.getPrice());
             voucherDTO.setCourseDTO(courseDTO);
         } else {
             log.error("Invalid voucher type");
