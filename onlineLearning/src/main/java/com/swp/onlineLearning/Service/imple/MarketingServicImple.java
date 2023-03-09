@@ -27,7 +27,7 @@ public class MarketingServicImple implements MarketingService {
             return json;
         }
         MarketingImage marketingImage = new MarketingImage();
-        marketingDTO.setLink(marketingDTO.getLink());
+        marketingImage.setLink(marketingDTO.getLink());
 
         try {
             marketingRepo.save(marketingImage);
