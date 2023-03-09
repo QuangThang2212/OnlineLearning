@@ -72,7 +72,7 @@ public class VoucherServiceImple implements VoucherService {
             }
             voucherCheck = voucherRepo.findByNameAndVoucherID(voucherDTO.getName(), voucherDTO.getVoucherID());
         }
-        voucherDTO.setAmount(Math.round((voucherDTO.getAmount()*10)/10));
+        voucherDTO.setAmount(Math.round(voucherDTO.getAmount()*10)/10);
         if (voucherCheck != null) {
             log.error("Name of voucher " + voucherDTO.getName() + " had already exist in system");
             json.put("msg", "Name of voucher " + voucherDTO.getName() + " had already exist in system");
