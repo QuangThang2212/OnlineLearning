@@ -3,6 +3,7 @@ package com.swp.onlineLearning.Controller;
 import com.swp.onlineLearning.Service.BlogService;
 import com.swp.onlineLearning.Service.CourseRateService;
 import com.swp.onlineLearning.Service.CourseService;
+import com.swp.onlineLearning.Service.MarketingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,6 +26,8 @@ public class CommonActionController {
     private CourseService courseService;
     @Autowired
     private CourseRateService courseRateService;
+    @Autowired
+    private MarketingService marketingService;
     @GetMapping("/home")
     public ResponseEntity<HashMap<String, Object>> homePage(Principal principal){
         String authority;
@@ -105,6 +108,16 @@ public class CommonActionController {
     @GetMapping("/course/rating")
     public ResponseEntity<HashMap<String, Object>> getCourseRate(@RequestParam("id")int courseID, @RequestParam("page")int page, @RequestParam("limit")int limit){
         HashMap<String, Object> json = courseRateService.getCourseRate(courseID,page, limit);
+        String type = json.get("type").toString();
+        if(type.equals("true")){
+            return new ResponseEntity<>(json, HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
+    }
+    @GetMapping("/marketing")
+    public ResponseEntity<HashMap<String, Object>> getMarketingImage(){
+        HashMap<String, Object> json = marketingService.findAll();
         String type = json.get("type").toString();
         if(type.equals("true")){
             return new ResponseEntity<>(json, HttpStatus.OK);

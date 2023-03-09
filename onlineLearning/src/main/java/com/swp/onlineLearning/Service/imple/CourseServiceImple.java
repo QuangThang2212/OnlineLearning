@@ -455,7 +455,12 @@ public class CourseServiceImple implements CourseService {
         List<Lesson> deleteLesson = new ArrayList<>();
         List<LessonPackage> deleteLessonPackage = new ArrayList<>();
         if (listOfPackageDTO.getDeleteQuestion() != null) {
-            questionService.deleteQuestionAndAnswer(listOfPackageDTO.getDeleteQuestion());
+            jsonCheck = questionService.deleteQuestionAndAnswer(listOfPackageDTO.getDeleteQuestion());
+            if (jsonCheck.get("type").equals("false")) {
+                log.error(jsonCheck.get("msg").toString());
+                json.put("msg", jsonCheck.get("msg").toString());
+                return json;
+            }
         }
         if (listOfPackageDTO.getDeleteLesson() != null) {
             for (int lessonID : listOfPackageDTO.getDeleteLesson()) {

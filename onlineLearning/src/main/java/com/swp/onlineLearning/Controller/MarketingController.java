@@ -11,8 +11,6 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.security.Principal;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 @RestController
@@ -22,15 +20,15 @@ public class MarketingController {
     @Autowired
     private MarketingService marketingService;
 
-    @PostMapping("create")
-    public ResponseEntity<HashMap<String, Object>> createMarketing(@Valid @RequestBody MarketingDTO marketingDTO, BindingResult result, Principal principal) throws Exception {
+    @PostMapping("/create")
+    public ResponseEntity<HashMap<String, Object>> createMarketing(@Valid @RequestBody MarketingDTO marketingDTO, BindingResult result) {
         HashMap<String, Object> json = new HashMap<>();
-        ArrayList<String> strings = new ArrayList<>();
+        StringBuilder strings = new StringBuilder();
         if (result.hasErrors()) {
             for (FieldError error : result.getFieldErrors()) {
-                strings.add(error.getDefaultMessage());
+                strings.append(error.getDefaultMessage());
             }
-            json.put("msgProgress",strings);
+            json.put("msg",strings.toString());
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
         json = marketingService.save(marketingDTO);

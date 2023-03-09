@@ -1,18 +1,13 @@
 package com.swp.onlineLearning.Service.imple;
 
-import com.swp.onlineLearning.DTO.BlogDTO;
 import com.swp.onlineLearning.DTO.MarketingDTO;
-import com.swp.onlineLearning.Model.Blog;
 import com.swp.onlineLearning.Model.MarketingImage;
-import com.swp.onlineLearning.Repository.BlogRepo;
 import com.swp.onlineLearning.Repository.MarketingRepo;
 import com.swp.onlineLearning.Service.MarketingService;
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -46,6 +41,34 @@ public class MarketingServicImple implements MarketingService {
         json.replace("type", true);
 
         return json;
+    }
+
+    @Override
+    public HashMap<String, Object> findAll() {
+        HashMap<String, Object> json = new HashMap<>();
+        json.put("type", false);
+
+        MarketingDTO dto;
+
+        List<MarketingImage> marketingImages = marketingRepo.findAll();
+        if(marketingImages.isEmpty()){
+            log.error("No image founded");
+            json.put("msg", "No image founded");
+            return json;
+        }
+        List<MarketingDTO> marketingDTOS = new ArrayList<>();
+        for(MarketingImage marketingImage : marketingImages){
+            dto = new MarketingDTO();
+            dto.setId(marketingImage.getId());
+            dto.setLink(marketingImage.getLink());
+
+            marketingDTOS.add(dto);
+        }
+        log.info("Get list of image successfully");
+        json.put("msg","Get list of image successfully");
+        json.put("marketingImage", marketingDTOS);
+        json.replace("type", true);
+        return null;
     }
 
 }
