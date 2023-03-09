@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 @Slf4j
@@ -26,13 +27,13 @@ public class BlogManagementController {
     @PostMapping("/create")
     public ResponseEntity<HashMap<String, Object>> createBlogType(@Valid @RequestBody BlogDTO blogDTO, BindingResult result, Principal principal) throws Exception{
         HashMap<String, Object> json = new HashMap<>();
-        StringBuilder stringBuilder = new StringBuilder();
+        ArrayList<String> strings = new ArrayList<>();
         if (result.hasErrors()) {
             for (FieldError error : result.getFieldErrors()) {
-                stringBuilder.append(error.getDefaultMessage()).append("\n");
+                strings.add(error.getDefaultMessage());
             }
-            json.put("msg",stringBuilder.toString());
-            return new ResponseEntity<>(json,HttpStatus.BAD_REQUEST);
+            json.put("msgProgress",strings);
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
         blogDTO.setGmail(principal.getName());
         json = blogService.save(blogDTO);
@@ -47,13 +48,13 @@ public class BlogManagementController {
     @PostMapping("/update/id={id}")
     public ResponseEntity<HashMap<String, Object>> updateBlogType(@Valid @RequestBody BlogDTO blogDTO, BindingResult result, Principal principal,  @PathVariable("id") int id) {
         HashMap<String, Object> json = new HashMap<>();
-        StringBuilder stringBuilder = new StringBuilder();
+        ArrayList<String> strings = new ArrayList<>();
         if (result.hasErrors()) {
             for (FieldError error : result.getFieldErrors()) {
-                stringBuilder.append(error.getDefaultMessage()).append("\n");
+                strings.add(error.getDefaultMessage());
             }
-            json.put("msg",stringBuilder.toString());
-            return new ResponseEntity<>(json,HttpStatus.BAD_REQUEST);
+            json.put("msgProgress",strings);
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
         blogDTO.setBlogID(blogDTO.getBlogID());
         json = blogService.update(blogDTO);

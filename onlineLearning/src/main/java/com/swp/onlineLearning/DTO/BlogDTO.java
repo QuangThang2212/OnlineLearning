@@ -15,12 +15,12 @@ import java.time.LocalDateTime;
 public class BlogDTO {
 
     private String blogID;
-    @Length(min = 10, max = 200, message = "Blog name must between 10 to 200")
+    @Length(min = 5, max = 100, message = "Blog name length must between 5 to 100")
     @Pattern(regexp = "^[a-zA-Z0-9 ]+$", message = "Type name isn't in the right format, only allow character and number")
     private String blogName;
-    @Length(min = 10, max = 400, message = "Blog meta must between 10 to 400")
+    @Length(min = 10, max = 400, message = "Blog meta length must between 10 to 400")
     private String blogMeta;
-    @Length(min = 200, message = "Blog content must greater than 200 characters")
+    @Length(min = 20, message = "Blog content length must greater than 20 characters")
     private String content;
     private LocalDateTime createDate;
     @Value("0")

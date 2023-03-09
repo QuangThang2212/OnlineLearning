@@ -21,11 +21,7 @@ public class LessonServiceImple implements LessonService {
     @Autowired
     private CourseRepo courseRepo;
     @Autowired
-    private LessonPackageRepo lessonPackageRepo;
-    @Autowired
     private LessonRepo lessonRepo;
-    @Autowired
-    private LessonTypeRepo lessonTypeRepo;
     @Autowired
     private AccountRepo accountRepo;
     @Autowired
@@ -61,7 +57,7 @@ public class LessonServiceImple implements LessonService {
             json.put("msg", "Course with id: " + courseID + " isn't found in system");
             return json;
         }
-        if(!course.isStatus()){
+        if (!course.isStatus()) {
             log.error("Course with id " + courseID + " not allow access");
             json.put("msg", "Course with id " + courseID + " not allow access");
             return json;
@@ -106,14 +102,14 @@ public class LessonServiceImple implements LessonService {
             lessonPakages.add(lessonPackageDTO);
         }
         CourseRate courseRate = courseRateRepo.findByCourseAndAccount(course, account);
-        if((courseRate.getLesson().getLessonPackage().getPackageID()==lesson.getLessonPackage().getPackageID()
-                && courseRate.getLesson().getLessonLocation()<lesson.getLessonLocation())
-                || courseRate.getLesson().getLessonPackage().getPackageLocation()<lesson.getLessonPackage().getPackageLocation()){
+        if ((courseRate.getLesson().getLessonPackage().getPackageID() == lesson.getLessonPackage().getPackageID()
+                && courseRate.getLesson().getLessonLocation() < lesson.getLessonLocation())
+                || courseRate.getLesson().getLessonPackage().getPackageLocation() < lesson.getLessonPackage().getPackageLocation()) {
             courseRate.setLesson(lesson);
-            try{
+            try {
                 courseRate = courseRateRepo.saveAndFlush(courseRate);
-            }catch(Exception e){
-                log.error("Update learning process fail \n" +e.getMessage());
+            } catch (Exception e) {
+                log.error("Update learning process fail \n" + e.getMessage());
                 json.put("msg", "Update learning process fail");
                 return json;
             }
@@ -135,7 +131,7 @@ public class LessonServiceImple implements LessonService {
         List<QuestionDTO> questionDTOS;
         if (lesson.getLessonType().getName().equals(typeQuiz)) {
             quizResult = quizResultRepo.findByAccountAndLesson(account, lesson);
-            if(quizResult!=null){
+            if (quizResult != null) {
                 quizResultDTO = new QuizResultDTO();
                 quizResultDTO.setQuizStatus(quizResult.isStatus());
                 quizResultDTO.setResult(quizResult.getResult());
@@ -167,7 +163,7 @@ public class LessonServiceImple implements LessonService {
             List<Comment> childComment;
             List<ChildCommentDTO> childCommentDTOS;
             ChildCommentDTO childCommentDTO;
-            for(Comment comment : comments){
+            for (Comment comment : comments) {
                 childComment = commentRepo.findByParentIDAndLesson(comment, lesson);
 
                 commentDTO = new CommentDTO();
@@ -175,7 +171,7 @@ public class LessonServiceImple implements LessonService {
                 commentDTO.setComment(comment.getComment());
 
                 childCommentDTOS = new ArrayList<>();
-                for(Comment comment1 : childComment){
+                for (Comment comment1 : childComment) {
                     childCommentDTO = new ChildCommentDTO();
                     childCommentDTO.setCommentID(comment1.getCommentID());
                     childCommentDTO.setComment(comment1.getComment());
@@ -188,12 +184,12 @@ public class LessonServiceImple implements LessonService {
             }
             lessonDTO.setComments(commentDTOList);
         }
-        json.put("lessonPakages",lessonPakages);
+        json.put("lessonPakages", lessonPakages);
         json.put("currentLearningLesson", currentLearningLesson);
         json.put("currentLearningPackage", currentLearningPackage);
-        json.put("lesson",lessonDTO);
+        json.put("lesson", lessonDTO);
         json.put("type", true);
-        log.info("Get lesson with id "+lessonID);
+        log.info("Get lesson with id " + lessonID);
         return json;
     }
 
@@ -205,36 +201,36 @@ public class LessonServiceImple implements LessonService {
         json.put("courseFinish", false);
 
         Lesson lesson = lessonRepo.findByLessonID(submitDTO.getLessonID());
-        if(lesson==null || !lesson.getLessonType().getName().equals(typeQuiz)){
+        if (lesson == null || !lesson.getLessonType().getName().equals(typeQuiz)) {
             log.error("Invalid lessonID");
             return json;
         }
         Account account = accountRepo.findByGmail(gmail);
-        if(!account.getRoleUser().getName().equals(roleUser)){
+        if (!account.getRoleUser().getName().equals(roleUser)) {
             log.error("Invalid user role");
             return json;
         }
 
         List<Question> questions = lesson.getQuestions();
         String answer = null;
-        int countResult=0;
-        for(Question question : questions){
-            for(Answer answerCheck : question.getAnswers()){
-                if(answerCheck.isRightAnswer()){
-                    answer=answerCheck.getAnswerContent();
+        int countResult = 0;
+        for (Question question : questions) {
+            for (Answer answerCheck : question.getAnswers()) {
+                if (answerCheck.isRightAnswer()) {
+                    answer = answerCheck.getAnswerContent();
                 }
             }
-            for(QuestionDTO questionDTO : submitDTO.getQuiz()){
-                if(questionDTO.getQuestionID() == question.getQuestionID() && questionDTO.getAnswer().equals(answer)){
+            for (QuestionDTO questionDTO : submitDTO.getQuiz()) {
+                if (questionDTO.getQuestionID() == question.getQuestionID() && questionDTO.getAnswer().equals(answer)) {
                     countResult++;
                 }
             }
         }
-        int result = Math.round(((float) countResult/questions.size())*100);
+        int result = Math.round(((float) countResult / questions.size()) * 100);
         boolean passed = result > passCondition;
 
         QuizResult quizResult = quizResultRepo.findByAccountAndLesson(account, lesson);
-        if(quizResult==null){
+        if (quizResult == null) {
             quizResult = new QuizResult();
             quizResult.setQuizResultID(LocalDateTime.now().toString());
             quizResult.setAccount(account);
@@ -248,8 +244,8 @@ public class LessonServiceImple implements LessonService {
 
         try {
             quizResultRepo.save(quizResult);
-        }catch (Exception e){
-            log.error("Storage result for user fail \n"+e.getMessage());
+        } catch (Exception e) {
+            log.error("Storage result for user fail \n" + e.getMessage());
             json.put("msg", "Storage result for user fail");
             return json;
         }
@@ -257,12 +253,12 @@ public class LessonServiceImple implements LessonService {
         Course course = lesson.getLessonPackage().getCourse();
         List<QuizResult> quizResults = quizResultRepo.findAllPassedQuizOfUser(account.getAccountID(), course.getCourseID());
         CourseRate courseRate = courseRateRepo.findByCourseAndAccount(course, account);
-        if(quizResults.size()==course.getNumberOfQuiz() && courseRate != null){
+        if (quizResults.size() == course.getNumberOfQuiz() && courseRate != null) {
             courseRate.setStatus(true);
-            try{
+            try {
                 courseRateRepo.save(courseRate);
-            }catch (Exception e){
-                log.error("Update course learning progress fail \n"+e.getMessage());
+            } catch (Exception e) {
+                log.error("Update course learning progress fail \n" + e.getMessage());
                 json.put("msg", "Update course learning progress fail");
                 return json;
             }

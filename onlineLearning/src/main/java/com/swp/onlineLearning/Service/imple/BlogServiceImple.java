@@ -24,12 +24,7 @@ import java.util.List;
 @Service
 public class BlogServiceImple implements BlogService {
     @Autowired
-    private CourseRepo courseRepo;
-
-    @Autowired
     private BlogRepo blogRepo;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
     @Autowired
     private CourseTypeRepo courseTypeRepo;
 

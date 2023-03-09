@@ -12,7 +12,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transaction;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -30,8 +29,6 @@ public class CourseServiceImple implements CourseService {
     private LessonPackageRepo lessonPackageRepo;
     @Autowired
     private LessonRepo lessonRepo;
-    @Autowired
-    private RoleRepo roleRepo;
     @Autowired
     private LessonTypeRepo lessonTypeRepo;
     @Autowired
@@ -454,7 +451,7 @@ public class CourseServiceImple implements CourseService {
 
 
         boolean deleteStatus;
-        StringBuilder msgDelete = new StringBuilder();
+        ArrayList<String> errorString = new ArrayList<>();
         List<Lesson> deleteLesson = new ArrayList<>();
         List<LessonPackage> deleteLessonPackage = new ArrayList<>();
         if (listOfPackageDTO.getDeleteQuestion() != null) {
@@ -472,10 +469,10 @@ public class CourseServiceImple implements CourseService {
                 if (typeQuiz.equals(lesson.getLessonType().getName())) {
                     if (!lesson.getQuizResults().isEmpty()) {
                         log.error("Lesson with id " + lesson.getLessonID() + " have user learning history, can't delete \n");
-                        msgDelete.append("Lesson with id ").append(lesson.getLessonID()).append(" have user learning history, can't delete \n");
+                        errorString.add("Lesson with id " + lesson.getLessonID() + " have user learning history, can't delete");
                         deleteStatus = false;
                     } else {
-                        if(quizCount>0){
+                        if (quizCount > 0) {
                             quizCount--;
                         }
                         jsonCheck = questionService.deleteQuestionObjectAndAnswer(lesson.getQuestions());
@@ -488,7 +485,7 @@ public class CourseServiceImple implements CourseService {
                 }
                 if (typeListening.equals(lesson.getLessonType().getName()) && !lesson.getComments().isEmpty()) {
                     log.error("Lesson with id " + lesson.getLessonID() + " have user learning history, can't delete \n");
-                    msgDelete.append("Lesson with id ").append(lesson.getLessonID()).append(" have user learning history, can't delete \n");
+                    errorString.add("Lesson with id " + lesson.getLessonID() + " have user learning history, can't delete");
                     deleteStatus = false;
                 }
                 if (deleteStatus) {
@@ -509,13 +506,13 @@ public class CourseServiceImple implements CourseService {
                 for (Lesson lessonDelete : fkPackage.getLessons()) {
                     if (typeQuiz.equals(lessonDelete.getLessonType().getName()) && !lessonDelete.getQuizResults().isEmpty()) {
                         log.error("Lesson with id " + lessonDelete.getLessonID() + " have user learning history, can't delete \n");
-                        msgDelete.append("Lesson with id ").append(lessonDelete.getLessonID()).append(" have user learning history, can't delete \n");
+                        errorString.add("Lesson with id " + lessonDelete.getLessonID() + " have user learning history, can't delete");
                         deleteStatus = false;
                         break;
                     }
                     if (typeListening.equals(lessonDelete.getLessonType().getName()) && !lessonDelete.getComments().isEmpty()) {
                         log.error("Lesson with id " + lessonDelete.getLessonID() + " have user learning history, can't delete \n");
-                        msgDelete.append("Lesson with id ").append(lessonDelete.getLessonID()).append(" have user learning history, can't delete \n");
+                        errorString.add("Lesson with id " + lessonDelete.getLessonID() + " have user learning history, can't delete");
                         deleteStatus = false;
                         break;
                     }
@@ -525,7 +522,7 @@ public class CourseServiceImple implements CourseService {
                     deleteLesson.addAll(fkPackage.getLessons());
                     for (Lesson lesson1 : fkPackage.getLessons()) {
                         if (typeQuiz.equals(lesson1.getLessonType().getName()) && lesson1.getQuizResults().isEmpty()) {
-                            if(quizCount>0){
+                            if (quizCount > 0) {
                                 quizCount--;
                             }
                             jsonCheck = questionService.deleteQuestionObjectAndAnswer(lesson1.getQuestions());
@@ -540,7 +537,6 @@ public class CourseServiceImple implements CourseService {
             }
         }
         course.setNumberOfQuiz(quizCount);
-        System.out.println(quizCount+" quiz count");
         try {
             if (!deleteLesson.isEmpty()) {
                 lessonRepo.deleteInBatch(deleteLesson);
@@ -556,8 +552,11 @@ public class CourseServiceImple implements CourseService {
         }
 
         log.error("Update process for list of topic successfully");
-        json.put("msg", "Update process for list of topic successfully");
-        json.put("msgProcess", msgDelete.toString());
+        if (errorString.isEmpty()) {
+            json.put("msg", "Update process for list of topic successfully");
+        } else {
+            json.put("msgProcess", errorString);
+        }
         json.put("type", true);
         return json;
     }
@@ -569,7 +568,7 @@ public class CourseServiceImple implements CourseService {
         List<Integer> listOfCourseId = listOfCourseDTO.getCourseID();
         Course course;
         List<Course> courses = new ArrayList<>();
-        StringBuilder stringBuilder = new StringBuilder();
+        ArrayList<String> errorString = new ArrayList<>();
         boolean status = listOfCourseDTO.isStatus();
 
         List<LessonPackage> lessonPackages;
@@ -581,14 +580,14 @@ public class CourseServiceImple implements CourseService {
                 lessonPackages = course.getLessonPackages();
                 if (lessonPackages.size() < 2) {
                     log.error("Course with id: " + course.getCourseID() + " have only " + lessonPackages.size() + " topic, not allow public");
-                    stringBuilder.append("Course with id: ").append(course.getCourseID()).append(" have only ").append(lessonPackages.size()).append(" topic, not allow public \n");
+                    errorString.add("Course with id: " + course.getCourseID() + " have only " + lessonPackages.size() + " topic, not allow public");
                     continue;
                 }
                 for (LessonPackage lessonPackage : lessonPackages) {
                     lessonLis = lessonPackage.getLessons();
                     if (lessonLis.size() < 2) {
                         log.error("Topic with id: " + lessonPackage.getPackageID() + " have only " + lessonLis.size() + " lesson, not allow public");
-                        stringBuilder.append("Topic with id: ").append(lessonPackage.getPackageID()).append(" have only ").append(lessonLis.size()).append(" lesson, not allow public \n");
+                        errorString.add("Topic with id: " + lessonPackage.getPackageID() + " have only " + lessonLis.size() + " lesson, not allow public");
                         lessonCheck = true;
                         break;
                     }
@@ -608,11 +607,11 @@ public class CourseServiceImple implements CourseService {
             json.put("msg", "Update status for list of course fail, view log ");
             return json;
         }
-        if (stringBuilder.toString().isEmpty()) {
+        if (errorString.isEmpty()) {
             log.error("Update status for list of course successfully");
             json.put("msg", "Update status for list of course successfully");
         } else {
-            json.put("msg", stringBuilder.toString());
+            json.put("msgProgress", errorString);
         }
         json.put("type", true);
         return json;

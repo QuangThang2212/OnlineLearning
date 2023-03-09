@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.HashMap;
 import java.util.List;
+
 @Slf4j
 @Service
 public class CourseTypeServiceImple implements CourseTypeService {
@@ -25,21 +26,22 @@ public class CourseTypeServiceImple implements CourseTypeService {
     private CourseRepo courseRepo;
     @Autowired
     private BlogRepo blogRepo;
+
     @Override
     @Transactional
-    public HashMap<String, Object> save(CourseTypeDTO courseTypeDTO){
+    public HashMap<String, Object> save(CourseTypeDTO courseTypeDTO) {
         HashMap<String, Object> json = new HashMap<>();
-        json.put("type",false);
-        if(courseTypeDTO == null ){
+        json.put("type", false);
+        if (courseTypeDTO == null) {
             log.error("Not allow pass object null");
             json.put("msg", "Not allow pass object null");
             return json;
         }
 
         CourseType courseTypeCheck = courseTypeRepo.findByCourseTypeName(courseTypeDTO.getCourseTypeName());
-        if(courseTypeCheck != null ){
-            log.error(courseTypeDTO.getCourseTypeName()+" had already exist in system");
-            json.put("msg", courseTypeDTO.getCourseTypeName()+" had already exist in system");
+        if (courseTypeCheck != null) {
+            log.error(courseTypeDTO.getCourseTypeName() + " had already exist in system");
+            json.put("msg", courseTypeDTO.getCourseTypeName() + " had already exist in system");
             return json;
         }
 
@@ -49,15 +51,15 @@ public class CourseTypeServiceImple implements CourseTypeService {
 
         try {
             courseTypeRepo.save(courseType);
-        }catch (Exception e){
-            log.error("Save course type with name " + courseType.getCourseTypeName()+" fail\n" + e.getMessage());
-            json.put("msg", "Save course type with name " + courseType.getCourseTypeName()+" fail");
+        } catch (Exception e) {
+            log.error("Save course type with name " + courseType.getCourseTypeName() + " fail\n" + e.getMessage());
+            json.put("msg", "Save course type with name " + courseType.getCourseTypeName() + " fail");
             return json;
         }
 
-        log.info("Saving new course type with name:"+ courseType.getCourseTypeName()+" successfully");
-        json.put("msg", "Saving new course type with name:"+ courseType.getCourseTypeName()+" successfully");
-        json.replace("type",true);
+        log.info("Saving new course type with name:" + courseType.getCourseTypeName() + " successfully");
+        json.put("msg", "Saving new course type with name:" + courseType.getCourseTypeName() + " successfully");
+        json.replace("type", true);
 
         return json;
     }
@@ -66,18 +68,18 @@ public class CourseTypeServiceImple implements CourseTypeService {
     @Transactional
     public HashMap<String, Object> update(CourseTypeDTO courseTypeDTO) {
         HashMap<String, Object> json = new HashMap<>();
-        json.put("type",false);
+        json.put("type", false);
 
         CourseType courseType = courseTypeRepo.findByCourseTypeID(courseTypeDTO.getCourseTypeID());
-        if(courseType==null){
-            log.error("Course type with id "+courseTypeDTO.getCourseTypeID()+" isn't found in system");
-            json.put("msg", "Course type with id "+courseTypeDTO.getCourseTypeID()+" isn't found in system");
+        if (courseType == null) {
+            log.error("Course type with id " + courseTypeDTO.getCourseTypeID() + " isn't found in system");
+            json.put("msg", "Course type with id " + courseTypeDTO.getCourseTypeID() + " isn't found in system");
             return json;
         }
-        CourseType courseTypeCheck = courseTypeRepo.findByCourseTypeNameAndID(courseTypeDTO.getCourseTypeName(),courseTypeDTO.getCourseTypeID());
-        if(courseTypeCheck != null){
-            log.error(courseTypeDTO.getCourseTypeName()+" name had already exist in system, can't update");
-            json.put("msg", courseTypeDTO.getCourseTypeName()+" name had already exist in system, can't update");
+        CourseType courseTypeCheck = courseTypeRepo.findByCourseTypeNameAndID(courseTypeDTO.getCourseTypeName(), courseTypeDTO.getCourseTypeID());
+        if (courseTypeCheck != null) {
+            log.error(courseTypeDTO.getCourseTypeName() + " name had already exist in system, can't update");
+            json.put("msg", courseTypeDTO.getCourseTypeName() + " name had already exist in system, can't update");
             return json;
         }
         ModelMapper modelMapper = new ModelMapper();
@@ -85,15 +87,15 @@ public class CourseTypeServiceImple implements CourseTypeService {
         modelMapper.map(courseTypeDTO, updateObject);
         try {
             courseTypeRepo.save(updateObject);
-        }catch (Exception e){
-            log.error("Update course type with name " + updateObject.getCourseTypeName()+" fail\n" + e.getMessage());
-            json.put("msg", "Update course type with name " + updateObject.getCourseTypeName()+" fail");
+        } catch (Exception e) {
+            log.error("Update course type with name " + updateObject.getCourseTypeName() + " fail\n" + e.getMessage());
+            json.put("msg", "Update course type with name " + updateObject.getCourseTypeName() + " fail");
             return json;
         }
 
-        log.info("Update new course type with name:"+ updateObject.getCourseTypeName()+" successfully");
-        json.put("msg", "Update new course type with name:"+ updateObject.getCourseTypeName()+" successfully");
-        json.replace("type",true);
+        log.info("Update new course type with name:" + updateObject.getCourseTypeName() + " successfully");
+        json.put("msg", "Update new course type with name:" + updateObject.getCourseTypeName() + " successfully");
+        json.replace("type", true);
 
         return json;
     }
@@ -102,37 +104,37 @@ public class CourseTypeServiceImple implements CourseTypeService {
     @Transactional
     public HashMap<String, Object> delete(int id) {
         HashMap<String, Object> json = new HashMap<>();
-        json.put("type",false);
+        json.put("type", false);
 
         CourseType courseType = courseTypeRepo.findByCourseTypeID(id);
-        if(courseType==null){
-            log.error("Course type with id "+id+" isn't found in system");
-            json.put("msg", "Course type with id "+id+" isn't found in system");
+        if (courseType == null) {
+            log.error("Course type with id " + id + " isn't found in system");
+            json.put("msg", "Course type with id " + id + " isn't found in system");
             return json;
         }
-        List<Course> courses= courseRepo.findByCourseType(courseType);
-        if(courses.size() >0 ){
-            log.error(courseType.getCourseTypeName()+" is used by other course on the system, can't delete");
-            json.put("msg", courseType.getCourseTypeName()+" is used by other course on the system, can't delete");
+        List<Course> courses = courseRepo.findByCourseType(courseType);
+        if (courses.size() > 0) {
+            log.error(courseType.getCourseTypeName() + " is used by other course on the system, can't delete");
+            json.put("msg", courseType.getCourseTypeName() + " is used by other course on the system, can't delete");
             return json;
         }
-        List<Blog> blogs= blogRepo.findByCourseType(courseType);
-        if(blogs.size() >0 ){
-            log.error(courseType.getCourseTypeName()+" is used by other blog on the system, can't delete");
-            json.put("msg", courseType.getCourseTypeName()+" is used by other blog on the system, can't delete");
+        List<Blog> blogs = blogRepo.findByCourseType(courseType);
+        if (blogs.size() > 0) {
+            log.error(courseType.getCourseTypeName() + " is used by other blog on the system, can't delete");
+            json.put("msg", courseType.getCourseTypeName() + " is used by other blog on the system, can't delete");
             return json;
         }
         try {
             courseTypeRepo.delete(courseType);
-        }catch (Exception e){
-            log.error("Delete course type with name " + courseType.getCourseTypeName()+" fail\n" + e.getMessage());
-            json.put("msg", "Delete course type with name " + courseType.getCourseTypeName()+" fail");
+        } catch (Exception e) {
+            log.error("Delete course type with name " + courseType.getCourseTypeName() + " fail\n" + e.getMessage());
+            json.put("msg", "Delete course type with name " + courseType.getCourseTypeName() + " fail");
             return json;
         }
 
-        log.info("Delete new course type with name:"+ courseType.getCourseTypeName()+" successfully");
-        json.put("msg", "Delete new course type with name:"+ courseType.getCourseTypeName()+" successfully");
-        json.replace("type",true);
+        log.info("Delete new course type with name:" + courseType.getCourseTypeName() + " successfully");
+        json.put("msg", "Delete new course type with name:" + courseType.getCourseTypeName() + " successfully");
+        json.replace("type", true);
 
         return json;
     }

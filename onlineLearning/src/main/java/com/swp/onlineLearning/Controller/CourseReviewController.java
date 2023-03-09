@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 @RestController
@@ -61,14 +62,14 @@ public class CourseReviewController {
     }
     @PostMapping("/rating/create")
     public ResponseEntity<HashMap<String, Object>> sendRatingOfUser(@Valid @RequestBody CourseRateDTO courseRateDTO, BindingResult result, Principal principal){
-        StringBuilder stringBuilder = new StringBuilder();
         HashMap<String, Object> json = new HashMap<>();
+        ArrayList<String> strings = new ArrayList<>();
         if (result.hasErrors()) {
             for (FieldError error : result.getFieldErrors()) {
-                stringBuilder.append(error.getDefaultMessage()).append("\n");
+                strings.add(error.getDefaultMessage());
             }
-            json.put("msg",stringBuilder.toString());
-            return new ResponseEntity<>(json,HttpStatus.BAD_REQUEST);
+            json.put("msgProgress",strings);
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
         if(principal == null){
             json.put("msg", "Invalid account information");

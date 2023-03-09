@@ -26,10 +26,9 @@ public class Blog implements Serializable {
     @Length(min = 10, max = 250)
     private String blogName;
     @Column(nullable = false, length = 500)
-    @Length(min = 10, max = 500)
     private String blogMeta;
     @Column(nullable = false, length = Integer.MAX_VALUE)
-    @Length(min = 200)
+    @Length(min = 20)
     private String content;
     @NotNull
     @Column(nullable = false)

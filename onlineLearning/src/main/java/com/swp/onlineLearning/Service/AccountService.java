@@ -11,7 +11,6 @@ public interface AccountService {
     Account findByGmail(String gmail);
     HashMap<String, Object> save(UserDTO userDTO);
     HashMap<String, Object> activeAccount(UserDTO userDTO);
-    HashMap<String, Object> update(int id);
     HashMap<String, Object> changRole(RoleDTO roleDTO);
     HashMap<String, Object> findBAllCourseExpert();
     HashMap<String,Object> findUser(String gmail);

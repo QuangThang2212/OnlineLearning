@@ -13,6 +13,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 @RestController
@@ -25,12 +26,12 @@ public class VoucherController {
     @PostMapping("/create")
     public ResponseEntity<HashMap<String, Object>> createVoucher(@Valid @RequestBody VoucherDTO voucherDTO, BindingResult result){
         HashMap<String, Object> json = new HashMap<>();
-        StringBuilder stringBuilder = new StringBuilder();
+        ArrayList<String> strings = new ArrayList<>();
         if (result.hasErrors()) {
             for (FieldError error : result.getFieldErrors()) {
-                stringBuilder.append(error.getDefaultMessage()).append("\n");
+                strings.add(error.getDefaultMessage());
             }
-            json.put("msg",stringBuilder.toString());
+            json.put("msgProgress",strings);
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
         json = voucherService.createVoucher(voucherDTO);
