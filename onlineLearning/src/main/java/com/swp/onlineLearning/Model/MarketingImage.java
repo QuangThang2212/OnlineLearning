@@ -1,8 +1,6 @@
 package com.swp.onlineLearning.Model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -18,4 +16,5 @@ public class MarketingImage {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String link;
+
 }
