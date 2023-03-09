@@ -31,12 +31,12 @@ public class CourseTypeController {
     @PostMapping("/create")
     public ResponseEntity<HashMap<String, Object>> createCourseType(@Valid @RequestBody CourseTypeDTO courseTypeDTO, BindingResult result) {
         HashMap<String, Object> json = new HashMap<>();
-        ArrayList<String> strings = new ArrayList<>();
+        StringBuilder stringBuilder = new StringBuilder();
         if (result.hasErrors()) {
             for (FieldError error : result.getFieldErrors()) {
-                strings.add(error.getDefaultMessage());
+                stringBuilder.append(error.getDefaultMessage()).append(" ");
             }
-            json.put("msgProgress",strings);
+            json.put("msg",stringBuilder);
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
         json = courseTypeService.save(courseTypeDTO);
@@ -51,12 +51,12 @@ public class CourseTypeController {
     @PostMapping("/update/id={id}")
     public ResponseEntity<HashMap<String, Object>> updateCourseType(@Valid @RequestBody CourseTypeDTO courseTypeDTO, BindingResult result, @PathVariable("id") int id) {
         HashMap<String, Object> json = new HashMap<>();
-        ArrayList<String> strings = new ArrayList<>();
+        StringBuilder stringBuilder = new StringBuilder();
         if (result.hasErrors()) {
             for (FieldError error : result.getFieldErrors()) {
-                strings.add(error.getDefaultMessage());
+                stringBuilder.append(error.getDefaultMessage()).append(" ");
             }
-            json.put("msgProgress",strings);
+            json.put("msg",stringBuilder);
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
         courseTypeDTO.setCourseTypeID(id);

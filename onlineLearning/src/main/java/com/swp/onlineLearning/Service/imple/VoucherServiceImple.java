@@ -4,14 +4,8 @@ import com.swp.onlineLearning.DTO.ChangeStatusVoucherDTO;
 import com.swp.onlineLearning.DTO.CourseDTO;
 import com.swp.onlineLearning.DTO.CourseTypeDTO;
 import com.swp.onlineLearning.DTO.VoucherDTO;
-import com.swp.onlineLearning.Model.Account;
-import com.swp.onlineLearning.Model.Course;
-import com.swp.onlineLearning.Model.CourseType;
-import com.swp.onlineLearning.Model.Voucher;
-import com.swp.onlineLearning.Repository.AccountRepo;
-import com.swp.onlineLearning.Repository.CourseRepo;
-import com.swp.onlineLearning.Repository.CourseTypeRepo;
-import com.swp.onlineLearning.Repository.VoucherRepo;
+import com.swp.onlineLearning.Model.*;
+import com.swp.onlineLearning.Repository.*;
 import com.swp.onlineLearning.Service.VoucherService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +32,8 @@ public class VoucherServiceImple implements VoucherService {
     private CourseTypeRepo courseTypeRepo;
     @Autowired
     private AccountRepo accountRepo;
+    @Autowired
+    private CourseRateRepo courseRateRepo;
     @Value("${voucher.type.course}")
     private String voucherCourse;
     @Value("${voucher.type.typeCourse}")
@@ -310,6 +306,13 @@ public class VoucherServiceImple implements VoucherService {
             return json;
         }
         Account account = accountRepo.findByGmail(gmail);
+
+        CourseRate courseRate = courseRateRepo.findByCourseAndAccount(course, account);
+        if(courseRate!=null){
+            log.info("Account with id "+account.getAccountID()+" already enrolled course");
+            json.put("type", true);
+            return json;
+        }
         LocalDateTime startAt = account.getCreateAt();
         long presentDate = Duration.between(startAt.toLocalDate().atStartOfDay(), LocalDateTime.now().toLocalDate().atStartOfDay()).toDays();
 
@@ -327,6 +330,7 @@ public class VoucherServiceImple implements VoucherService {
 
         List<VoucherDTO> voucherDTOS = new ArrayList<>();
         VoucherDTO voucherDTO;
+
         for (Voucher voucher : vouchers) {
             if (voucher.getStartApply() <= presentDate && (voucher.getStartApply() + voucher.getDuration()) >= presentDate) {
                 voucherDTO = new VoucherDTO();

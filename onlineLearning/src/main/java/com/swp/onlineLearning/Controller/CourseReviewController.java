@@ -63,12 +63,12 @@ public class CourseReviewController {
     @PostMapping("/rating/create")
     public ResponseEntity<HashMap<String, Object>> sendRatingOfUser(@Valid @RequestBody CourseRateDTO courseRateDTO, BindingResult result, Principal principal){
         HashMap<String, Object> json = new HashMap<>();
-        ArrayList<String> strings = new ArrayList<>();
+        StringBuilder stringBuilder = new StringBuilder();
         if (result.hasErrors()) {
             for (FieldError error : result.getFieldErrors()) {
-                strings.add(error.getDefaultMessage());
+                stringBuilder.append(error.getDefaultMessage()).append(" ");
             }
-            json.put("msgProgress",strings);
+            json.put("msg",stringBuilder);
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
         if(principal == null){

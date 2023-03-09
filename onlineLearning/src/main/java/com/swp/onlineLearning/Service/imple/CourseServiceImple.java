@@ -14,7 +14,9 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -609,7 +611,7 @@ public class CourseServiceImple implements CourseService {
             courseRepo.saveAll(courses);
         } catch (Exception e) {
             log.error("Update status for list of course fail, view log " + e.getMessage());
-            json.put("msg", "Update status for list of course fail, view log ");
+            json.put("msgProgress", errorString);
             return json;
         }
         if (errorString.isEmpty()) {
