@@ -68,7 +68,7 @@ public class MarketingServicImple implements MarketingService {
         json.put("msg","Get list of image successfully");
         json.put("marketingImage", marketingDTOS);
         json.replace("type", true);
-        return null;
+        return json;
     }
 
 }
