@@ -69,7 +69,7 @@ public class CommonActionController {
         }
     }
     @GetMapping("/course")
-    public ResponseEntity<HashMap<String, Object>> CourseDetail(@RequestParam("id") Integer id, Principal principal){
+    public ResponseEntity<HashMap<String, Object>> getCourseDetail(@RequestParam("id") Integer id, Principal principal){
         String authority;
         if(principal == null){
             authority = roleGuest;

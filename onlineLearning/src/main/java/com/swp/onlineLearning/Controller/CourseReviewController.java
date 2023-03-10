@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 @RestController
@@ -99,8 +98,7 @@ public class CourseReviewController {
     public ResponseEntity<HashMap<String, Object>> getVoucherForUser(@RequestParam("id") Integer id, Principal principal){
         HashMap<String, Object> json = new HashMap<>();
         if(principal == null){
-            json.put("msg", "Invalid account information");
-            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(json, HttpStatus.OK);
         }
         json = voucherService.getVoucherForUser(id, principal.getName());
 

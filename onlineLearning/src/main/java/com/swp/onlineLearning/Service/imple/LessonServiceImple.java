@@ -28,12 +28,8 @@ public class LessonServiceImple implements LessonService {
     private CourseRateRepo courseRateRepo;
     @Autowired
     private QuizResultRepo quizResultRepo;
-    @Autowired
-    private CommentRepo commentRepo;
     @Value("${lessonType.quiz}")
     private String typeQuiz;
-    @Value("${lessonType.listening}")
-    private String typeListening;
     @Value("${role.user}")
     private String roleUser;
     @Value("${quiz.pass.condition}")
@@ -155,35 +151,35 @@ public class LessonServiceImple implements LessonService {
             lessonDTO.setValue(questionDTOS);
         }
 
-        if (lesson.getLessonType().getName().equals(typeListening)) {
-            List<Comment> comments = commentRepo.findFatherComByLesson(lesson.getLessonID());
-
-            List<CommentDTO> commentDTOList = new ArrayList<>();
-            CommentDTO commentDTO;
-            List<Comment> childComment;
-            List<ChildCommentDTO> childCommentDTOS;
-            ChildCommentDTO childCommentDTO;
-            for (Comment comment : comments) {
-                childComment = commentRepo.findByParentIDAndLesson(comment, lesson);
-
-                commentDTO = new CommentDTO();
-                commentDTO.setCommentID(comment.getCommentID());
-                commentDTO.setComment(comment.getComment());
-
-                childCommentDTOS = new ArrayList<>();
-                for (Comment comment1 : childComment) {
-                    childCommentDTO = new ChildCommentDTO();
-                    childCommentDTO.setCommentID(comment1.getCommentID());
-                    childCommentDTO.setComment(comment1.getComment());
-                    childCommentDTO.setCommentLocation(comment1.getCommentLocation());
-
-                    childCommentDTOS.add(childCommentDTO);
-                }
-                commentDTO.setChildComment(childCommentDTOS);
-                commentDTOList.add(commentDTO);
-            }
-            lessonDTO.setComments(commentDTOList);
-        }
+//        if (lesson.getLessonType().getName().equals(typeListening)) {
+//            List<Comment> comments = commentRepo.findFatherComByLesson(lesson.getLessonID());
+//
+//            List<CommentDTO> commentDTOList = new ArrayList<>();
+//            CommentDTO commentDTO;
+//            List<Comment> childComment;
+//            List<ChildCommentDTO> childCommentDTOS;
+//            ChildCommentDTO childCommentDTO;
+//            for (Comment comment : comments) {
+//                childComment = commentRepo.findByParentIDAndLesson(comment, lesson);
+//
+//                commentDTO = new CommentDTO();
+//                commentDTO.setCommentID(comment.getCommentID());
+//                commentDTO.setComment(comment.getComment());
+//
+//                childCommentDTOS = new ArrayList<>();
+//                for (Comment comment1 : childComment) {
+//                    childCommentDTO = new ChildCommentDTO();
+//                    childCommentDTO.setCommentID(comment1.getCommentID());
+//                    childCommentDTO.setComment(comment1.getComment());
+//                    childCommentDTO.setCommentLocation(comment1.getCommentLocation());
+//
+//                    childCommentDTOS.add(childCommentDTO);
+//                }
+//                commentDTO.setChildComment(childCommentDTOS);
+//                commentDTOList.add(commentDTO);
+//            }
+//            lessonDTO.setComments(commentDTOList);
+//        }
         json.put("lessonPakages", lessonPakages);
         json.put("currentLearningLesson", currentLearningLesson);
         json.put("currentLearningPackage", currentLearningPackage);

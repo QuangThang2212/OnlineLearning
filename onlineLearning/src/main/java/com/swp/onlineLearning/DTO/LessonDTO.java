@@ -1,13 +1,11 @@
 package com.swp.onlineLearning.DTO;
 
-import com.swp.onlineLearning.Model.Comment;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -24,7 +22,6 @@ public class LessonDTO {
     @NotNull
     private String type;
     private List<QuestionDTO> value;
-    private List<CommentDTO> comments;
     private String lessonPackageName;
     private QuizResultDTO quizResultDTO;
 }

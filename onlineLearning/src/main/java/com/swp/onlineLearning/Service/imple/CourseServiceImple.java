@@ -819,8 +819,8 @@ public class CourseServiceImple implements CourseService {
             return json;
         }
         if (!course.isStatus()) {
-            log.error("Course with id " + id + " not allow access");
-            json.put("msg", "Course with id " + id + " not allow access");
+            log.error("Course with id " + id + " are in the inactive mode for further update, we will come back soon");
+            json.put("msg", "Course with id " + id + " are in the inactive mode for further update, we will come back soon");
             return json;
         }
         boolean enrolled = false;
