@@ -2,6 +2,7 @@ package com.swp.onlineLearning.Controller;
 
 import com.swp.onlineLearning.DTO.CourseRateDTO;
 import com.swp.onlineLearning.DTO.EnrollInformationDTO;
+import com.swp.onlineLearning.DTO.ErrorMessageDTO;
 import com.swp.onlineLearning.Service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 @RestController
@@ -62,12 +64,16 @@ public class CourseReviewController {
     @PostMapping("/rating/create")
     public ResponseEntity<HashMap<String, Object>> sendRatingOfUser(@Valid @RequestBody CourseRateDTO courseRateDTO, BindingResult result, Principal principal){
         HashMap<String, Object> json = new HashMap<>();
-        StringBuilder stringBuilder = new StringBuilder();
+        ArrayList<ErrorMessageDTO> errorMessageDTOS = new ArrayList<>();
+        ErrorMessageDTO errorMessageDTO;
         if (result.hasErrors()) {
             for (FieldError error : result.getFieldErrors()) {
-                stringBuilder.append(error.getDefaultMessage()).append(" ");
+                errorMessageDTO = new ErrorMessageDTO();
+                errorMessageDTO.setErrorName(error.getObjectName());
+                errorMessageDTO.setMessage(error.getDefaultMessage());
+                errorMessageDTOS.add(errorMessageDTO);
             }
-            json.put("msg",stringBuilder);
+            json.put("msgProgress",errorMessageDTOS);
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
         if(principal == null){

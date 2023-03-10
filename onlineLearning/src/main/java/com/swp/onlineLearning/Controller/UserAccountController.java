@@ -1,6 +1,7 @@
 package com.swp.onlineLearning.Controller;
 
 import com.swp.onlineLearning.Config.JWTUtil;
+import com.swp.onlineLearning.DTO.ErrorMessageDTO;
 import com.swp.onlineLearning.DTO.UserDTO;
 import com.swp.onlineLearning.Model.Account;
 import com.swp.onlineLearning.Service.AccountService;
@@ -12,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
@@ -28,8 +28,6 @@ import java.util.HashMap;
 public class UserAccountController {
     @Autowired
     private AccountService accountService;
-    @Autowired
-    private UserDetailsService userDetailsService;
     @Autowired
     private AuthenticationManager authenticationManager;
 
@@ -60,12 +58,16 @@ public class UserAccountController {
     @PostMapping("/register")
     public ResponseEntity<HashMap<String, Object>> register(@Valid @RequestBody UserDTO userDTO, BindingResult result){
         HashMap<String, Object> json = new HashMap<>();
-        ArrayList<String> strings = new ArrayList<>();
+        ArrayList<ErrorMessageDTO> errorMessageDTOS = new ArrayList<>();
+        ErrorMessageDTO errorMessageDTO;
         if (result.hasErrors()) {
             for (FieldError error : result.getFieldErrors()) {
-                strings.add(error.getDefaultMessage());
+                errorMessageDTO = new ErrorMessageDTO();
+                errorMessageDTO.setErrorName(error.getObjectName());
+                errorMessageDTO.setMessage(error.getDefaultMessage());
+                errorMessageDTOS.add(errorMessageDTO);
             }
-            json.put("msgProgress",strings);
+            json.put("msgProgress",errorMessageDTOS);
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
         json = accountService.save(userDTO);

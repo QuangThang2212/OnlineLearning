@@ -126,10 +126,10 @@ public class VoucherServiceImple implements VoucherService {
             json.put("msg", "Invalid type " + voucherDTO.getType());
             return json;
         }
-        voucher.setStartApply(voucherDTO.getStartApply());
+        voucher.setStartApply(Math.round(voucherDTO.getStartApply()));
         voucher.setName(voucherDTO.getName());
         voucher.setDescription(voucherDTO.getDescription());
-        voucher.setDuration(voucherDTO.getDuration());
+        voucher.setDuration(Math.round(voucherDTO.getDuration()));
 
         try {
             voucherRepo.save(voucher);

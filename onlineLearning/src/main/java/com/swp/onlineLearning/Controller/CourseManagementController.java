@@ -1,6 +1,7 @@
 package com.swp.onlineLearning.Controller;
 
 import com.swp.onlineLearning.DTO.CourseDTO;
+import com.swp.onlineLearning.DTO.ErrorMessageDTO;
 import com.swp.onlineLearning.DTO.ListOfCourseDTO;
 import com.swp.onlineLearning.DTO.ListOfPackageDTO;
 import com.swp.onlineLearning.Service.CourseService;
@@ -15,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -26,12 +26,16 @@ public class CourseManagementController {
     @PostMapping("/create")
     public ResponseEntity<HashMap<String, Object>> createNewCourse(@Valid @RequestBody CourseDTO courseDTO, BindingResult result){
         HashMap<String, Object> json = new HashMap<>();
-        ArrayList<String> strings = new ArrayList<>();
+        ArrayList<ErrorMessageDTO> errorMessageDTOS = new ArrayList<>();
+        ErrorMessageDTO errorMessageDTO;
         if (result.hasErrors()) {
             for (FieldError error : result.getFieldErrors()) {
-                strings.add(error.getDefaultMessage());
+                errorMessageDTO = new ErrorMessageDTO();
+                errorMessageDTO.setErrorName(error.getObjectName());
+                errorMessageDTO.setMessage(error.getDefaultMessage());
+                errorMessageDTOS.add(errorMessageDTO);
             }
-            json.put("msgProgress",strings);
+            json.put("msgProgress",errorMessageDTOS);
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
         json = courseService.save(courseDTO);

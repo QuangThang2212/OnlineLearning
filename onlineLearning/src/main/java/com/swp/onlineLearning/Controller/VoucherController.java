@@ -1,6 +1,7 @@
 package com.swp.onlineLearning.Controller;
 
 import com.swp.onlineLearning.DTO.ChangeStatusVoucherDTO;
+import com.swp.onlineLearning.DTO.ErrorMessageDTO;
 import com.swp.onlineLearning.DTO.VoucherDTO;
 import com.swp.onlineLearning.Service.VoucherService;
 import lombok.RequiredArgsConstructor;
@@ -26,12 +27,16 @@ public class VoucherController {
     @PostMapping("/create")
     public ResponseEntity<HashMap<String, Object>> createVoucher(@Valid @RequestBody VoucherDTO voucherDTO, BindingResult result){
         HashMap<String, Object> json = new HashMap<>();
-        ArrayList<String> strings = new ArrayList<>();
+        ArrayList<ErrorMessageDTO> errorMessageDTOS = new ArrayList<>();
+        ErrorMessageDTO errorMessageDTO;
         if (result.hasErrors()) {
             for (FieldError error : result.getFieldErrors()) {
-                strings.add(error.getDefaultMessage());
+                errorMessageDTO = new ErrorMessageDTO();
+                errorMessageDTO.setErrorName(error.getObjectName());
+                errorMessageDTO.setMessage(error.getDefaultMessage());
+                errorMessageDTOS.add(errorMessageDTO);
             }
-            json.put("msgProgress",strings);
+            json.put("msgProgress",errorMessageDTOS);
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
         json = voucherService.createVoucher(voucherDTO);

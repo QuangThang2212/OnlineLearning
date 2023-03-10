@@ -1,5 +1,6 @@
 package com.swp.onlineLearning.Controller;
 
+import com.swp.onlineLearning.DTO.ErrorMessageDTO;
 import com.swp.onlineLearning.DTO.RoleDTO;
 import com.swp.onlineLearning.DTO.UserDTO;
 import com.swp.onlineLearning.Service.AccountService;
@@ -81,12 +82,16 @@ public class AccountManagerController {
     @PostMapping("/update")
     public ResponseEntity<HashMap<String, Object>> getUserInformation(@Valid @RequestBody UserDTO userDTO, BindingResult result, Principal principal) {
         HashMap<String, Object> json = new HashMap<>();
-        ArrayList<String> strings = new ArrayList<>();
+        ArrayList<ErrorMessageDTO> errorMessageDTOS = new ArrayList<>();
+        ErrorMessageDTO errorMessageDTO;
         if (result.hasErrors()) {
             for (FieldError error : result.getFieldErrors()) {
-                strings.add(error.getDefaultMessage());
+                errorMessageDTO = new ErrorMessageDTO();
+                errorMessageDTO.setErrorName(error.getObjectName());
+                errorMessageDTO.setMessage(error.getDefaultMessage());
+                errorMessageDTOS.add(errorMessageDTO);
             }
-            json.put("msgProgress",strings);
+            json.put("msgProgress",errorMessageDTOS);
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
         if(principal==null){

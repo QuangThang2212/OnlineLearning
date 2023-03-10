@@ -453,7 +453,9 @@ public class CourseServiceImple implements CourseService {
 
 
         boolean deleteStatus;
-        ArrayList<String> errorString = new ArrayList<>();
+        ArrayList<ErrorMessageDTO> errorMessageDTOS = new ArrayList<>();
+        StringBuilder stringBuilder;
+        ErrorMessageDTO errorMessageDTO;
         List<Lesson> deleteLesson = new ArrayList<>();
         List<LessonPackage> deleteLessonPackage = new ArrayList<>();
         if (listOfPackageDTO.getDeleteQuestion() != null) {
@@ -476,7 +478,13 @@ public class CourseServiceImple implements CourseService {
                 if (typeQuiz.equals(lesson.getLessonType().getName())) {
                     if (!lesson.getQuizResults().isEmpty()) {
                         log.error("Lesson with id " + lesson.getLessonID() + " have user learning history, can't delete \n");
-                        errorString.add("Lesson with id " + lesson.getLessonID() + " have user learning history, can't delete");
+                        errorMessageDTO = new ErrorMessageDTO();
+                        stringBuilder = new StringBuilder();
+                        stringBuilder.append("Lesson ").append(lesson.getName()).append(" (").append(lesson.getLessonID()).append(") ").append("in Topic ").append(lesson.getLessonPackage().getName());
+                        errorMessageDTO.setErrorName(stringBuilder.toString());
+                        errorMessageDTO.setMessage("have user learning history, can't delete");
+
+                        errorMessageDTOS.add(errorMessageDTO);
                         deleteStatus = false;
                     } else {
                         if (quizCount > 0) {
@@ -492,7 +500,13 @@ public class CourseServiceImple implements CourseService {
                 }
                 if (typeListening.equals(lesson.getLessonType().getName()) && !lesson.getComments().isEmpty()) {
                     log.error("Lesson with id " + lesson.getLessonID() + " have user learning history, can't delete \n");
-                    errorString.add("Lesson with id " + lesson.getLessonID() + " have user learning history, can't delete");
+                    errorMessageDTO = new ErrorMessageDTO();
+                    stringBuilder = new StringBuilder();
+                    stringBuilder.append("Lesson ").append(lesson.getName()).append(" (").append(lesson.getLessonID()).append(") ").append("in Topic ").append(lesson.getLessonPackage().getName());
+                    errorMessageDTO.setErrorName(stringBuilder.toString());
+                    errorMessageDTO.setMessage("have user learning history, can't delete");
+
+                    errorMessageDTOS.add(errorMessageDTO);
                     deleteStatus = false;
                 }
                 if (deleteStatus) {
@@ -513,13 +527,25 @@ public class CourseServiceImple implements CourseService {
                 for (Lesson lessonDelete : fkPackage.getLessons()) {
                     if (typeQuiz.equals(lessonDelete.getLessonType().getName()) && !lessonDelete.getQuizResults().isEmpty()) {
                         log.error("Lesson with id " + lessonDelete.getLessonID() + " have user learning history, can't delete \n");
-                        errorString.add("Lesson with id " + lessonDelete.getLessonID() + " have user learning history, can't delete");
+                        errorMessageDTO = new ErrorMessageDTO();
+                        stringBuilder = new StringBuilder();
+                        stringBuilder.append("Lesson ").append(lessonDelete.getName()).append(" (").append(lessonDelete.getLessonID()).append(") ").append("in Topic ").append(lessonDelete.getLessonPackage().getName());
+                        errorMessageDTO.setErrorName(stringBuilder.toString());
+                        errorMessageDTO.setMessage("have user learning history, can't delete");
+
+                        errorMessageDTOS.add(errorMessageDTO);
                         deleteStatus = false;
                         break;
                     }
                     if (typeListening.equals(lessonDelete.getLessonType().getName()) && !lessonDelete.getComments().isEmpty()) {
                         log.error("Lesson with id " + lessonDelete.getLessonID() + " have user learning history, can't delete \n");
-                        errorString.add("Lesson with id " + lessonDelete.getLessonID() + " have user learning history, can't delete");
+                        errorMessageDTO = new ErrorMessageDTO();
+                        stringBuilder = new StringBuilder();
+                        stringBuilder.append("Lesson ").append(lessonDelete.getName()).append(" (").append(lessonDelete.getLessonID()).append(") ").append("in Topic ").append(lessonDelete.getLessonPackage().getName());
+                        errorMessageDTO.setErrorName(stringBuilder.toString());
+                        errorMessageDTO.setMessage("have user learning history, can't delete");
+
+                        errorMessageDTOS.add(errorMessageDTO);
                         deleteStatus = false;
                         break;
                     }
@@ -559,10 +585,10 @@ public class CourseServiceImple implements CourseService {
         }
 
         log.error("Update process for list of topic successfully");
-        if (errorString.isEmpty()) {
+        if (errorMessageDTOS.isEmpty()) {
             json.put("msg", "Update process for list of topic successfully");
         } else {
-            json.put("msgProcess", errorString);
+            json.put("msgProcess", errorMessageDTOS);
         }
         json.put("type", true);
         return json;
@@ -575,7 +601,9 @@ public class CourseServiceImple implements CourseService {
         List<Integer> listOfCourseId = listOfCourseDTO.getCourseID();
         Course course;
         List<Course> courses = new ArrayList<>();
-        ArrayList<String> errorString = new ArrayList<>();
+        ArrayList<ErrorMessageDTO> errorMessageDTOS = new ArrayList<>();
+        StringBuilder stringBuilder;
+        ErrorMessageDTO errorMessageDTO;
         boolean status = listOfCourseDTO.isStatus();
 
         List<LessonPackage> lessonPackages;
@@ -587,14 +615,26 @@ public class CourseServiceImple implements CourseService {
                 lessonPackages = course.getLessonPackages();
                 if (lessonPackages.size() < 2) {
                     log.error("Course with id: " + course.getCourseID() + " have only " + lessonPackages.size() + " topic, not allow public");
-                    errorString.add("Course with id: " + course.getCourseID() + " have only " + lessonPackages.size() + " topic, not allow public");
+                    errorMessageDTO = new ErrorMessageDTO();
+                    stringBuilder = new StringBuilder();
+                    stringBuilder.append("Course ").append(course.getCourseName()).append(" (").append(course.getCourseID()).append(")");
+                    errorMessageDTO.setErrorName(stringBuilder.toString());
+                    errorMessageDTO.setMessage(" have only " + lessonPackages.size() + " topic, not allow public");
+
+                    errorMessageDTOS.add(errorMessageDTO);
                     continue;
                 }
                 for (LessonPackage lessonPackage : lessonPackages) {
                     lessonLis = lessonPackage.getLessons();
                     if (lessonLis.size() < 2) {
                         log.error("Topic with id: " + lessonPackage.getPackageID() + " have only " + lessonLis.size() + " lesson, not allow public");
-                        errorString.add("Topic with id: " + lessonPackage.getPackageID() + " have only " + lessonLis.size() + " lesson, not allow public");
+                        errorMessageDTO = new ErrorMessageDTO();
+                        stringBuilder = new StringBuilder();
+                        stringBuilder.append("Topic ").append(lessonPackage.getName()).append(" (").append(lessonPackage.getPackageID()).append(")").append(" in course ").append(course.getCourseName()).append(" (").append(course.getCourseID()).append(")");
+                        errorMessageDTO.setErrorName(stringBuilder.toString());
+                        errorMessageDTO.setMessage(" have only " + lessonLis.size() + " lesson, not allow public");
+
+                        errorMessageDTOS.add(errorMessageDTO);
                         lessonCheck = true;
                         break;
                     }
@@ -606,19 +646,26 @@ public class CourseServiceImple implements CourseService {
             course.setStatus(status);
 
             courses.add(course);
+            errorMessageDTO = new ErrorMessageDTO();
+            stringBuilder = new StringBuilder();
+            stringBuilder.append("Course ").append(course.getCourseName()).append(" (").append(course.getCourseID()).append(")");
+            errorMessageDTO.setErrorName(stringBuilder.toString());
+            errorMessageDTO.setMessage(" update status successfully");
+
+            errorMessageDTOS.add(errorMessageDTO);
         }
         try {
             courseRepo.saveAll(courses);
         } catch (Exception e) {
             log.error("Update status for list of course fail, view log " + e.getMessage());
-            json.put("msgProgress", errorString);
+            json.put("msg", "Update Status Fail");
             return json;
         }
-        if (errorString.isEmpty()) {
+        if (errorMessageDTOS.isEmpty()) {
             log.error("Update status for list of course successfully");
             json.put("msg", "Update status for list of course successfully");
         } else {
-            json.put("msgProgress", errorString);
+            json.put("msgProgress", errorMessageDTOS);
         }
         json.put("type", true);
         return json;
