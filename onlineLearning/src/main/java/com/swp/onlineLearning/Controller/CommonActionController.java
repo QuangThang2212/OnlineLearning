@@ -125,13 +125,8 @@ public class CommonActionController {
         }
     }
     @GetMapping("/get_user")
-    public ResponseEntity<HashMap<String, Object>> getUser(Principal principal) {
-        HashMap<String, Object> json = new HashMap<>();
-        if(principal==null){
-            json.put("msg", "Invalid account");
-            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
-        }
-        json = accountService.findUser(principal.getName());
+    public ResponseEntity<HashMap<String, Object>> getUser(@RequestParam("id")Integer id) {
+        HashMap<String, Object> json = accountService.findUser(id);
         String type = json.get("type").toString();
         if(type.equals("true")){
             return new ResponseEntity<>(json, HttpStatus.OK);
