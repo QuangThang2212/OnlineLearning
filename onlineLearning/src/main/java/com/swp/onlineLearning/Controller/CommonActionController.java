@@ -1,9 +1,6 @@
 package com.swp.onlineLearning.Controller;
 
-import com.swp.onlineLearning.Service.BlogService;
-import com.swp.onlineLearning.Service.CourseRateService;
-import com.swp.onlineLearning.Service.CourseService;
-import com.swp.onlineLearning.Service.MarketingService;
+import com.swp.onlineLearning.Service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,6 +25,8 @@ public class CommonActionController {
     private CourseRateService courseRateService;
     @Autowired
     private MarketingService marketingService;
+    @Autowired
+    private AccountService accountService;
     @GetMapping("/home")
     public ResponseEntity<HashMap<String, Object>> homePage(Principal principal){
         String authority;
@@ -124,5 +123,21 @@ public class CommonActionController {
         }else{
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
+    }
+    @GetMapping("/get_user")
+    public ResponseEntity<HashMap<String, Object>> getUser(Principal principal) {
+        HashMap<String, Object> json = new HashMap<>();
+        if(principal==null){
+            json.put("msg", "Invalid account");
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
+        json = accountService.findUser(principal.getName());
+        String type = json.get("type").toString();
+        if(type.equals("true")){
+            return new ResponseEntity<>(json, HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
+
     }
 }

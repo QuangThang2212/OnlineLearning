@@ -262,6 +262,7 @@ public class AccountServiceImple implements AccountService, UserDetailsService {
         userDTO.setGmail(account.getGmail());
 
         log.info("successfully");
+        json.put("user",userDTO);
         json.put("msg","successfully");
         json.put("type", true);
         return json;
