@@ -63,7 +63,7 @@ public class UserAccountController {
         if (result.hasErrors()) {
             for (FieldError error : result.getFieldErrors()) {
                 errorMessageDTO = new ErrorMessageDTO();
-                errorMessageDTO.setErrorName((String) error.getRejectedValue());
+                errorMessageDTO.setErrorName(error.getField());
                 errorMessageDTO.setMessage(error.getDefaultMessage());
                 errorMessageDTOS.add(errorMessageDTO);
             }
