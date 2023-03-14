@@ -51,7 +51,7 @@ public class CommonActionController {
         }
     }
     @GetMapping("/course/getAllCourse")
-    public ResponseEntity<HashMap<String, Object>> getAllCourse(@RequestParam("limit") int limit, @RequestParam("page") int page, Principal principal){
+    public ResponseEntity<HashMap<String, Object>> getAllCourse(@RequestParam("limit") int limit, @RequestParam("page") int page, Principal principal, @RequestParam("type") String typeFilter){
         String authority;
         if(principal== null){
             authority = roleGuest;
