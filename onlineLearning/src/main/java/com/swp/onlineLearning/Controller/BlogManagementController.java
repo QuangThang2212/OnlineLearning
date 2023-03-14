@@ -1,6 +1,8 @@
 package com.swp.onlineLearning.Controller;
 
 import com.swp.onlineLearning.DTO.BlogDTO;
+import com.swp.onlineLearning.DTO.BlogReactDTO;
+import com.swp.onlineLearning.Service.BlogReactService;
 import com.swp.onlineLearning.Service.BlogService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +25,8 @@ import java.util.HashMap;
 public class BlogManagementController {
     @Autowired
     private BlogService blogService;
+    @Autowired
+    private BlogReactService blogReactService;
 
     @PostMapping("/create")
     public ResponseEntity<HashMap<String, Object>> createBlogType(@Valid @RequestBody BlogDTO blogDTO, BindingResult result, Principal principal) throws Exception{
@@ -47,7 +51,7 @@ public class BlogManagementController {
     }
 
     @GetMapping("/my_blog")
-    public ResponseEntity<HashMap<String, Object>> getAllCourseType() throws Exception {
+    public ResponseEntity<HashMap<String, Object>> getAllMyBlog() throws Exception {
         HashMap<String, Object> json = blogService.findAll();
         return new ResponseEntity<>(json, HttpStatus.OK);
     }
@@ -73,6 +77,31 @@ public class BlogManagementController {
         }else{
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
+    }
+    @PostMapping("/save")
+    public ResponseEntity<HashMap<String, Object>> saveBlog(@Valid @RequestBody BlogReactDTO blogReactDTO, @RequestParam("id") String id, BindingResult result) throws Exception{
+        HashMap<String, Object> json = new HashMap<>();
+        ArrayList<String> strings = new ArrayList<>();
+        if (result.hasErrors()) {
+            for (FieldError error : result.getFieldErrors()) {
+                strings.add(error.getDefaultMessage());
+            }
+            json.put("msgProgress",strings);
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
+        json = blogReactService.save(id);
+
+        String type = json.get("type").toString();
+        if(type.equals("true")){
+            return new ResponseEntity<>(json, HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
+    }
+    @GetMapping("mark_blog")
+    public ResponseEntity<HashMap<String, Object>> getMarkBlog() throws Exception {
+        HashMap<String, Object> json = blogReactService.getBlogMark();
+        return new ResponseEntity<>(json, HttpStatus.OK);
     }
 
 }
