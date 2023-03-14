@@ -13,6 +13,6 @@ import javax.persistence.*;
 public class BlogReactDTO {
 
     private String blogReactID;
-    private int account;
-    private String blog;
+    private int accountID;
+    private String blogID;
 }

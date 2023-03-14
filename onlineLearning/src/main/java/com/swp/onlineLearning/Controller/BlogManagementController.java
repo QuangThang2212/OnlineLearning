@@ -98,7 +98,7 @@ public class BlogManagementController {
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
     }
-    @GetMapping("mark_blog")
+    @GetMapping("/mark_blog")
     public ResponseEntity<HashMap<String, Object>> getMarkBlog() throws Exception {
         HashMap<String, Object> json = blogReactService.getBlogMark();
         return new ResponseEntity<>(json, HttpStatus.OK);

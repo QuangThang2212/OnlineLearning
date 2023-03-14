@@ -43,13 +43,13 @@ public class BlogReactServiceImple implements BlogReactService {
             json.put("msg", "Not allow pass object null");
             return json;
         }
-        Blog blog = blogRepo.findByBlogID(blogReactDTO.getBlog());
+        Blog blog = blogRepo.findByBlogID(blogReactDTO.getBlogID());
         if (blog == null) {
             log.error("blog isn't exist in system");
             json.put("msg", "blog isn't exist in system");
             return json;
         }
-        Account account = accountRepo.findByAccountID(blogReactDTO.getAccount());
+        Account account = accountRepo.findByAccountID(blogReactDTO.getAccountID());
         if (account == null) {
             log.error("account isn't exist in system");
             json.put("msg", "account isn't exist in system");
@@ -58,7 +58,8 @@ public class BlogReactServiceImple implements BlogReactService {
         ModelMapper modelMapper = new ModelMapper();
         BlogReact blogReact = new BlogReact();
         modelMapper.map(blogReactDTO, blogReact);
-
+        blogReactDTO.setBlogID(blog.getBlogID());
+        blogReactDTO.setAccountID(account.getAccountID());
         try {
         blogReactRepo.save(blogReact);
 
