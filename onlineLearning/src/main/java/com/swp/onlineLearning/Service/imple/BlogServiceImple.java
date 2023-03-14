@@ -89,33 +89,28 @@ public class BlogServiceImple implements BlogService {
         HashMap<String, Object> json = new HashMap<>();
         json.put("type", false);
 
-        CourseType courseType = courseTypeRepo.findByCourseTypeID(blogDTO.getCourseTypeId());
-        if (courseType == null) {
-            log.error("Blog type with id " + blogDTO.getBlogID() + " isn't found in system");
-            json.put("msg", "Blog type with id " + blogDTO.getBlogID() + " isn't found in system");
+        Blog blog = blogRepo.findByBlogID(blogDTO.getBlogID());
+        if (blog == null) {
+            log.error("blog with id " + blogDTO.getBlogID() + " isn't found in system");
+            json.put("msg", "blog with id " + blogDTO.getBlogID() + " isn't found in system");
             return json;
         }
-        Blog blogNameCheck = blogRepo.findByBlogName(blogDTO.getBlogName());
-        if (blogNameCheck != null) {
-            log.error(blogDTO.getBlogName() + " name had already exist in system, can't update");
-            json.put("msg", blogDTO.getBlogName() + " name had already exist in system, can't update");
-            return json;
-        }
-        ModelMapper modelMapper = new ModelMapper();
-        CourseType updateObject = new CourseType();
-        modelMapper.map(blogDTO, updateObject);
+
+        CourseType courseType = courseTypeRepo.findByCourseTypeName(blogDTO.getCourseTypeName());
+        CourseType courseType1 = courseTypeRepo.findByCourseTypeID(blogDTO.getCourseTypeId());
+        blog.setBlogName(blogDTO.getBlogName());
+        blog.setBlogMeta(blogDTO.getBlogMeta());
+        blog.setContent(blogDTO.getContent());
+        blog.setCourseType(courseType1);
         try {
-            courseTypeRepo.save(updateObject);
-        } catch (Exception e) {
-            log.error("Update blog type with name " + updateObject.getCourseTypeName() + " fail\n" + e.getMessage());
-            json.put("msg", "Update blog type with name " + updateObject.getCourseTypeName() + " fail");
+            blogRepo.save(blog);
+        }catch (Exception e){
+            log.error("Update blog infomation fail");
+            json.put("msg","Update blog infomation fail");
             return json;
         }
-
-        log.info("Update new blog type with name:" + updateObject.getCourseTypeName() + " successfully");
-        json.put("msg", "Update new blog type with name:" + updateObject.getCourseTypeName() + " successfully");
-        json.replace("type", true);
-
+        json.put("msg","Update blog infomation successfukky");
+        json.put("type",true);
         return json;
     }
 
@@ -244,6 +239,14 @@ public class BlogServiceImple implements BlogService {
 
         json.put("blogDetail", blogDTO);
         json.put("type", true);
+        return json;
+    }
+
+    @Override
+    public HashMap<String, Object> findAll() {
+        HashMap<String, Object> json = new HashMap<>();
+        List<Blog> blogList = blogRepo.findAll();
+        json.put("blogs", blogList);
         return json;
     }
 
