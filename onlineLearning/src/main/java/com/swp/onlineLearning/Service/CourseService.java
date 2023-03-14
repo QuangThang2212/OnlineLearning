@@ -13,7 +13,7 @@ public interface CourseService {
     HashMap<String, Object> delete(Integer id);
     HashMap<String, Object> saveLessonPackage(ListOfPackageDTO listOfPackageDTO, int id);
     HashMap<String, Object> changeCourseStatus(ListOfCourseDTO listOfCourseDTO);
-    HashMap<String, Object> findAll(int page, int size, String role);
+    HashMap<String, Object> findAll(int page, int size, String role, String typeFilter, String sort, boolean kind, String search);
     HashMap<String, Object> findCourseByIdToUpdate(Integer id);
     HashMap<String, Object> findAllPurchaseCourse(int page, int size, String search);
     HashMap<String, Object> findCourseById(String authority, Integer id);

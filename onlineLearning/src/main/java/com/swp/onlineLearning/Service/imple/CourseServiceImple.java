@@ -673,7 +673,7 @@ public class CourseServiceImple implements CourseService {
 
 
     @Override
-    public HashMap<String, Object> findAll(int page, int size, String role) {
+    public HashMap<String, Object> findAll(int page, int size, String role, String typeFilter, String sort, boolean kind, String search) {
         HashMap<String, Object> json = new HashMap<>();
         json.put("type", false);
         if (page < 1 || size < 1) {

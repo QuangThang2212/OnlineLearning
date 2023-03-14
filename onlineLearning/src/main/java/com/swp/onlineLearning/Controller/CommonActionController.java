@@ -51,14 +51,15 @@ public class CommonActionController {
         }
     }
     @GetMapping("/course/getAllCourse")
-    public ResponseEntity<HashMap<String, Object>> getAllCourse(@RequestParam("limit") int limit, @RequestParam("page") int page, Principal principal, @RequestParam("type") String typeFilter){
+    public ResponseEntity<HashMap<String, Object>> getAllCourse(Principal principal, @RequestParam("limit") int limit, @RequestParam("page") int page,
+                                                                @RequestParam("type") String typeFilter, @RequestParam("sort") String sort,  @RequestParam("kind") boolean kind, @RequestParam("search") String search){
         String authority;
         if(principal== null){
             authority = roleGuest;
         }else{
             authority = principal.getName();
         }
-        HashMap<String, Object> json = courseService.findAll(page, limit, authority);
+        HashMap<String, Object> json = courseService.findAll(page, limit, authority, typeFilter, sort, kind, search);
 
         String type = json.get("type").toString();
         if(type.equals("true")){
