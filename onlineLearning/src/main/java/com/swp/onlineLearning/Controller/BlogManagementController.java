@@ -80,7 +80,7 @@ public class BlogManagementController {
         }
     }
     @PostMapping("/save")
-    public ResponseEntity<HashMap<String, Object>> saveBlog(@Valid @RequestBody BlogReactDTO blogReactDTO, @RequestParam("id") String id, BindingResult result) throws Exception{
+    public ResponseEntity<HashMap<String, Object>> saveBlog(@Valid @RequestBody BlogReactDTO blogReactDTO, BindingResult result) throws Exception{
         HashMap<String, Object> json = new HashMap<>();
         ArrayList<String> strings = new ArrayList<>();
         if (result.hasErrors()) {
