@@ -15,7 +15,7 @@ import java.security.Principal;
 import java.util.HashMap;
 
 @RestController
-@RequestMapping("/comment")
+@RequestMapping("/api/comment")
 @RequiredArgsConstructor
 @Slf4j
 public class CommentController {
