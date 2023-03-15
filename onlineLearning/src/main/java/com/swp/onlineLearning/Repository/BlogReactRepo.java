@@ -9,6 +9,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface BlogReactRepo extends JpaRepository<BlogReact,Integer> {
-
+    BlogReact findByBlogReactID(String id);
     Page<BlogReact> findAll(Pageable pageable);
 }

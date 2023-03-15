@@ -68,6 +68,7 @@ public class BlogManagementController {
             json.put("msg",stringBuilder.toString());
             return new ResponseEntity<>(json,HttpStatus.BAD_REQUEST);
         }
+
         blogDTO.setBlogID(id);
         json = blogService.update(blogDTO);
 
@@ -89,7 +90,9 @@ public class BlogManagementController {
             json.put("msgProgress",strings);
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
-        json = blogReactService.save(id);
+
+        json = blogReactService.save(blogReactDTO);
+
 
         String type = json.get("type").toString();
         if(type.equals("true")){

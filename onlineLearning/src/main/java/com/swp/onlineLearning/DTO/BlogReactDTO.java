@@ -15,4 +15,5 @@ public class BlogReactDTO {
     private String blogReactID;
     private int accountID;
     private String blogID;
+
 }
