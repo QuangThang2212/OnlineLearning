@@ -42,7 +42,6 @@ public class CommonActionController {
     @GetMapping("/blog")
     public ResponseEntity<HashMap<String, Object>> getALlBlog(@RequestParam("page") int page, @RequestParam("limit") int limit) {
         HashMap<String, Object> json = blogService.findAllBlog(page, limit);
-
         String type = json.get("type").toString();
         if (type.equals("true")) {
             return new ResponseEntity<>(json, HttpStatus.OK);

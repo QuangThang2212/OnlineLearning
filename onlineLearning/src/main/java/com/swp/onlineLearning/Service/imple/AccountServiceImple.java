@@ -174,7 +174,6 @@ public class AccountServiceImple implements AccountService, UserDetailsService {
             json.put("msg", "Not allow null account to register");
             return json;
         }
-
         return null;
     }
 
@@ -249,11 +248,11 @@ public class AccountServiceImple implements AccountService, UserDetailsService {
     }
 
     @Override
-    public HashMap<String, Object> findUser(Integer id) {
+    public HashMap<String, Object> findUser(String gmail) {
         HashMap<String, Object> json = new HashMap<>();
         json.put("type", false);
 
-        Account account = accountRepo.findByAccountID(id);
+        Account account = accountRepo.findByGmail(gmail);
         if(account==null){
             log.error("Account not found");
             json.put("msg", "Account not found");
