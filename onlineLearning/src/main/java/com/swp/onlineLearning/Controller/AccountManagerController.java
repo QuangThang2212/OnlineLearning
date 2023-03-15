@@ -63,24 +63,26 @@ public class AccountManagerController {
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
     }
+
     @GetMapping("/get_user")
     public ResponseEntity<HashMap<String, Object>> getUser(Principal principal) {
         HashMap<String, Object> json = new HashMap<>();
-        if(principal==null){
+        if (principal == null) {
             json.put("msg", "Invalid account");
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
         json = accountService.findUser(principal.getName());
         String type = json.get("type").toString();
-        if(type.equals("true")){
+        if (type.equals("true")) {
             return new ResponseEntity<>(json, HttpStatus.OK);
-        }else{
+        } else {
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
 
     }
+
     @PostMapping("/update")
-    public ResponseEntity<HashMap<String, Object>> getUserInformation(@Valid @RequestBody UserDTO userDTO, BindingResult result, Principal principal) {
+    public ResponseEntity<HashMap<String, Object>> updateInformation(@Valid @RequestBody UserDTO userDTO, BindingResult result, Principal principal) {
         HashMap<String, Object> json = new HashMap<>();
         ArrayList<ErrorMessageDTO> errorMessageDTOS = new ArrayList<>();
         ErrorMessageDTO errorMessageDTO;
@@ -91,18 +93,18 @@ public class AccountManagerController {
                 errorMessageDTO.setMessage(error.getDefaultMessage());
                 errorMessageDTOS.add(errorMessageDTO);
             }
-            json.put("msgProgress",errorMessageDTOS);
+            json.put("msgProgress", errorMessageDTOS);
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
-        if(principal==null){
+        if (principal == null) {
             json.put("msg", "Invalid account");
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
         json = accountService.update(userDTO, principal.getName());
         String type = json.get("type").toString();
-        if(type.equals("true")){
-            return new ResponseEntity<>(json,HttpStatus.OK);
-        }else return new ResponseEntity<>(json,HttpStatus.BAD_REQUEST);
+        if (type.equals("true")) {
+            return new ResponseEntity<>(json, HttpStatus.OK);
+        } else return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
 
     }
 }
