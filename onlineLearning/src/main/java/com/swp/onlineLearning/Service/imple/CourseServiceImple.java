@@ -1018,4 +1018,39 @@ public class CourseServiceImple implements CourseService {
         json.put("type", true);
         return json;
     }
+
+    @Override
+    public HashMap<String, Object> getEnrollCourseForUser(Integer id) {
+        HashMap<String, Object> json = new HashMap<>();
+        json.put("type", false);
+        List Course = courseRepo.getCourseForUserOnProcess(id);
+        if (Course == null) {
+            log.error("Course with id " + id + " isn't exist in system");
+            json.put("msg", "Course with id " + id + " isn't exist in system");
+            return json;
+        }
+        List<CourseDTO> courseDTOS = new ArrayList<>();
+        for (Course course : courseRepo.getCourseForUser(id)) {
+
+            CourseDTO courseDTO = new CourseDTO();
+            courseDTO.setCourseID(course.getCourseID());
+            courseDTO.setCourseName(course.getCourseName());
+            courseDTO.setDescription(course.getDescription());
+            courseDTO.setImage(course.getImage());
+        }
+        for (Course course : courseRepo.getCourseForUser(id)){
+            CourseDTO courseDTO = new CourseDTO();
+            courseDTO.setCourseID(course.getCourseID());
+            courseDTO.setCourseName(course.getCourseName());
+            courseDTO.setDescription(course.getDescription());
+            courseDTO.setImage(course.getImage());
+
+        }
+
+        json.put("course", courseDTOS);
+        json.put("type", true);
+        return json;
+
+    }
+
 }

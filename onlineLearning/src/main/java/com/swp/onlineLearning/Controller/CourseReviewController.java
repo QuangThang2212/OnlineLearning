@@ -29,40 +29,43 @@ public class CourseReviewController {
     private CourseRateService courseRateService;
     @Autowired
     private VoucherService voucherService;
+
     @PostMapping("/enroll")
-    public ResponseEntity<HashMap<String, Object>> enrollCourse(@RequestBody EnrollInformationDTO enrollInformationDTO, Principal principal){
+    public ResponseEntity<HashMap<String, Object>> enrollCourse(@RequestBody EnrollInformationDTO enrollInformationDTO, Principal principal) {
         HashMap<String, Object> json = new HashMap<>();
-        if(principal == null){
+        if (principal == null) {
             json.put("msg", "Invalid account information");
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
         json = courseService.enrollCourse(principal.getName(), enrollInformationDTO);
 
         String type = json.get("type").toString();
-        if(type.equals("true")){
+        if (type.equals("true")) {
             return new ResponseEntity<>(json, HttpStatus.OK);
-        }else{
+        } else {
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
     }
+
     @GetMapping("/lesson")
-    public ResponseEntity<HashMap<String, Object>> getLessonForUser(@RequestParam("courseid") Integer courseID, @RequestParam("lessonid") Integer lessonID, Principal principal){
+    public ResponseEntity<HashMap<String, Object>> getLessonForUser(@RequestParam("courseid") Integer courseID, @RequestParam("lessonid") Integer lessonID, Principal principal) {
         HashMap<String, Object> json = new HashMap<>();
-        if(principal == null){
+        if (principal == null) {
             json.put("msg", "Invalid account information");
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
-        json = lessonService.getLessonForLearning(courseID,lessonID,principal.getName());
+        json = lessonService.getLessonForLearning(courseID, lessonID, principal.getName());
 
         String type = json.get("type").toString();
-        if(type.equals("true")){
+        if (type.equals("true")) {
             return new ResponseEntity<>(json, HttpStatus.OK);
-        }else{
+        } else {
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
     }
+
     @PostMapping("/rating/create")
-    public ResponseEntity<HashMap<String, Object>> sendRatingOfUser(@Valid @RequestBody CourseRateDTO courseRateDTO, BindingResult result, Principal principal){
+    public ResponseEntity<HashMap<String, Object>> sendRatingOfUser(@Valid @RequestBody CourseRateDTO courseRateDTO, BindingResult result, Principal principal) {
         HashMap<String, Object> json = new HashMap<>();
         ArrayList<ErrorMessageDTO> errorMessageDTOS = new ArrayList<>();
         ErrorMessageDTO errorMessageDTO;
@@ -73,46 +76,49 @@ public class CourseReviewController {
                 errorMessageDTO.setMessage(error.getDefaultMessage());
                 errorMessageDTOS.add(errorMessageDTO);
             }
-            json.put("msgProgress",errorMessageDTOS);
+            json.put("msgProgress", errorMessageDTOS);
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
-        if(principal == null){
+        if (principal == null) {
             json.put("msg", "Invalid account information");
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
-        json = courseRateService.createCourseRate(courseRateDTO,principal.getName());
+        json = courseRateService.createCourseRate(courseRateDTO, principal.getName());
 
         String type = json.get("type").toString();
-        if(type.equals("true")){
+        if (type.equals("true")) {
             return new ResponseEntity<>(json, HttpStatus.OK);
-        }else{
+        } else {
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
     }
+
     @GetMapping("/get_purchase_course")
-    public ResponseEntity<HashMap<String, Object>> getPurchaseCourse(@RequestParam("page") Integer page, @RequestParam("limit") Integer limit, @RequestParam("search") String search){
-        HashMap<String, Object> json = courseService.findAllPurchaseCourse(page,limit,search);
+    public ResponseEntity<HashMap<String, Object>> getPurchaseCourse(@RequestParam("page") Integer page, @RequestParam("limit") Integer limit, @RequestParam("search") String search) {
+        HashMap<String, Object> json = courseService.findAllPurchaseCourse(page, limit, search);
 
         String type = json.get("type").toString();
-        if(type.equals("true")){
+        if (type.equals("true")) {
             return new ResponseEntity<>(json, HttpStatus.OK);
-        }else{
+        } else {
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
     }
+
     @GetMapping("/getAllVoucherForUser")
-    public ResponseEntity<HashMap<String, Object>> getVoucherForUser(@RequestParam("id") Integer id, Principal principal){
+    public ResponseEntity<HashMap<String, Object>> getVoucherForUser(@RequestParam("id") Integer id, Principal principal) {
         HashMap<String, Object> json = new HashMap<>();
-        if(principal == null){
+        if (principal == null) {
             return new ResponseEntity<>(json, HttpStatus.OK);
         }
         json = voucherService.getVoucherForUser(id, principal.getName());
 
         String type = json.get("type").toString();
-        if(type.equals("true")){
+        if (type.equals("true")) {
             return new ResponseEntity<>(json, HttpStatus.OK);
-        }else{
+        } else {
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
     }
+
 }

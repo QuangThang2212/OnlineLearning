@@ -1,10 +1,7 @@
 package com.swp.onlineLearning.Service.imple;
 
-import com.swp.onlineLearning.DTO.RoleDTO;
-import com.swp.onlineLearning.DTO.UserDTO;
-import com.swp.onlineLearning.Model.Account;
-import com.swp.onlineLearning.Model.CourseRate;
-import com.swp.onlineLearning.Model.RoleUser;
+import com.swp.onlineLearning.DTO.*;
+import com.swp.onlineLearning.Model.*;
 import com.swp.onlineLearning.Repository.AccountRepo;
 import com.swp.onlineLearning.Repository.RoleRepo;
 import com.swp.onlineLearning.Service.AccountService;

@@ -32,5 +32,12 @@ public interface CourseRepo extends JpaRepository<Course, Integer> {
     List<Course> findTop8FreePopularCourse();
     @Query(nativeQuery = true, value = "Select * From Course Where Price!=0 Order By number_of_enroll DESC LIMIT 8")
     List<Course> findTop8FamousPaidCourses();
+    @Query(nativeQuery = true, value = "Select c.courseid, c.course_name, c.image, c.description  from course c join course_rate cr on c.courseid = cr.courseid" +
+            " and cr.accountid = ?1 and cr.status = 0")
+    List<Course> getCourseForUserOnProcess(Integer id);
+    @Query(nativeQuery = true, value = "Select c.courseid, c.course_name, c.image, c.description  from course c join course_rate cr on c.courseid = cr.courseid" +
+            " and cr.accountid = ?1 and cr.status = 1")
+    List<Course> getCourseForUser(Integer id);
+
 
 }
