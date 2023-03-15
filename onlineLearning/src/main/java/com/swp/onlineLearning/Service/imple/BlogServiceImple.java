@@ -60,6 +60,7 @@ public class BlogServiceImple implements BlogService {
 
         blogDTO.setCreateDate(LocalDateTime.now());
         String id = blogDTO.getGmail().substring(0, 2) + "Blg" + LocalDateTime.now();
+
         blogDTO.setBlogID(id);
 
         ModelMapper modelMapper = new ModelMapper();

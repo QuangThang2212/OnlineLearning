@@ -4,6 +4,7 @@ import com.swp.onlineLearning.DTO.BlogReactDTO;
 import com.swp.onlineLearning.Model.Account;
 import com.swp.onlineLearning.Model.Blog;
 import com.swp.onlineLearning.Model.BlogReact;
+import com.swp.onlineLearning.Model.Course;
 import com.swp.onlineLearning.Repository.AccountRepo;
 import com.swp.onlineLearning.Repository.BlogReactRepo;
 import com.swp.onlineLearning.Repository.BlogRepo;
@@ -63,24 +64,25 @@ public class BlogReactServiceImple implements BlogReactService {
                 json.put("msg", "blog isn't exist in system");
                 return json;
             }
-
-
             Account account = accountRepo.findByAccountID(blogReactDTO.getAccountID());
             if (account == null) {
                 log.error("account isn't exist in system");
                 json.put("msg", "account isn't exist in system");
                 return json;
             }
+            String id = blogReactDTO.getGmail().substring(0, 2);
+            blogReact.setBlogReactID(id);
 
             blogReactDTO.setBlogID(blog.getBlogID());
             blogReactDTO.setAccountID(account.getAccountID());
-            ModelMapper modelMapper = new ModelMapper();
-            modelMapper.map(blogReactDTO, blogReact);
+//            ModelMapper modelMapper = new ModelMapper();
+//            modelMapper.map(blogReactDTO, blogReact);
             blogReact.setBlog(blog);
             blogReact.setAccount(account);
-            try {
-                blogReactRepo.save(blogReact);
 
+            try {
+            blogReactRepo.save(blogReact);
+//             json.put("id",result.getBlogReactID());
             } catch (Exception e) {
                 log.error("Love Blog fail\n" + e.getMessage());
                 json.put("msg", "Love Blog fail\n");

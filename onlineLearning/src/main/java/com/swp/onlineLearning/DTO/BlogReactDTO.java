@@ -16,4 +16,6 @@ public class BlogReactDTO {
     private int accountID;
     private String blogID;
 
+    private String gmail;
+
 }

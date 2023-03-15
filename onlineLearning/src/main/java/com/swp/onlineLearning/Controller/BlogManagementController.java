@@ -80,7 +80,7 @@ public class BlogManagementController {
         }
     }
     @PostMapping("/save")
-    public ResponseEntity<HashMap<String, Object>> saveBlog(@Valid @RequestBody BlogReactDTO blogReactDTO, BindingResult result) throws Exception{
+    public ResponseEntity<HashMap<String, Object>> saveBlog(@Valid @RequestBody BlogReactDTO blogReactDTO, BindingResult result, Principal principal) throws Exception{
         HashMap<String, Object> json = new HashMap<>();
         ArrayList<String> strings = new ArrayList<>();
         if (result.hasErrors()) {
@@ -90,7 +90,7 @@ public class BlogManagementController {
             json.put("msgProgress",strings);
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
-
+        blogReactDTO.setGmail(principal.getName());
         json = blogReactService.save(blogReactDTO);
 
 
