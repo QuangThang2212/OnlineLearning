@@ -21,9 +21,10 @@ import java.util.HashMap;
 public class CommentController {
     @Autowired
     private CommentService commentService;
+
     @GetMapping("/get")
-    public ResponseEntity<HashMap<String, Object>> getAllComment(@RequestParam("id")String id, @RequestParam("type")String type) {
-        HashMap<String, Object> json = commentService.findAllComment(id, type);
+    public ResponseEntity<HashMap<String, Object>> getAllComment(@RequestParam("id")String id, @RequestParam("type")String type, @RequestParam("page") int page) {
+        HashMap<String, Object> json = commentService.findAllComment(id, type, page);
 
         String typeMessage = json.get("type").toString();
         if(typeMessage.equals("true")){
@@ -33,7 +34,7 @@ public class CommentController {
         }
     }
     @PostMapping("/create")
-    public ResponseEntity<HashMap<String, Object>> createBlog(@RequestBody CommentDTO commentDTO, Principal principal, BindingResult result) {
+    public ResponseEntity<HashMap<String, Object>> createComment(@RequestBody CommentDTO commentDTO, Principal principal, BindingResult result) {
         HashMap<String, Object> json = new HashMap<>();
         StringBuilder stringBuilder = new StringBuilder();
         if (result.hasErrors()) {
@@ -57,7 +58,7 @@ public class CommentController {
         }
     }
     @PostMapping("/update")
-    public ResponseEntity<HashMap<String, Object>> updateBlog(@RequestBody CommentDTO commentDTO, Principal principal, BindingResult result) {
+    public ResponseEntity<HashMap<String, Object>> updateComment(@RequestBody CommentDTO commentDTO, Principal principal, BindingResult result) {
         HashMap<String, Object> json = new HashMap<>();
         StringBuilder stringBuilder = new StringBuilder();
         if (result.hasErrors()) {
@@ -80,5 +81,36 @@ public class CommentController {
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
     }
+    @PostMapping("/delete/{id}")
+    public ResponseEntity<HashMap<String, Object>> deleteComment(@PathVariable("id") String id, Principal principal) {
+        HashMap<String, Object> json = new HashMap<>();
+        if(principal==null){
+            json.put("msg","please login to comment");
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
+        json = commentService.deleteComment(id, principal.getName());
 
+        String typeMessage = json.get("type").toString();
+        if(typeMessage.equals("true")){
+            return new ResponseEntity<>(json, HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
+    }
+    @PostMapping("/report/{id}")
+    public ResponseEntity<HashMap<String, Object>> reportComment(@PathVariable("id") String id, Principal principal) {
+        HashMap<String, Object> json = new HashMap<>();
+        if(principal==null){
+            json.put("msg","please login to comment");
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
+        json = commentService.reportComment(id, principal.getName());
+
+        String typeMessage = json.get("type").toString();
+        if(typeMessage.equals("true")){
+            return new ResponseEntity<>(json, HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
+    }
 }

@@ -5,7 +5,6 @@ import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.validator.constraints.Range;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -23,7 +22,6 @@ public class Comment implements Serializable {
     @Column(nullable = false)
     private LocalDateTime createAt;
     private LocalDateTime updateAt;
-    private byte reportStatus;
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "AccountID", nullable = false)
     private Account account;
