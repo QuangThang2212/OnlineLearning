@@ -1,21 +1,14 @@
 package com.swp.onlineLearning.Controller;
-
-import com.swp.onlineLearning.DTO.ErrorMessageDTO;
 import com.swp.onlineLearning.DTO.RoleDTO;
-import com.swp.onlineLearning.DTO.UserDTO;
+
 import com.swp.onlineLearning.Service.AccountService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 @RestController
@@ -64,44 +57,18 @@ public class AccountManagerController {
         }
     }
     @GetMapping("/get_user")
-    public ResponseEntity<HashMap> getUser(Principal principal) {
-        HashMap<String, Object> json = accountService.findUser(principal.getName());
+    public ResponseEntity<HashMap<String, Object>> getUser(Principal principal) {
+        HashMap<String, Object> json = new HashMap<>();
         if(principal==null){
             json.put("msg", "Invalid account");
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
+        json = accountService.findUser(principal.getName());
         String type = json.get("type").toString();
         if(type.equals("true")){
             return new ResponseEntity<>(json, HttpStatus.OK);
         }else{
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
-
-    }
-    @PostMapping("/update")
-    public ResponseEntity<HashMap> getUserInformation(@Valid @RequestBody UserDTO userDTO, BindingResult result,Principal principal) {
-        HashMap<String, Object> json = new HashMap<>();
-        ArrayList<ErrorMessageDTO> errorMessageDTOS = new ArrayList<>();
-        ErrorMessageDTO errorMessageDTO;
-        json = accountService.update(userDTO, principal.getName());
-        String type = json.get("type").toString();
-//        if (result.hasErrors()) {
-//            for (FieldError error : result.getFieldErrors()) {
-//                errorMessageDTO = new ErrorMessageDTO();
-//                errorMessageDTO.setErrorName(error.getObjectName());
-//                errorMessageDTO.setMessage(error.getDefaultMessage());
-//                errorMessageDTOS.add(errorMessageDTO);
-//            }
-//            json.put("msgProgress",errorMessageDTOS);
-//            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
-//        }
-//        if(principal==null){
-//            json.put("msg", "Invalid account");
-//            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
-//        }
-        if(type.equals("true")){
-            return new ResponseEntity<>(json,HttpStatus.OK);
-        }else return new ResponseEntity<>(json,HttpStatus.BAD_REQUEST);
-
     }
 }
