@@ -97,7 +97,7 @@ public class BlogServiceImple implements BlogService {
             return json;
         }
 
-        CourseType courseType = courseTypeRepo.findByCourseTypeName(blogDTO.getCourseTypeName());
+
         CourseType courseType1 = courseTypeRepo.findByCourseTypeID(blogDTO.getCourseTypeId());
         blog.setBlogName(blogDTO.getBlogName());
         blog.setBlogMeta(blogDTO.getBlogMeta());
