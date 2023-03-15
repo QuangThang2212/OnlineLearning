@@ -13,7 +13,7 @@ public interface AccountService {
 
     HashMap<String, Object> changRole(RoleDTO roleDTO);
     HashMap<String, Object> findBAllCourseExpert();
-    HashMap<String,Object> findUser(String gmail);
+    HashMap<String,Object> findUser(Integer id);
     HashMap<String,Object> update(UserDTO userDTO, String gmail);
 
 }

@@ -33,7 +33,7 @@ public class BlogManagementController {
         if (result.hasErrors()) {
             for (FieldError error : result.getFieldErrors()) {
                 errorMessageDTO = new ErrorMessageDTO();
-                errorMessageDTO.setErrorName(error.getObjectName());
+                errorMessageDTO.setErrorName(error.getField());
                 errorMessageDTO.setMessage(error.getDefaultMessage());
                 errorMessageDTOS.add(errorMessageDTO);
             }
@@ -58,11 +58,15 @@ public class BlogManagementController {
         if (result.hasErrors()) {
             for (FieldError error : result.getFieldErrors()) {
                 errorMessageDTO = new ErrorMessageDTO();
-                errorMessageDTO.setErrorName(error.getObjectName());
+                errorMessageDTO.setErrorName(error.getField());
                 errorMessageDTO.setMessage(error.getDefaultMessage());
                 errorMessageDTOS.add(errorMessageDTO);
             }
             json.put("msgProgress",errorMessageDTOS);
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
+        if(principal==null){
+            json.put("msg","please login to update blog");
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
         blogDTO.setBlogID(blogDTO.getBlogID());

@@ -32,7 +32,7 @@ public class VoucherController {
         if (result.hasErrors()) {
             for (FieldError error : result.getFieldErrors()) {
                 errorMessageDTO = new ErrorMessageDTO();
-                errorMessageDTO.setErrorName(error.getObjectName());
+                errorMessageDTO.setErrorName(error.getField());
                 errorMessageDTO.setMessage(error.getDefaultMessage());
                 errorMessageDTOS.add(errorMessageDTO);
             }

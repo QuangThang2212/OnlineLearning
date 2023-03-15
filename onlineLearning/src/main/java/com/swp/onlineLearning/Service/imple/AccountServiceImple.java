@@ -249,26 +249,25 @@ public class AccountServiceImple implements AccountService, UserDetailsService {
     }
 
     @Override
-    public HashMap<String, Object> findUser(String gmail) {
+    public HashMap<String, Object> findUser(Integer id) {
         HashMap<String, Object> json = new HashMap<>();
         json.put("type", false);
-        if (gmail == null) {
-            log.error("account not allow null value");
-            json.put("msg", "account not allow null value");
+
+        Account account = accountRepo.findByAccountID(id);
+        if(account==null){
+            log.error("Account not found");
+            json.put("msg", "Account not found");
             return json;
         }
-        Account account = accountRepo.findByGmail(gmail);
-        if (account == null) {
-            log.error("account doesn't exist in system");
-            json.put("msg", "account doesn't exist in system");
-            return json;
-        }
+
         UserDTO userDTO = new UserDTO();
         userDTO.setAccountID(account.getAccountID());
         userDTO.setName(account.getName());
         userDTO.setImage(account.getImage());
+        userDTO.setGmail(account.getGmail());
 
         log.info("successfully");
+        json.put("user",userDTO);
         json.put("msg","successfully");
         json.put("type", true);
         return json;

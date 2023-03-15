@@ -1,5 +1,6 @@
 package com.swp.onlineLearning.Repository;
 
+import com.swp.onlineLearning.Model.Blog;
 import com.swp.onlineLearning.Model.Comment;
 import com.swp.onlineLearning.Model.Lesson;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,5 +13,8 @@ import java.util.List;
 public interface CommentRepo extends JpaRepository<Comment, String> {
     @Query(nativeQuery = true, value = "Select * from comment where lessonid = ?1 and parentid = null")
     List<Comment> findFatherComByLesson(int lessonID);
+    @Query(nativeQuery = true, value = "Select * from comment where blogid = ?1 and parentid = null")
+    List<Comment> findFatherComByBlog(String blogID);
     List<Comment> findByParentIDAndLesson(Comment comment, Lesson lesson);
+    List<Comment> findByParentIDAndBlog(Comment comment, Blog blog);
 }

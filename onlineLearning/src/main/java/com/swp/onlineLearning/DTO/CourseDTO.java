@@ -26,7 +26,7 @@ public class CourseDTO {
     @NotNull(message = "Please add image for this course")
     private String image;
     private LocalDateTime createDate;
-    @Range(min = 0)
+    @Range(min = 0, message = "Price must greater than 0")
     @Value("0")
     private double price;
     @Range(min = 0)

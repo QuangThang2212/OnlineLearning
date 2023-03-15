@@ -1,9 +1,6 @@
 package com.swp.onlineLearning.Controller;
 
-import com.swp.onlineLearning.Service.BlogService;
-import com.swp.onlineLearning.Service.CourseRateService;
-import com.swp.onlineLearning.Service.CourseService;
-import com.swp.onlineLearning.Service.MarketingService;
+import com.swp.onlineLearning.Service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,6 +25,8 @@ public class CommonActionController {
     private CourseRateService courseRateService;
     @Autowired
     private MarketingService marketingService;
+    @Autowired
+    private AccountService accountService;
     @GetMapping("/home")
     public ResponseEntity<HashMap<String, Object>> homePage(Principal principal){
         String authority;
@@ -51,14 +50,15 @@ public class CommonActionController {
         }
     }
     @GetMapping("/course/getAllCourse")
-    public ResponseEntity<HashMap<String, Object>> getAllCourse(@RequestParam("limit") int limit, @RequestParam("page") int page, Principal principal){
+    public ResponseEntity<HashMap<String, Object>> getAllCourse(Principal principal, @RequestParam("limit") int limit, @RequestParam("page") int page,
+                                                                @RequestParam("type") String typeFilter, @RequestParam("sort") String sort,  @RequestParam("kind") String kind, @RequestParam("search") String search){
         String authority;
         if(principal== null){
             authority = roleGuest;
         }else{
             authority = principal.getName();
         }
-        HashMap<String, Object> json = courseService.findAll(page, limit, authority);
+        HashMap<String, Object> json = courseService.findAll(page, limit, authority, typeFilter, sort, kind, search);
 
         String type = json.get("type").toString();
         if(type.equals("true")){
@@ -123,5 +123,16 @@ public class CommonActionController {
         }else{
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
+    }
+    @GetMapping("/get_user")
+    public ResponseEntity<HashMap<String, Object>> getUser(@RequestParam("id")Integer id) {
+        HashMap<String, Object> json = accountService.findUser(id);
+        String type = json.get("type").toString();
+        if(type.equals("true")){
+            return new ResponseEntity<>(json, HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
+
     }
 }
