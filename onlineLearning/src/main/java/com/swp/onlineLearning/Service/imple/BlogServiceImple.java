@@ -158,6 +158,7 @@ public class BlogServiceImple implements BlogService {
             blogDTO.setCourseTypeId(a.getCourseType().getCourseTypeID());
             blogDTO.setCourseType(a.getCourseType().getCourseTypeName());
             blogDTO.setAccountID(a.getAccount().getAccountID());
+            blogDTO.setCreateDate(a.getCreateDate());
             blogDTO.setName(a.getAccount().getName());
             blogDTO.setImage(a.getAccount().getImage());
             blogDTO.setCreateDate(a.getCreateDate());
@@ -212,6 +213,7 @@ public class BlogServiceImple implements BlogService {
             blogDTO.setCourseTypeId(a.getCourseType().getCourseTypeID());
             blogDTO.setCourseType(a.getCourseType().getCourseTypeName());
             blogDTO.setAccountID(a.getAccount().getAccountID());
+            blogDTO.setCreateDate(a.getCreateDate());
             blogDTO.setName(a.getAccount().getName());
             blogDTO.setImage(a.getAccount().getImage());
 
@@ -240,6 +242,7 @@ public class BlogServiceImple implements BlogService {
         blogDTO.setContent(blog.getContent());
         blogDTO.setName(blog.getAccount().getName());
         blogDTO.setImage(blog.getAccount().getImage());
+        blogDTO.setCreateDate(blog.getCreateDate());
         blogDTO.setCourseTypeName(blog.getCourseType().getCourseTypeName());
 
         json.put("blogDetail", blogDTO);
