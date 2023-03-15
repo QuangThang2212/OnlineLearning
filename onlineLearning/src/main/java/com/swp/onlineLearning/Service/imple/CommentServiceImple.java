@@ -200,8 +200,25 @@ public class CommentServiceImple implements CommentService {
         HashMap<String, Object> json = new HashMap<>();
         json.put("type", false);
 
+        Account account = accountRepo.findByGmail(gmail);
 
+        Comment comment = commentRepo.getById(commentDTO.getCommentID());
+        if(account.getAccountID()!=comment.getAccount().getAccountID()){
+            log.error("Don't have authority to change account");
+            json.put("msg", "Don't have authority to change account");
+            return json;
+        }
+        comment.setComment(commentDTO.getContent());
 
-        return null;
+        try {
+            commentRepo.save(comment);
+        } catch (Exception e) {
+            log.error("Save comment fail, please try again \n" + e.getMessage());
+            json.put("msg", "Save comment fail, please try again");
+            return json;
+        }
+        json.put("msg", "Update comment successfully");
+        json.put("type", true);
+        return json;
     }
 }

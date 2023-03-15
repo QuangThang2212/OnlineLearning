@@ -1,7 +1,6 @@
 package com.swp.onlineLearning.Controller;
 
 import com.swp.onlineLearning.DTO.CommentDTO;
-import com.swp.onlineLearning.DTO.ErrorMessageDTO;
 import com.swp.onlineLearning.Service.CommentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +12,6 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 @RestController
@@ -34,7 +32,7 @@ public class CommentController {
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
     }
-    @GetMapping("/create")
+    @PostMapping("/create")
     public ResponseEntity<HashMap<String, Object>> createBlog(@RequestBody CommentDTO commentDTO, Principal principal, BindingResult result) {
         HashMap<String, Object> json = new HashMap<>();
         StringBuilder stringBuilder = new StringBuilder();
@@ -58,4 +56,29 @@ public class CommentController {
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
     }
+    @PostMapping("/update")
+    public ResponseEntity<HashMap<String, Object>> updateBlog(@RequestBody CommentDTO commentDTO, Principal principal, BindingResult result) {
+        HashMap<String, Object> json = new HashMap<>();
+        StringBuilder stringBuilder = new StringBuilder();
+        if (result.hasErrors()) {
+            for (FieldError error : result.getFieldErrors()) {
+                stringBuilder.append(error.getDefaultMessage()).append(" ");
+            }
+            json.put("msg",stringBuilder);
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
+        if(principal==null){
+            json.put("msg","please login to comment");
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
+        json = commentService.updateComment(commentDTO, principal.getName());
+
+        String typeMessage = json.get("type").toString();
+        if(typeMessage.equals("true")){
+            return new ResponseEntity<>(json, HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
+    }
+
 }
