@@ -15,5 +15,8 @@ public interface BlogService {
     HashMap<String, Object> getBlogDetail(String id);
     HashMap<String, Object> findAll();
 
+    HashMap<String, Object> findAll();
+
+
 }
 
