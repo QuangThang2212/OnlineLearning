@@ -52,7 +52,7 @@ public class CommonActionController {
     }
     @GetMapping("/course/getAllCourse")
     public ResponseEntity<HashMap<String, Object>> getAllCourse(Principal principal, @RequestParam("limit") int limit, @RequestParam("page") int page,
-                                                                @RequestParam("type") String typeFilter, @RequestParam("sort") String sort,  @RequestParam("kind") boolean kind, @RequestParam("search") String search){
+                                                                @RequestParam("type") String typeFilter, @RequestParam("sort") String sort,  @RequestParam("kind") String kind, @RequestParam("search") String search){
         String authority;
         if(principal== null){
             authority = roleGuest;

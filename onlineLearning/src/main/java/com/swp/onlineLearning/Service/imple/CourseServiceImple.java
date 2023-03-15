@@ -45,6 +45,8 @@ public class CourseServiceImple implements CourseService {
     private VoucherRepo voucherRepo;
     @Autowired
     private PaymentRepo paymentRepo;
+    @Autowired
+    private CourseFilterRepo courseFilterRepo;
     @Value("${lessonType.quiz}")
     private String typeQuiz;
     @Value("${lessonType.listening}")
@@ -673,7 +675,7 @@ public class CourseServiceImple implements CourseService {
 
 
     @Override
-    public HashMap<String, Object> findAll(int page, int size, String role, String typeFilter, String sort, boolean kind, String search) {
+    public HashMap<String, Object> findAll(int page, int size, String role, String typeFilter, String sort, String kind, String search) {
         HashMap<String, Object> json = new HashMap<>();
         json.put("type", false);
         if (page < 1 || size < 1) {
@@ -690,7 +692,34 @@ public class CourseServiceImple implements CourseService {
                 allowAccess = true;
             }
         }
-        int totalNumber = courseRepo.findAll(PageRequest.of(page - 1, size)).getTotalPages();
+        Integer type = null;
+        if (!typeFilter.equals("null")) {
+            try {
+                type = Integer.parseInt(typeFilter);
+            } catch (NumberFormatException e) {
+                log.info("Type value null, not allow filter");
+            }
+        }
+        Boolean kindFilter = null;
+        if (!kind.equals("null")) {
+            try {
+                kindFilter = Boolean.parseBoolean(kind);
+            } catch (NumberFormatException e) {
+                log.info("Type value null, not allow search");
+            }
+        }
+
+        int totalNumber;
+        Page<Course> courses;
+        if (!search.equals("null")) {
+            totalNumber = courseRepo.findAllCourseByKeyWord(search, PageRequest.of(page - 1, size)).getTotalPages();
+            courses = courseRepo.findAllCourseByKeyWord(search, PageRequest.of(page - 1, size));
+        } else {
+            CourseFilterObjectDTO courseFilterObjectDTO = courseFilterRepo.findCourseFilter(type, sort, kindFilter, PageRequest.of(page - 1, size));
+            totalNumber = courseFilterObjectDTO.getTotal();
+            courses = courseFilterObjectDTO.getCourses();
+        }
+
         if (totalNumber == 0) {
             log.error("0 course founded");
             json.put("msg", "0 course founded for page");
@@ -701,10 +730,11 @@ public class CourseServiceImple implements CourseService {
             return json;
         }
 
-        Page<Course> courses = courseRepo.findAll(PageRequest.of(page - 1, size));
         if (courses.isEmpty()) {
             log.error("0 course founded for page " + page);
             json.put("msg", "0 course founded for page " + page);
+            json.put("courses", null);
+            json.put("numPage", totalNumber);
             return json;
         }
 

@@ -15,12 +15,17 @@ public class CommentDTO {
     private String comment;
     private LocalDateTime createAt;
     private LocalDateTime updateAt;
-    private List<ChildCommentDTO> childComment;
+    private List<CommentDTO> childComment;
 
     private int parentID;
     private int commentLocation;
     private int accountID;
     private String blogID;
     private int lessonID;
+
+    private int userID;
+    private String userName;
+    private String image;
+
 
 }

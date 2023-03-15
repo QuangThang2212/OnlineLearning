@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface BlogRepo extends JpaRepository<Blog,Integer> {
+public interface BlogRepo extends JpaRepository<Blog,String> {
     Blog findByBlogName(String BlogName);
     List<Blog> findByCourseType(CourseType courseType);
     Page<Blog> findAll(Pageable pageable);

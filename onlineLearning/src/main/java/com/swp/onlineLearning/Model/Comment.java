@@ -9,6 +9,7 @@ import org.hibernate.validator.constraints.Range;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Data
@@ -28,11 +29,11 @@ public class Comment implements Serializable {
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "AccountID", nullable = false)
     private Account account;
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "ParentID")
     private Comment parentID;
-    @OneToOne(mappedBy = "parentID",cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private Comment parent;
+    @OneToMany(mappedBy = "parentID",cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<Comment> childComment;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "BlogID")
