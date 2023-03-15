@@ -5,6 +5,7 @@ import com.swp.onlineLearning.Model.Account;
 import com.swp.onlineLearning.Model.Blog;
 import com.swp.onlineLearning.Model.Comment;
 import com.swp.onlineLearning.Model.Lesson;
+import com.swp.onlineLearning.Repository.AccountRepo;
 import com.swp.onlineLearning.Repository.BlogRepo;
 import com.swp.onlineLearning.Repository.CommentRepo;
 import com.swp.onlineLearning.Repository.LessonRepo;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,10 +29,13 @@ public class CommentServiceImple implements CommentService {
     private LessonRepo lessonRepo;
     @Autowired
     private BlogRepo blogRepo;
+    @Autowired
+    private AccountRepo accountRepo;
     @Value("${comment.type.blog}")
     private String typeBlog;
     @Value("${comment.type.lesson}")
     private String typeLesson;
+
     @Override
     public HashMap<String, Object> findAllComment(String id, String type) {
         HashMap<String, Object> json = new HashMap<>();
@@ -42,11 +47,11 @@ public class CommentServiceImple implements CommentService {
         List<CommentDTO> childCommentDTOS;
         CommentDTO childCommentDTO;
         Account account;
-        if(type.equals(typeBlog)){
+        if (type.equals(typeBlog)) {
             List<Comment> comments = commentRepo.findFatherComByBlog(id);
 
             Blog blog = blogRepo.findByBlogID(id);
-            if(blog==null){
+            if (blog == null) {
                 log.error("Invalid id, lesson isn't found");
                 json.put("msg", "Invalid id, lesson isn't found");
                 return json;
@@ -57,7 +62,7 @@ public class CommentServiceImple implements CommentService {
 
                 commentDTO = new CommentDTO();
                 commentDTO.setCommentID(comment.getCommentID());
-                commentDTO.setComment(comment.getComment());
+                commentDTO.setContent(comment.getComment());
 
                 account = comment.getAccount();
                 commentDTO.setUserID(account.getAccountID());
@@ -68,8 +73,7 @@ public class CommentServiceImple implements CommentService {
                 for (Comment comment1 : childComment) {
                     childCommentDTO = new CommentDTO();
                     childCommentDTO.setCommentID(comment1.getCommentID());
-                    childCommentDTO.setComment(comment1.getComment());
-                    childCommentDTO.setCommentLocation(comment1.getCommentLocation());
+                    childCommentDTO.setContent(comment1.getComment());
 
                     account = comment1.getAccount();
                     childCommentDTO.setUserID(account.getAccountID());
@@ -81,19 +85,19 @@ public class CommentServiceImple implements CommentService {
                 commentDTO.setChildComment(childCommentDTOS);
                 commentDTOList.add(commentDTO);
             }
-        }else if (type.equals(typeLesson)){
+        } else if (type.equals(typeLesson)) {
             int lessonID;
-            try{
+            try {
                 lessonID = Integer.parseInt(id);
-            }catch (NumberFormatException e){
-                log.error("Invalid lesson id, can't load comment \n"+e.getMessage());
+            } catch (NumberFormatException e) {
+                log.error("Invalid lesson id, can't load comment \n" + e.getMessage());
                 json.put("msg", "Invalid lesson id, can't load comment");
                 return json;
             }
             List<Comment> comments = commentRepo.findFatherComByLesson(lessonID);
 
             Lesson lesson = lessonRepo.findByLessonID(lessonID);
-            if(lesson==null){
+            if (lesson == null) {
                 log.error("Invalid id, lesson isn't found");
                 json.put("msg", "Invalid id, lesson isn't found");
                 return json;
@@ -104,7 +108,7 @@ public class CommentServiceImple implements CommentService {
 
                 commentDTO = new CommentDTO();
                 commentDTO.setCommentID(comment.getCommentID());
-                commentDTO.setComment(comment.getComment());
+                commentDTO.setContent(comment.getComment());
 
                 account = comment.getAccount();
                 commentDTO.setUserID(account.getAccountID());
@@ -115,8 +119,7 @@ public class CommentServiceImple implements CommentService {
                 for (Comment comment1 : childComment) {
                     childCommentDTO = new CommentDTO();
                     childCommentDTO.setCommentID(comment1.getCommentID());
-                    childCommentDTO.setComment(comment1.getComment());
-                    childCommentDTO.setCommentLocation(comment1.getCommentLocation());
+                    childCommentDTO.setContent(comment1.getComment());
 
                     account = comment1.getAccount();
                     childCommentDTO.setUserID(account.getAccountID());
@@ -128,14 +131,77 @@ public class CommentServiceImple implements CommentService {
                 commentDTO.setChildComment(childCommentDTOS);
                 commentDTOList.add(commentDTO);
             }
-        }else{
-            log.error("Invalid comment type("+type+"), can't load comment");
-            json.put("msg", "Invalid comment type("+type+"), can't load comment");
+        } else {
+            log.error("Invalid comment type(" + type + "), can't load comment");
+            json.put("msg", "Invalid comment type(" + type + "), can't load comment");
             return json;
         }
         json.put("comments", commentDTOList);
         json.put("msg", "Get list of course successfully");
         json.put("type", true);
         return json;
+    }
+
+    @Override
+    public HashMap<String, Object> createComment(CommentDTO commentDTO, String gmail) {
+        HashMap<String, Object> json = new HashMap<>();
+        json.put("type", false);
+
+        Account account = accountRepo.findByGmail(gmail);
+
+        Comment comment = new Comment();
+        comment.setComment(commentDTO.getContent());
+        comment.setAccount(account);
+        comment.setCreateAt(LocalDateTime.now());
+        comment.setCommentID(LocalDateTime.now().toString());
+        comment.setReportStatus((byte) 0);
+
+        if (commentDTO.getType().equals(typeBlog)) {
+            Blog blog = blogRepo.findByBlogID(commentDTO.getBlogID());
+            if (blog == null) {
+                log.error("Blog id(" + commentDTO.getBlogID() + ") isn't found, can't save comment");
+                json.put("msg", "Blog id(" + commentDTO.getType() + ") isn't found, can't save comment");
+                return json;
+            }
+            comment.setBlog(blog);
+        } else if (commentDTO.getType().equals(typeLesson)) {
+            Lesson lesson = lessonRepo.findByLessonID(commentDTO.getLessonID());
+            if (lesson == null) {
+                log.error("lesson id(" + commentDTO.getLessonID() + ") isn't found, can't save comment");
+                json.put("msg", "lesson id(" + commentDTO.getLessonID() + ") isn't found, can't save comment");
+                return json;
+            }
+            comment.setLesson(lesson);
+        } else {
+            log.error("Invalid comment type(" + commentDTO.getType() + "), can't save comment");
+            json.put("msg", "Invalid comment type(" + commentDTO.getType() + "), can't save comment");
+            return json;
+        }
+        if (commentDTO.getParentID() != null) {
+            Comment commentParent = commentRepo.getById(commentDTO.getCommentID());
+            comment.setParentID(commentParent);
+        }
+        Comment commentReturn;
+        try {
+            commentReturn = commentRepo.saveAndFlush(comment);
+        } catch (Exception e) {
+            log.error("Save comment fail, please try again \n" + e.getMessage());
+            json.put("msg", "Save comment fail, please try again");
+            return json;
+        }
+        json.put("commentID", commentReturn.getCommentID());
+        json.put("msg", "Save comment successfully");
+        json.put("type", true);
+        return json;
+    }
+
+    @Override
+    public HashMap<String, Object> updateComment(CommentDTO commentDTO, String gmail) {
+        HashMap<String, Object> json = new HashMap<>();
+        json.put("type", false);
+
+
+
+        return null;
     }
 }

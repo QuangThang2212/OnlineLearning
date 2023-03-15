@@ -15,8 +15,9 @@ import java.util.List;
 public interface BlogRepo extends JpaRepository<Blog,String> {
     Blog findByBlogName(String BlogName);
     List<Blog> findByCourseType(CourseType courseType);
+    @Query(nativeQuery = true, value = "select * from blog where blog_name like :name% order by create_date desc")
     Page<Blog> findAll(Pageable pageable);
-    @Query(nativeQuery = true, value = "select * from blog where blog_name like :name%")
+    @Query(nativeQuery = true, value = "select * from blog where blog_name like :name% order by create_date desc")
     Page<Blog> searchByName(Pageable pageable,@Param("name")String name);
     Blog findByBlogID(String id);
 

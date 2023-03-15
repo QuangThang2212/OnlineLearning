@@ -65,6 +65,10 @@ public class BlogManagementController {
             json.put("msgProgress",errorMessageDTOS);
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
+        if(principal==null){
+            json.put("msg","please login to update blog");
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
         blogDTO.setBlogID(blogDTO.getBlogID());
         json = blogService.update(blogDTO);
 

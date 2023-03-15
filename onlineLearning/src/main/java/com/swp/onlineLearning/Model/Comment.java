@@ -23,8 +23,6 @@ public class Comment implements Serializable {
     @Column(nullable = false)
     private LocalDateTime createAt;
     private LocalDateTime updateAt;
-    @Range(min = 0)
-    private int commentLocation;
     private byte reportStatus;
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "AccountID", nullable = false)
@@ -41,4 +39,6 @@ public class Comment implements Serializable {
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "LessonID")
     private Lesson lesson;
+    @OneToMany(mappedBy = "comment",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<CommentReport> commentReports;
 }
