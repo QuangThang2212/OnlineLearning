@@ -49,6 +49,7 @@ public class CommentServiceImple implements CommentService {
         Account account;
         if (type.equals(typeBlog)) {
             List<Comment> comments = commentRepo.findFatherComByBlog(id);
+            System.out.println(comments.size());
 
             Blog blog = blogRepo.findByBlogID(id);
             if (blog == null) {

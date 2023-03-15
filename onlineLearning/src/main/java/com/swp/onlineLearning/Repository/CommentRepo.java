@@ -11,9 +11,9 @@ import java.util.List;
 
 @Repository
 public interface CommentRepo extends JpaRepository<Comment, String> {
-    @Query(nativeQuery = true, value = "Select * from comment where lessonid = ?1 and parentid = null")
+    @Query(nativeQuery = true, value = "Select * from comment where lessonid = ?1 and parentid is null")
     List<Comment> findFatherComByLesson(int lessonID);
-    @Query(nativeQuery = true, value = "Select * from comment where blogid = ?1 and parentid = null")
+    @Query(nativeQuery = true, value = "Select * from comment where blogid = ?1 and parentid is null")
     List<Comment> findFatherComByBlog(String blogID);
     List<Comment> findByParentIDAndLesson(Comment comment, Lesson lesson);
     List<Comment> findByParentIDAndBlog(Comment comment, Blog blog);
