@@ -107,14 +107,15 @@ public class CommentServiceImple implements CommentService {
 
         for (Comment comment : commentList) {
             if (type.equals(typeBlog)) {
-                childComment = commentRepo.findByParentIDAndBlog(comment, blog);
+                childComment = commentRepo.findByParentIDAndBlogOrderByCreateDateDesc(comment, blog);
             } else {
-                childComment = commentRepo.findByParentIDAndLesson(comment, lesson);
+                childComment = commentRepo.findByParentIDAndLessonOrderByCreateDateDesc(comment, lesson);
             }
 
             commentDTO = new CommentDTO();
             commentDTO.setCommentID(comment.getCommentID());
             commentDTO.setContent(comment.getComment());
+            commentDTO.setCreateAt(comment.getCreateAt());
 
             account = comment.getAccount();
             commentDTO.setUserID(account.getAccountID());
@@ -126,6 +127,7 @@ public class CommentServiceImple implements CommentService {
                 childCommentDTO = new CommentDTO();
                 childCommentDTO.setCommentID(comment1.getCommentID());
                 childCommentDTO.setContent(comment1.getComment());
+                childCommentDTO.setCreateAt(comment1.getCreateAt());
 
                 account = comment1.getAccount();
                 childCommentDTO.setUserID(account.getAccountID());
@@ -247,15 +249,15 @@ public class CommentServiceImple implements CommentService {
         }
         List<Comment> comments = comment.getChildComment();
         List<CommentReport> commentReports = new ArrayList<>();
-        for(Comment comment1: comments){
+        for (Comment comment1 : comments) {
             commentReports.addAll(comment1.getCommentReports());
         }
 
         try {
-            if(!commentReports.isEmpty()){
+            if (!commentReports.isEmpty()) {
                 commentReportRepo.deleteInBatch(commentReports);
             }
-            if(!comments.isEmpty()){
+            if (!comments.isEmpty()) {
                 commentRepo.deleteInBatch(comments);
             }
             commentReportRepo.deleteInBatch(comment.getCommentReports());
@@ -282,17 +284,24 @@ public class CommentServiceImple implements CommentService {
             json.put("msg", "invalid comment id");
             return json;
         }
-        if(comment.getCommentReports().size()+1==reportLimit){
+        Account account = accountRepo.findByGmail(gmail);
+        CommentReport commentReport = commentReportRepo.findByCommentAndAccount(comment, account);
+        if (commentReport != null) {
+            json.put("msg", "You had reported comment of user " + comment.getAccount().getName() + ", we will consider this action, thank you for your support with our education community");
+            json.put("type", true);
+            return json;
+        }
+        if (comment.getCommentReports().size() + 1 == reportLimit) {
             List<Comment> comments = comment.getChildComment();
             List<CommentReport> commentReports = new ArrayList<>();
-            for(Comment comment1: comments){
+            for (Comment comment1 : comments) {
                 commentReports.addAll(comment1.getCommentReports());
             }
             try {
-                if(!commentReports.isEmpty()){
+                if (!commentReports.isEmpty()) {
                     commentReportRepo.deleteInBatch(commentReports);
                 }
-                if(!comments.isEmpty()){
+                if (!comments.isEmpty()) {
                     commentRepo.deleteInBatch(comments);
                 }
                 commentReportRepo.deleteInBatch(comment.getCommentReports());
@@ -302,25 +311,21 @@ public class CommentServiceImple implements CommentService {
                 json.put("msg", "Don't have authority to change account");
                 return json;
             }
-        }else{
-            Account account = accountRepo.findByGmail(gmail);
-            CommentReport commentReport = commentReportRepo.findByCommentAndAccount(comment, account);
-            if(commentReport==null){
-                commentReport = new CommentReport();
-                commentReport.setAccount(account);
-                commentReport.setComment(comment);
-                commentReport.setReportAt(LocalDateTime.now());
+        } else {
+            commentReport = new CommentReport();
+            commentReport.setAccount(account);
+            commentReport.setComment(comment);
+            commentReport.setReportAt(LocalDateTime.now());
 
-                try{
-                    commentReportRepo.save(commentReport);
-                }catch (Exception e){
-                    log.error("Report comment fail \n" + e.getMessage());
-                    json.put("msg", "Report comment fail");
-                    return json;
-                }
+            try {
+                commentReportRepo.save(commentReport);
+            } catch (Exception e) {
+                log.error("Report comment fail \n" + e.getMessage());
+                json.put("msg", "Report comment fail");
+                return json;
             }
         }
-        json.put("msg", "You had report comment of user "+comment.getAccount().getName()+", we will consider this action, thank you for your support with our education community");
+        json.put("msg", "You had reported comment of user " + comment.getAccount().getName() + ", we will consider this action, thank you for your support with our education community");
         json.put("type", true);
         return json;
     }
