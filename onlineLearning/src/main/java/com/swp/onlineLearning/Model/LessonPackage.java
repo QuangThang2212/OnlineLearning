@@ -24,7 +24,7 @@ public class LessonPackage implements Serializable {
     @Column(nullable = false)
     private int packageLocation;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "CourseID", nullable = false)
     private Course course;
 

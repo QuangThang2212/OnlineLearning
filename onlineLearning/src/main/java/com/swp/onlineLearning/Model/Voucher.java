@@ -47,11 +47,11 @@ public class Voucher implements Serializable {
     @OneToMany(mappedBy = "voucher", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Payment> payments;
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JsonIgnore
     @JoinColumn(name = "CourseID")
     private Course course;
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JsonIgnore
     @JoinColumn(name = "CourseTypeID")
     private CourseType courseType;

@@ -25,16 +25,16 @@ public class CourseRate implements Serializable {
     private boolean status;
 
     @NotNull
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name = "CourseID", nullable = false)
     private Course course;
 
     @NotNull
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name = "AccountID", nullable = false)
     private Account account;
     @NotNull
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name = "LessonID", nullable = false)
     private Lesson lesson;
 }

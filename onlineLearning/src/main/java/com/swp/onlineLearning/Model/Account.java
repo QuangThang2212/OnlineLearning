@@ -29,7 +29,7 @@ public class Account implements Serializable {
     @Column(nullable = false)
     private LocalDateTime createAt;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "RoleID", nullable = false)
     private RoleUser roleUser;
 

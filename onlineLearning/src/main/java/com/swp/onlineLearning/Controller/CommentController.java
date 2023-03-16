@@ -48,7 +48,13 @@ public class CommentController {
             json.put("msg","please login to comment");
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
-        json = commentService.createComment(commentDTO, principal.getName());
+        try{
+            json = commentService.createComment(commentDTO, principal.getName());
+        }catch (Exception e){
+            log.error("Create comment fail \n"+e.getMessage());
+            json.put("msg","Create comment fail, please try again");
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
 
         String typeMessage = json.get("type").toString();
         if(typeMessage.equals("true")){
@@ -72,7 +78,13 @@ public class CommentController {
             json.put("msg","please login to comment");
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
-        json = commentService.updateComment(commentDTO, principal.getName());
+        try{
+            json = commentService.updateComment(commentDTO, principal.getName());
+        }catch (Exception e){
+            log.error("Update fail \n"+e.getMessage());
+            json.put("msg","Update fail");
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
 
         String typeMessage = json.get("type").toString();
         if(typeMessage.equals("true")){
@@ -88,7 +100,13 @@ public class CommentController {
             json.put("msg","please login to comment");
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
-        json = commentService.deleteComment(id, principal.getName());
+        try{
+            json = commentService.deleteComment(id, principal.getName());
+        }catch (Exception e){
+            log.error("Delete fail \n"+e.getMessage());
+            json.put("msg","Delete fail");
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
 
         String typeMessage = json.get("type").toString();
         if(typeMessage.equals("true")){

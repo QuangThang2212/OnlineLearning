@@ -255,6 +255,7 @@ public class CommentServiceImple implements CommentService {
         }
         List<Comment> comments = comment.getChildComment();
         List<CommentReport> commentReports = new ArrayList<>();
+        List<CommentReport> commentReportParent = comment.getCommentReports();
         for (Comment comment1 : comments) {
             commentReports.addAll(comment1.getCommentReports());
         }
@@ -265,7 +266,7 @@ public class CommentServiceImple implements CommentService {
             if (!comments.isEmpty()) {
                 commentRepo.deleteInBatch(comments);
             }
-            commentReportRepo.deleteInBatch(comment.getCommentReports());
+            commentReportRepo.deleteInBatch(commentReportParent);
             commentRepo.delete(comment);
         } catch (Exception e) {
             log.error("Delete comment fail \n" + e.getMessage());
@@ -300,6 +301,7 @@ public class CommentServiceImple implements CommentService {
         if (comment.getCommentReports().size() + 1 == reportLimit) {
             List<Comment> comments = comment.getChildComment();
             List<CommentReport> commentReports = new ArrayList<>();
+            List<CommentReport> commentReportParent = comment.getCommentReports();
             for (Comment comment1 : comments) {
                 commentReports.addAll(comment1.getCommentReports());
             }
@@ -310,7 +312,7 @@ public class CommentServiceImple implements CommentService {
                 if (!comments.isEmpty()) {
                     commentRepo.deleteInBatch(comments);
                 }
-                commentReportRepo.deleteInBatch(comment.getCommentReports());
+                commentReportRepo.deleteInBatch(commentReportParent);
                 commentRepo.delete(comment);
             } catch (Exception e) {
                 log.error("Delete comment fail \n" + e.getMessage());
