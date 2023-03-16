@@ -128,6 +128,7 @@ public class CommentServiceImple implements CommentService {
                 childCommentDTO.setCommentID(comment1.getCommentID());
                 childCommentDTO.setContent(comment1.getComment());
                 childCommentDTO.setCreateAt(comment1.getCreateAt());
+                childCommentDTO.setParentID(comment.getCommentID());
 
                 account = comment1.getAccount();
                 childCommentDTO.setUserID(account.getAccountID());
@@ -257,7 +258,6 @@ public class CommentServiceImple implements CommentService {
         for (Comment comment1 : comments) {
             commentReports.addAll(comment1.getCommentReports());
         }
-
         try {
             if (!commentReports.isEmpty()) {
                 commentReportRepo.deleteInBatch(commentReports);

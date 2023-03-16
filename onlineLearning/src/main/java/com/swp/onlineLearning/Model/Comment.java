@@ -22,13 +22,13 @@ public class Comment implements Serializable {
     @Column(nullable = false)
     private LocalDateTime createAt;
     private LocalDateTime updateAt;
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "AccountID", nullable = false)
     private Account account;
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "ParentID")
     private Comment parentID;
-    @OneToMany(mappedBy = "parentID",cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "parentID",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Comment> childComment;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
