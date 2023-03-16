@@ -27,7 +27,7 @@ public class Course implements Serializable {
     @Length(min = 5, max = 250, message = "Name length must in range from 5 to 250")
     private String courseName;
     @Column(nullable = false, length = Integer.MAX_VALUE)
-    @Length(min = 200, message = "Description length must greater than 200")
+    @Length(min = 200, message = "Description length must greater zthan 200")
     private String description;
     @NotNull(message = "Please add image for this course")
     private String image;
