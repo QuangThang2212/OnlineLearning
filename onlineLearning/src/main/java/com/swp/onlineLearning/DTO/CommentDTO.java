@@ -21,7 +21,7 @@ public class CommentDTO {
     private LocalDateTime updateAt;
     private List<CommentDTO> childComment;
 
-    private Integer parentID;
+    private String parentID;
     private int accountID;
     private String blogID;
     private int lessonID;

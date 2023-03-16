@@ -107,9 +107,9 @@ public class CommentServiceImple implements CommentService {
 
         for (Comment comment : commentList) {
             if (type.equals(typeBlog)) {
-                childComment = commentRepo.findByParentIDAndBlogOrderByCreateDateDesc(comment, blog);
+                childComment = commentRepo.findByParentIDAndBlogOrderByCreateAtDesc(comment, blog);
             } else {
-                childComment = commentRepo.findByParentIDAndLessonOrderByCreateDateDesc(comment, lesson);
+                childComment = commentRepo.findByParentIDAndLessonOrderByCreateAtDesc(comment, lesson);
             }
 
             commentDTO = new CommentDTO();
@@ -182,7 +182,12 @@ public class CommentServiceImple implements CommentService {
             return json;
         }
         if (commentDTO.getParentID() != null) {
-            Comment commentParent = commentRepo.getById(commentDTO.getCommentID());
+            Comment commentParent = commentRepo.findByCommentID(commentDTO.getParentID());
+            if (commentParent == null) {
+                log.error("lesson id(" + commentDTO.getParentID() + ") isn't found, can't save comment");
+                json.put("msg", "lesson id(" + commentDTO.getParentID() + ") isn't found, can't save comment");
+                return json;
+            }
             comment.setParentID(commentParent);
         }
         Comment commentReturn;
@@ -274,6 +279,7 @@ public class CommentServiceImple implements CommentService {
     }
 
     @Override
+    @Transactional
     public HashMap<String, Object> reportComment(String id, String gmail) {
         HashMap<String, Object> json = new HashMap<>();
         json.put("type", false);
