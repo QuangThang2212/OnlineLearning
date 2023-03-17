@@ -46,7 +46,6 @@ public class PaymentImple implements PaymentService {
 
            paymentDTOS.add(paymentDTO);
         }
-
         log.info("successfully");
         json.put("payments",paymentDTOS);
         json.put("msg","successfully");
