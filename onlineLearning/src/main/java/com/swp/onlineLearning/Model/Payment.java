@@ -24,13 +24,13 @@ public class Payment implements Serializable {
     private LocalDateTime paymentAt;
     @Column(length = 100)
     private String toPerson;
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "AccountID", nullable = false)
     private Account account;
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "CourseID", nullable = false)
     private Course course;
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "VoucherID")
     private Voucher voucher;
 }

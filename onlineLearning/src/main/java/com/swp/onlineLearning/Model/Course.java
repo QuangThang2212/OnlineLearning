@@ -61,7 +61,7 @@ public class Course implements Serializable {
     private List<CourseRate> courseRates;
 
     @NotNull
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "courseTypeID", nullable = false)
     private CourseType courseType;
 

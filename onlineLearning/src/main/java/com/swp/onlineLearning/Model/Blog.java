@@ -37,13 +37,13 @@ public class Blog implements Serializable {
     private byte reportStatus;
 
     @NotNull
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "AccountID", nullable = false)
     @JsonIgnore
     private Account account;
 
     @NotNull
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "CourseTypeID", nullable = false)
     @JsonIgnore
     private CourseType courseType;

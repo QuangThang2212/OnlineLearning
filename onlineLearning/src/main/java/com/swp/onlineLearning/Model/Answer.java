@@ -17,7 +17,7 @@ public class Answer implements Serializable {
     private String answerContent;
     private boolean rightAnswer;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "QuestionID", nullable = false)
     private Question question;
 }

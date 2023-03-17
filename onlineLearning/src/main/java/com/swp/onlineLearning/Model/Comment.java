@@ -5,7 +5,6 @@ import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.validator.constraints.Range;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -23,20 +22,19 @@ public class Comment implements Serializable {
     @Column(nullable = false)
     private LocalDateTime createAt;
     private LocalDateTime updateAt;
-    private byte reportStatus;
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name = "AccountID", nullable = false)
     private Account account;
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "ParentID")
     private Comment parentID;
-    @OneToMany(mappedBy = "parentID",cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "parentID",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Comment> childComment;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "BlogID")
     private Blog blog;
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "LessonID")
     private Lesson lesson;
     @OneToMany(mappedBy = "comment",cascade = CascadeType.ALL, fetch = FetchType.LAZY)

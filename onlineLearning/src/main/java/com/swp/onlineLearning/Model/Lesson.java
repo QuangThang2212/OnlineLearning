@@ -28,12 +28,12 @@ public class Lesson implements Serializable {
     private int lessonLocation;
     private String link;
     private double time;
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "PackageID", nullable = false)
     @JsonIgnore
     private LessonPackage lessonPackage;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "LessonTypeID", nullable = false)
     @JsonIgnore
     private LessonType lessonType;
