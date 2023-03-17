@@ -251,5 +251,19 @@ public class BlogServiceImple implements BlogService {
         return json;
     }
 
+//    @Override
+//    public HashMap<String, Object> getMyBlog(String id) {
+//        HashMap<String, Object> json = new HashMap<>();
+//        json.put("type", false);
+//         Account account = accountRepo.findByGmail(id);
+//         if (account == null){
+//             log.error("account with id " + account.getAccountID() + " isn't found in system");
+//             json.put("msg", "account with id " + account.getAccountID() + " isn't found in system");
+//         }
+//         List<Blog>  blogList= blogRepo.findAll();
+//        json.put("blogs", blogList);
+//        return json;
+//    }
+
 
 }

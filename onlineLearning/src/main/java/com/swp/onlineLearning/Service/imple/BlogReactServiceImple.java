@@ -4,13 +4,11 @@ import com.swp.onlineLearning.DTO.BlogReactDTO;
 import com.swp.onlineLearning.Model.Account;
 import com.swp.onlineLearning.Model.Blog;
 import com.swp.onlineLearning.Model.BlogReact;
-import com.swp.onlineLearning.Model.Course;
 import com.swp.onlineLearning.Repository.AccountRepo;
 import com.swp.onlineLearning.Repository.BlogReactRepo;
 import com.swp.onlineLearning.Repository.BlogRepo;
 import com.swp.onlineLearning.Service.BlogReactService;
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -34,6 +32,7 @@ public class BlogReactServiceImple implements BlogReactService {
     public HashMap<String, Object> save(BlogReactDTO blogReactDTO) {
         HashMap<String, Object> json = new HashMap<>();
         json.put("type", false);
+        Boolean markBlog =false;
 
         if (blogReactDTO == null) {
             log.error("Not allow pass object null");
@@ -42,21 +41,29 @@ public class BlogReactServiceImple implements BlogReactService {
         }
 
         BlogReact blogReact = new BlogReact();
+        System.out.println(blogReactDTO.getBlogReactID());
         if (blogReactDTO.getBlogReactID() != null) {
-            blogReact = blogReactRepo.findByBlogReactID(blogReactDTO.getBlogReactID());
+
+            blogReact = blogReactRepo.findByBlogReactID(blogReact.getBlogReactID());
             if (blogReact == null) {
                 log.error("blogReact with id: " + blogReactDTO.getBlogReactID() + " isn't found in system");
                 json.put("msg", "blogReact with id: " + blogReactDTO.getBlogReactID() + " isn't found in system");
                 return json;
             }
+            blogReactDTO.setAccountID(blogReact.getAccount().getAccountID());
+            blogReactDTO.setBlogID(blogReact.getBlog().getBlogID());
             try {
-                blogReactRepo.delete(blogReact);
+                markBlog=true;
+               blogReactRepo.delete(blogReact);
 
             } catch (Exception e) {
                 log.error("delete react blog fail\n" + e.getMessage());
                 json.put("msg", "delete react blog fail");
                 return json;
             }
+            log.info("Not Love Blog successfully\n");
+            json.put("msg", "Not Love Blog successfully\n");
+            json.replace("type", true);
         } else {
             Blog blog = blogRepo.findByBlogID(blogReactDTO.getBlogID());
             if (blog == null) {
@@ -70,7 +77,7 @@ public class BlogReactServiceImple implements BlogReactService {
                 json.put("msg", "account isn't exist in system");
                 return json;
             }
-            String id = blogReactDTO.getGmail().substring(0, 2);
+            String id = blogReactDTO.getGmail().substring(0, 2) + "Blg" + LocalDateTime.now();
             blogReact.setBlogReactID(id);
 
             blogReactDTO.setBlogID(blog.getBlogID());
@@ -81,8 +88,10 @@ public class BlogReactServiceImple implements BlogReactService {
             blogReact.setAccount(account);
 
             try {
-            blogReactRepo.save(blogReact);
-//             json.put("id",result.getBlogReactID());
+                markBlog=false;
+            BlogReact result = blogReactRepo.save(blogReact);
+             json.put("id",result.getBlogReactID());
+
             } catch (Exception e) {
                 log.error("Love Blog fail\n" + e.getMessage());
                 json.put("msg", "Love Blog fail\n");
@@ -90,6 +99,7 @@ public class BlogReactServiceImple implements BlogReactService {
             }
             log.info("Love Blog successfully\n");
             json.put("msg", "Love Blog successfully\n");
+
             json.replace("type", true);
         }
 
@@ -100,6 +110,7 @@ public class BlogReactServiceImple implements BlogReactService {
     public HashMap<String, Object> getBlogMark() {
         HashMap<String, Object> json = new HashMap<>();
         List<BlogReact> blogList = blogReactRepo.findAll();
+
         json.put("blogs", blogList);
         return json;
     }
