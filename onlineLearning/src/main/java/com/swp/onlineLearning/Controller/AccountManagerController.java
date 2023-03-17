@@ -110,7 +110,6 @@ public class AccountManagerController {
         } else return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
 
     }
-
     @GetMapping("/getpayment")
     public ResponseEntity<HashMap<String, Object>> getUserPayment(@RequestBody UserDTO UserDTO) {
         HashMap<String, Object> json = paymentService.getPayment(UserDTO);
