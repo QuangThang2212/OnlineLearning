@@ -1,6 +1,5 @@
 package com.swp.onlineLearning.DTO;
 
-import com.swp.onlineLearning.Model.Account;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,7 +17,7 @@ public class BlogDTO {
     @Length(min = 5, max = 100, message = "Blog name length must between 5 to 100")
     @Pattern(regexp = "^[a-zA-Z0-9 ]+$", message = "Type name isn't in the right format, only allow character and number")
     private String blogName;
-    @Length(min = 10, max = 400, message = "Blog meta length must between 10 to 400")
+    @Length(max = 400, message = "Blog meta length must under 400")
     private String blogMeta;
     @Length(min = 20, message = "Blog content length must greater than 20 characters")
     private String content;
