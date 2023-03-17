@@ -13,10 +13,10 @@ import java.io.Serializable;
 public class BlogReact implements Serializable {
     @Id
     private String blogReactID;
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name = "AccountID", nullable = false)
     private Account account;
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name = "BlogID", nullable = false)
     private Blog blog;
 }

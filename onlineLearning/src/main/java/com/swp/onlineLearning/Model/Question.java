@@ -17,7 +17,7 @@ public class Question implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int questionID;
     private String questionContent;
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "LessonID", nullable = false)
     private Lesson lesson;
 

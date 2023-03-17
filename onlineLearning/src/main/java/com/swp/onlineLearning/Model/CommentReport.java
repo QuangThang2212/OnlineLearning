@@ -16,10 +16,10 @@ public class CommentReport {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int reportID;
     private LocalDateTime reportAt;
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "CommentID")
     private Comment comment;
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "AccountID")
     private Account account;
 }
