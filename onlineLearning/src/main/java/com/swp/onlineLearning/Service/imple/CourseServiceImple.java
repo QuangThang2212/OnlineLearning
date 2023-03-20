@@ -1059,31 +1059,35 @@ public class CourseServiceImple implements CourseService {
     public HashMap<String, Object> getEnrollCourseForUser(Integer id) {
         HashMap<String, Object> json = new HashMap<>();
         json.put("type", false);
-        List Course = courseRepo.getCourseForUserOnProcess(id);
+        List<Course> Course = courseRepo.getCourseForUserOnProcess(id);
         if (Course == null) {
             log.error("Course with id " + id + " isn't exist in system");
             json.put("msg", "Course with id " + id + " isn't exist in system");
             return json;
         }
-        List<CourseDTO> courseDTOS = new ArrayList<>();
-        for (Course course : courseRepo.getCourseForUser(id)) {
-
-            CourseDTO courseDTO = new CourseDTO();
-            courseDTO.setCourseID(course.getCourseID());
-            courseDTO.setCourseName(course.getCourseName());
-            courseDTO.setDescription(course.getDescription());
-            courseDTO.setImage(course.getImage());
-        }
-        for (Course course : courseRepo.getCourseForUser(id)){
+        List<CourseDTO> courseDTOProgress = new ArrayList<>();
+        List<CourseDTO> courseDTOFinish = new ArrayList<>();
+        for (Course course : courseRepo.getCourseForUserOnProcess(id)) {
             CourseDTO courseDTO = new CourseDTO();
             courseDTO.setCourseID(course.getCourseID());
             courseDTO.setCourseName(course.getCourseName());
             courseDTO.setDescription(course.getDescription());
             courseDTO.setImage(course.getImage());
 
+            courseDTOProgress.add(courseDTO);
+        }
+        for (Course course : courseRepo.getCourseForUserFinish(id)){
+            CourseDTO courseDTO = new CourseDTO();
+            courseDTO.setCourseID(course.getCourseID());
+            courseDTO.setCourseName(course.getCourseName());
+            courseDTO.setDescription(course.getDescription());
+            courseDTO.setImage(course.getImage());
+
+            courseDTOFinish.add(courseDTO);
         }
 
-        json.put("course", courseDTOS);
+        json.put("completed", courseDTOFinish);
+        json.put("onProcess", courseDTOProgress);
         json.put("type", true);
         return json;
 

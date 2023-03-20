@@ -113,20 +113,22 @@ public class AccountManagerController {
         } else return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
 
     }
-    @GetMapping("/user_course={id}")
-    public ResponseEntity<HashMap<String, Object>> getCourseForUser(@RequestParam("id") Integer id, Principal principal){
-    HashMap<String, Object> json = new HashMap<>();
-    if (principal == null) {
-        return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+
+    @GetMapping("/user_course")
+    public ResponseEntity<HashMap<String, Object>> getCourseForUser(@RequestParam("id") Integer id, Principal principal) {
+        HashMap<String, Object> json = new HashMap<>();
+        if (principal == null) {
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
+        json = courseService.getEnrollCourseForUser(id);
+        String type = json.get("type").toString();
+        if (type.equals("true")) {
+            return new ResponseEntity<>(json, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
     }
-    json = courseService.getEnrollCourseForUser(id);
-    String type = json.get("type").toString();
-    if (type.equals("true")) {
-        return new ResponseEntity<>(json, HttpStatus.OK);
-    } else {
-        return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
-    }
-}
+
     @GetMapping("/getpayment")
     public ResponseEntity<HashMap<String, Object>> getUserPayment(Principal principal) {
         HashMap<String, Object> json = new HashMap<>();
