@@ -7,7 +7,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.Range;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -24,10 +23,8 @@ public class Course implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int courseID;
     @Column(nullable = false, unique = true)
-    @Length(min = 5, max = 250, message = "Name length must in range from 5 to 250")
     private String courseName;
     @Column(nullable = false, length = Integer.MAX_VALUE)
-    @Length(min = 200, message = "Description length must greater than 200")
     private String description;
     @NotNull(message = "Please add image for this course")
     private String image;
@@ -61,7 +58,7 @@ public class Course implements Serializable {
     private List<CourseRate> courseRates;
 
     @NotNull
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "courseTypeID", nullable = false)
     private CourseType courseType;
 

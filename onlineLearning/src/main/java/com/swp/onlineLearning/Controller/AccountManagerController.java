@@ -5,6 +5,7 @@ import com.swp.onlineLearning.DTO.RoleDTO;
 import com.swp.onlineLearning.DTO.UserDTO;
 import com.swp.onlineLearning.Service.AccountService;
 import com.swp.onlineLearning.Service.CourseService;
+import com.swp.onlineLearning.Service.PaymentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,8 @@ public class AccountManagerController {
     private CourseService courseService;
     @Autowired
     private AccountService accountService;
+    @Autowired
+    private PaymentService paymentService;
 
     @GetMapping()
     public ResponseEntity<HashMap<String, Object>> getAllAccount(@RequestParam("page") int page, @RequestParam("limit") int limit, Principal principal) {
@@ -65,6 +68,23 @@ public class AccountManagerController {
         } else {
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @GetMapping("/get_user")
+    public ResponseEntity<HashMap<String, Object>> getUser(Principal principal) {
+        HashMap<String, Object> json = new HashMap<>();
+        if (principal == null) {
+            json.put("msg", "Invalid account");
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
+        json = accountService.findUser(principal.getName());
+        String type = json.get("type").toString();
+        if (type.equals("true")) {
+            return new ResponseEntity<>(json, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
+
     }
 
     @PostMapping("/update")
@@ -107,4 +127,14 @@ public class AccountManagerController {
         return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
     }
 }
+    @GetMapping("/getpayment")
+    public ResponseEntity<HashMap<String, Object>> getUserPayment(@RequestBody UserDTO UserDTO) {
+        HashMap<String, Object> json = paymentService.getPayment(UserDTO);
+        String type = json.get("type").toString();
+        if (type.equals("true")) {
+            return new ResponseEntity<>(json, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
+    }
 }

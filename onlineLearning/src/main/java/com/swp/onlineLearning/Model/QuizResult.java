@@ -29,11 +29,11 @@ public class QuizResult implements Serializable {
     @Column(nullable = false)
     private LocalDateTime finishTime;
     private boolean status;
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "AccountID", nullable = false)
     private Account account;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "LessonID", nullable = false)
     private Lesson lesson;
 }
