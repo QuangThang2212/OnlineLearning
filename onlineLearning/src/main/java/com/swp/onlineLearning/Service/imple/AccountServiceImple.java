@@ -276,6 +276,7 @@ public class AccountServiceImple implements AccountService, UserDetailsService {
         account.setName(userDTO.getName());
         account.setImage(userDTO.getImage());
         try{
+
             accountRepo.save(account);
         }catch (Exception e){
             log.error("Update user information fail");
