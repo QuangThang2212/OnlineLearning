@@ -92,25 +92,33 @@ public class BlogServiceImple implements BlogService {
             json.put("msg", "Blog type with id " + blogDTO.getBlogID() + " isn't found in system");
             return json;
         }
-        Blog blogNameCheck = blogRepo.findByBlogName(blogDTO.getBlogName());
+        Blog blogNameCheck = blogRepo.findByBlogNameForUpdate(blogDTO.getBlogName(), blogDTO.getBlogID());
         if (blogNameCheck != null) {
             log.error(blogDTO.getBlogName() + " name had already exist in system, can't update");
             json.put("msg", blogDTO.getBlogName() + " name had already exist in system, can't update");
             return json;
         }
-        ModelMapper modelMapper = new ModelMapper();
-        CourseType updateObject = new CourseType();
-        modelMapper.map(blogDTO, updateObject);
+        Blog updateObject = blogRepo.findByBlogID(blogDTO.getBlogID());
+        if(updateObject==null){
+            log.error("Invalid id value");
+            json.put("msg", "Invalid id value");
+            return json;
+        }
+        updateObject.setBlogName(blogDTO.getBlogName());
+        updateObject.setBlogMeta(blogDTO.getBlogMeta());
+        updateObject.setContent(blogDTO.getContent());
+        updateObject.setCourseType(courseType);
+
         try {
-            courseTypeRepo.save(updateObject);
+            blogRepo.save(updateObject);
         } catch (Exception e) {
-            log.error("Update blog type with name " + updateObject.getCourseTypeName() + " fail\n" + e.getMessage());
-            json.put("msg", "Update blog type with name " + updateObject.getCourseTypeName() + " fail");
+            log.error("Update blog fail\n" + e.getMessage());
+            json.put("msg", "Update blog fail");
             return json;
         }
 
-        log.info("Update new blog type with name:" + updateObject.getCourseTypeName() + " successfully");
-        json.put("msg", "Update new blog type with name:" + updateObject.getCourseTypeName() + " successfully");
+        log.info("Update successfully");
+        json.put("msg", "Update successfully");
         json.replace("type", true);
 
         return json;
@@ -265,6 +273,7 @@ public class BlogServiceImple implements BlogService {
             blogDTO.setName(blog.getBlogName());
             blogDTO.setBlogID(blog.getBlogID());
             blogDTO.setBlogMeta(blog.getBlogMeta());
+            blogDTO.setBlogName(blog.getBlogName());
             blogDTO.setContent(blog.getContent());
             blogDTO.setCourseTypeId(blog.getCourseType().getCourseTypeID());
             blogDTO.setCourseTypeName(blog.getCourseType().getCourseTypeName());

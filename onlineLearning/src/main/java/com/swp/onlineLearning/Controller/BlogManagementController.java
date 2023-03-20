@@ -52,7 +52,7 @@ public class BlogManagementController {
     }
 
     @PostMapping("/update/id={id}")
-    public ResponseEntity<HashMap<String, Object>> updateBlog(@Valid @RequestBody BlogDTO blogDTO, BindingResult result, Principal principal, @PathVariable("id") int id) {
+    public ResponseEntity<HashMap<String, Object>> updateBlog(@Valid @RequestBody BlogDTO blogDTO, BindingResult result, Principal principal, @PathVariable("id") String id) {
         HashMap<String, Object> json = new HashMap<>();
         ArrayList<ErrorMessageDTO> errorMessageDTOS = new ArrayList<>();
         ErrorMessageDTO errorMessageDTO;
@@ -70,7 +70,7 @@ public class BlogManagementController {
             json.put("msg", "please login to update blog");
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
-        blogDTO.setBlogID(blogDTO.getBlogID());
+        blogDTO.setBlogID(id);
         json = blogService.update(blogDTO);
 
         String type = json.get("type").toString();

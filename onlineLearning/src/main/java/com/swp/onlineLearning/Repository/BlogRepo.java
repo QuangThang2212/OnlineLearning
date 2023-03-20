@@ -22,4 +22,6 @@ public interface BlogRepo extends JpaRepository<Blog,String> {
     Page<Blog> searchByName(Pageable pageable,@Param("name")String name);
     Blog findByBlogID(String id);
     List<Blog> findByAccount(Account account);
+    @Query(nativeQuery = true, value = "select * from blog where blog_name=?1 and blogid != ?2")
+    Blog findByBlogNameForUpdate(String BlogName, String id);
 }
