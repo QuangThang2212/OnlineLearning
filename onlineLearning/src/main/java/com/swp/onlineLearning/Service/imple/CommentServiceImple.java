@@ -253,21 +253,8 @@ public class CommentServiceImple implements CommentService {
             json.put("msg", "Don't have authority to delete comment");
             return json;
         }
-        List<Comment> comments = comment.getChildComment();
-        List<CommentReport> commentReports = new ArrayList<>();
-        List<CommentReport> commentReportParent = comment.getCommentReports();
-        for (Comment comment1 : comments) {
-            commentReports.addAll(comment1.getCommentReports());
-        }
         try {
-            if (!commentReports.isEmpty()) {
-                commentReportRepo.deleteInBatch(commentReports);
-            }
-            if (!comments.isEmpty()) {
-                commentRepo.deleteInBatch(comments);
-            }
-            commentReportRepo.deleteInBatch(commentReportParent);
-            commentRepo.delete(comment);
+            commentRepo.deleteById(comment.getCommentID());
         } catch (Exception e) {
             log.error("Delete comment fail \n" + e.getMessage());
             json.put("msg", "Don't have authority to change account");
@@ -299,21 +286,8 @@ public class CommentServiceImple implements CommentService {
             return json;
         }
         if (comment.getCommentReports().size() + 1 == reportLimit) {
-            List<Comment> comments = comment.getChildComment();
-            List<CommentReport> commentReports = new ArrayList<>();
-            List<CommentReport> commentReportParent = comment.getCommentReports();
-            for (Comment comment1 : comments) {
-                commentReports.addAll(comment1.getCommentReports());
-            }
             try {
-                if (!commentReports.isEmpty()) {
-                    commentReportRepo.deleteInBatch(commentReports);
-                }
-                if (!comments.isEmpty()) {
-                    commentRepo.deleteInBatch(comments);
-                }
-                commentReportRepo.deleteInBatch(commentReportParent);
-                commentRepo.delete(comment);
+                commentRepo.deleteById(comment.getCommentID());
             } catch (Exception e) {
                 log.error("Delete comment fail \n" + e.getMessage());
                 json.put("msg", "Don't have authority to change account");

@@ -1,14 +1,12 @@
 package com.swp.onlineLearning.Model;
 
 import javax.persistence.*;
-import javax.validation.constraints.Max;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.validator.constraints.Length;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -23,12 +21,10 @@ public class Blog implements Serializable {
     @Id
     private String blogID;
     @Column(nullable = false, unique = true)
-    @Length(min = 10, max = 250)
     private String blogName;
     @Column(nullable = false, length = 500)
     private String blogMeta;
     @Column(nullable = false, length = Integer.MAX_VALUE)
-    @Length(min = 20)
     private String content;
     @NotNull
     @Column(nullable = false)
