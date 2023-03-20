@@ -42,7 +42,8 @@ public class PaymentImple implements PaymentService {
             PaymentDTO paymentDTO = new PaymentDTO();
             paymentDTO.setPaymentAt(a.getPaymentAt());
             paymentDTO.setPaymentID(a.getPaymentID());
-            paymentDTO.setCourse(a.getCourse());
+            paymentDTO.setCourseID(a.getCourse().getCourseID());
+            paymentDTO.setCourseName(a.getCourse().getCourseName());
 
             paymentDTOS.add(paymentDTO);
         }
