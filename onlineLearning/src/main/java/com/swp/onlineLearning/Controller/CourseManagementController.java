@@ -4,9 +4,9 @@ import com.swp.onlineLearning.DTO.CourseDTO;
 import com.swp.onlineLearning.DTO.ErrorMessageDTO;
 import com.swp.onlineLearning.DTO.ListOfCourseDTO;
 import com.swp.onlineLearning.DTO.ListOfPackageDTO;
-import com.swp.onlineLearning.Service.AccountService;
 import com.swp.onlineLearning.Service.CourseService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +22,7 @@ import java.util.HashMap;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/course")
+@Slf4j
 public class CourseManagementController {
     @Autowired
     private CourseService courseService;
@@ -56,7 +57,13 @@ public class CourseManagementController {
             json.put("msg", "Not allow id course null");
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
-        json = courseService.saveLessonPackage(lessonPackageDTOS, id);
+        try{
+            json = courseService.saveLessonPackage(lessonPackageDTOS, id);
+        }catch (Exception e) {
+            log.error("Update topics fail\n"+e.getMessage());
+            json.put("msg", "Update topics fail");
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
 
         String type = json.get("type").toString();
         if(type.equals("true")){
