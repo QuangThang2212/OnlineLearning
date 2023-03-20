@@ -77,7 +77,7 @@ public class AccountManagerController {
             json.put("msg", "Invalid account");
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
-        json = accountService.findUser(principal.getName());
+        json = accountService.findUserWithGmail(principal.getName());
         String type = json.get("type").toString();
         if (type.equals("true")) {
             return new ResponseEntity<>(json, HttpStatus.OK);
@@ -112,21 +112,6 @@ public class AccountManagerController {
             return new ResponseEntity<>(json, HttpStatus.OK);
         } else return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
 
-    }
-
-    @GetMapping("/user_course")
-    public ResponseEntity<HashMap<String, Object>> getCourseForUser(@RequestParam("id") Integer id, Principal principal) {
-        HashMap<String, Object> json = new HashMap<>();
-        if (principal == null) {
-            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
-        }
-        json = courseService.getEnrollCourseForUser(id);
-        String type = json.get("type").toString();
-        if (type.equals("true")) {
-            return new ResponseEntity<>(json, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
-        }
     }
 
     @GetMapping("/getpayment")
