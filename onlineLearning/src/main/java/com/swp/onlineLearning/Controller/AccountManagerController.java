@@ -128,8 +128,8 @@ public class AccountManagerController {
     }
 }
     @GetMapping("/getpayment")
-    public ResponseEntity<HashMap<String, Object>> getUserPayment(@RequestBody UserDTO UserDTO) {
-        HashMap<String, Object> json = paymentService.getPayment(UserDTO);
+    public ResponseEntity<HashMap<String, Object>> getUserPayment(@RequestBody UserDTO UserDTO, String gmail) {
+        HashMap<String, Object> json = paymentService.getPayment(gmail);
         String type = json.get("type").toString();
         if (type.equals("true")) {
             return new ResponseEntity<>(json, HttpStatus.OK);
