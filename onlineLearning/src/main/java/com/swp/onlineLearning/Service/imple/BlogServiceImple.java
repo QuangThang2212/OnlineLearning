@@ -9,6 +9,7 @@ import com.swp.onlineLearning.Service.BlogService;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -25,10 +26,12 @@ public class BlogServiceImple implements BlogService {
     private BlogRepo blogRepo;
     @Autowired
     private CourseTypeRepo courseTypeRepo;
-
     @Autowired
     private AccountRepo accountRepo;
-
+    @Value("${role.courseExpert}")
+    private String roleCourseExpert;
+    @Value("${role.user}")
+    private String roleUser;
     @Override
     @Transactional
     public HashMap<String, Object> save(BlogDTO blogDTO) {
@@ -249,5 +252,39 @@ public class BlogServiceImple implements BlogService {
         return json;
     }
 
+    @Override
+    public HashMap<String, Object> getOwnerBlog(String gmail) {
+        HashMap<String, Object> json = new HashMap<>();
+        json.put("type", false);
+        Account account = accountRepo.findByGmail(gmail);
+        if (!account.getRoleUser().getName().equals(roleUser) || !account.getRoleUser().getName().equals(roleCourseExpert)) {
+            log.error("Account with gmail " + gmail + " don't have authority");
+            json.put("msg", "Account with gmail " + gmail + " don't have authority");
+            return json;
+        }
+        List<Blog> blogs = blogRepo.findByAccount(account);
+        if(blogs.isEmpty()){
+            json.put("type", true);
+            return json;
+        }
+        BlogDTO blogDTO;
+        List<BlogDTO> blogDTOS = new ArrayList<>();
+        for(Blog blog: blogs){
+            blogDTO = new BlogDTO();
+            blogDTO.setName(blog.getBlogName());
+            blogDTO.setBlogID(blog.getBlogID());
+            blogDTO.setBlogMeta(blog.getBlogMeta());
+            blogDTO.setContent(blog.getContent());
+            blogDTO.setCourseTypeId(blog.getCourseType().getCourseTypeID());
+            blogDTO.setCourseTypeName(blog.getCourseType().getCourseTypeName());
+            blogDTO.setAccountID(account.getAccountID());
+            blogDTO.setName(account.getName());
+            blogDTO.setImage(account.getImage());
 
+            blogDTOS.add(blogDTO);
+        }
+        json.put("blogs", blogDTOS);
+        json.put("type", true);
+        return json;
+    }
 }

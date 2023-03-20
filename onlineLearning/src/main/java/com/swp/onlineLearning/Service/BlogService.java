@@ -13,6 +13,6 @@ public interface BlogService {
     HashMap<String, Object> findAllBlog(int pageNumber, int size);
     HashMap<String, Object> searchByNameBlog(int pageNumber, int size,String name);
     HashMap<String, Object> getBlogDetail(String id);
-
+    HashMap<String, Object> getOwnerBlog(String gmail);
 }
 
