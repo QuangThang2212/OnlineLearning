@@ -125,6 +125,33 @@ public class BlogServiceImple implements BlogService {
     }
 
     @Override
+    public HashMap<String, Object> delete(String id) {
+        HashMap<String, Object> json = new HashMap<>();
+        json.put("type", false);
+
+        Blog deleteBlog = blogRepo.findByBlogID(id);
+        if(deleteBlog==null){
+            log.error("Invalid id value");
+            json.put("msg", "Invalid id value");
+            return json;
+        }
+
+        try {
+            blogRepo.delete(deleteBlog);
+        } catch (Exception e) {
+            log.error("Delete blog fail\n" + e.getMessage());
+            json.put("msg", "Delete blog fail");
+            return json;
+        }
+
+        log.info("Delete successfully");
+        json.put("msg", "Delete successfully");
+        json.replace("type", true);
+
+        return json;
+    }
+
+    @Override
     public HashMap<String, Object> findAllBlog(int pageNumber, int size) {
         HashMap<String, Object> json = new HashMap<>();
         json.put("type", false);
