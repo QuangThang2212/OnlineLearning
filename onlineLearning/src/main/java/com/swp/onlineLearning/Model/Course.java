@@ -48,7 +48,7 @@ public class Course implements Serializable {
     @OneToMany(mappedBy = "course",cascade = CascadeType.ALL)
     @JsonIgnore
     private List<LessonPackage> lessonPackages;
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JsonIgnore
     @JoinColumn(name = "expertID", nullable = false)
     private Account expertID;

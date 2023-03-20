@@ -50,4 +50,7 @@ public class Blog implements Serializable {
     @OneToMany(mappedBy = "blog",cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Comment> comments;
+    @OneToMany(mappedBy = "blog",cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<CommentReport> commentReports;
 }

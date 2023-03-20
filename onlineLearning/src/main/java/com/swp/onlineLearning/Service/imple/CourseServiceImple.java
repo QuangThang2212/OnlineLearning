@@ -1020,6 +1020,42 @@ public class CourseServiceImple implements CourseService {
     }
 
     @Override
+    public HashMap<String, Object> deleteCourse(String authority, Integer id) {
+        HashMap<String, Object> json = new HashMap<>();
+        json.put("type", false);
+
+        Course course = courseRepo.findByCourseID(id);
+        if (course == null) {
+            log.error("Course with id " + id + " isn't exist in system");
+            json.put("msg", "Course with id " + id + " isn't exist in system");
+            return json;
+        }
+        Account account = accountRepo.findByGmail(authority);
+        if (!account.getRoleUser().getName().equals(roleAdmin)) {
+            log.error("Account with gmail " + authority + " don't have authority to delete course");
+            json.put("msg", "Account with gmail " + authority + " don't have authority to delete course");
+            return json;
+        }
+        List<CourseRate> courseRates = course.getCourseRates();
+        if(!courseRates.isEmpty()){
+            log.error("Course " + course.getCourseName() + " have user learning history, not allow to delete");
+            json.put("msg", "Course " + course.getCourseName() + " have user learning history, not allow to delete");
+            return json;
+        }
+        try{
+            courseRepo.delete(course);
+        }catch (Exception e){
+            log.error("Course " + course.getCourseName() + "delete fail\n"+e.getMessage());
+            json.put("msg", "Course " + course.getCourseName() + "delete fail");
+            return json;
+        }
+        log.info("Course " + course.getCourseName() + "delete successfully");
+        json.put("msg", "Course " + course.getCourseName() + "delete successfully");
+        json.put("type", true);
+        return json;
+    }
+
+    @Override
     public HashMap<String, Object> getEnrollCourseForUser(Integer id) {
         HashMap<String, Object> json = new HashMap<>();
         json.put("type", false);

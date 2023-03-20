@@ -18,6 +18,6 @@ public interface CourseService {
     HashMap<String, Object> findAllPurchaseCourse(int page, int size, String search);
     HashMap<String, Object> findCourseById(String authority, Integer id);
     HashMap<String, Object> enrollCourse(String authority, EnrollInformationDTO enrollInformationDTO);
-
-    HashMap<String, Object> getEnrollCourseForUser( Integer id);
+    HashMap<String, Object> deleteCourse(String authority, Integer id);
+    HashMap<String, Object> getEnrollCourseForUser(Integer id);
 }

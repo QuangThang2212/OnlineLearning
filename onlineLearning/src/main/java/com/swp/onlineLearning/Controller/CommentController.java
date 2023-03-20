@@ -1,6 +1,7 @@
 package com.swp.onlineLearning.Controller;
 
 import com.swp.onlineLearning.DTO.CommentDTO;
+import com.swp.onlineLearning.Service.CommentReportService;
 import com.swp.onlineLearning.Service.CommentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +22,8 @@ import java.util.HashMap;
 public class CommentController {
     @Autowired
     private CommentService commentService;
+    @Autowired
+    private CommentReportService commentReportService;
 
     @GetMapping("/get")
     public ResponseEntity<HashMap<String, Object>> getAllComment(@RequestParam("id")String id, @RequestParam("type")String type, @RequestParam("page") int page) {
@@ -115,14 +118,14 @@ public class CommentController {
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
     }
-    @PostMapping("/report/{id}")
-    public ResponseEntity<HashMap<String, Object>> reportComment(@PathVariable("id") String id, Principal principal) {
+    @PostMapping("/report")
+    public ResponseEntity<HashMap<String, Object>> reportComment(@RequestParam("id")String id, @RequestParam("type")String type, Principal principal) {
         HashMap<String, Object> json = new HashMap<>();
         if(principal==null){
             json.put("msg","please login to comment");
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
-        json = commentService.reportComment(id, principal.getName());
+        json = commentReportService.reportCommentAndBlog(id,type, principal.getName());
 
         String typeMessage = json.get("type").toString();
         if(typeMessage.equals("true")){

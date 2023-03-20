@@ -76,6 +76,22 @@ public class CourseManagementController {
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
     }
+    @PostMapping("/delete")
+    public ResponseEntity<HashMap<String, Object>> changeCourseStatus(@RequestParam("id") Integer id, Principal principal){
+        HashMap<String, Object> json = new HashMap<>();
+        if(principal==null){
+            json.put("msg", "Invalid account");
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
+        json = courseService.deleteCourse(principal.getName(),id);
+
+        String type = json.get("type").toString();
+        if(type.equals("true")){
+            return new ResponseEntity<>(json, HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
+    }
 
     @GetMapping("/admin_get")
     public ResponseEntity<HashMap<String, Object>> getCourseUpdate(@RequestParam("id") Integer id){

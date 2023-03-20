@@ -22,4 +22,7 @@ public class CommentReport {
     @ManyToOne
     @JoinColumn(name = "AccountID")
     private Account account;
+    @ManyToOne
+    @JoinColumn(name = "BlogID")
+    private Blog blog;
 }

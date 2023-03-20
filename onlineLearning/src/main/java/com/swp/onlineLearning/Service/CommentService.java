@@ -9,5 +9,4 @@ public interface CommentService {
     HashMap<String, Object> createComment(CommentDTO commentDTO, String gmail);
     HashMap<String, Object> updateComment(CommentDTO commentDTO, String gmail);
     HashMap<String, Object> deleteComment(String id, String gmail);
-    HashMap<String, Object> reportComment(String id, String gmail);
 }
