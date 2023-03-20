@@ -4,6 +4,7 @@ import com.swp.onlineLearning.DTO.ErrorMessageDTO;
 import com.swp.onlineLearning.DTO.RoleDTO;
 import com.swp.onlineLearning.DTO.UserDTO;
 import com.swp.onlineLearning.Service.AccountService;
+import com.swp.onlineLearning.Service.CourseService;
 import com.swp.onlineLearning.Service.PaymentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +25,8 @@ import java.util.HashMap;
 @Slf4j
 @RequestMapping("/api/account")
 public class AccountManagerController {
+    @Autowired
+    private CourseService courseService;
     @Autowired
     private AccountService accountService;
     @Autowired
@@ -110,6 +113,20 @@ public class AccountManagerController {
         } else return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
 
     }
+    @GetMapping("/user_course={id}")
+    public ResponseEntity<HashMap<String, Object>> getCourseForUser(@RequestParam("id") Integer id, Principal principal){
+    HashMap<String, Object> json = new HashMap<>();
+    if (principal == null) {
+        return new ResponseEntity<>(json, HttpStatus.OK);
+    }
+    json = courseService.getEnrollCourseForUser(id);
+    String type = json.get("type").toString();
+    if (type.equals("true")) {
+        return new ResponseEntity<>(json, HttpStatus.OK);
+    } else {
+        return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+    }
+}
     @GetMapping("/getpayment")
     public ResponseEntity<HashMap<String, Object>> getUserPayment(@RequestBody UserDTO UserDTO) {
         HashMap<String, Object> json = paymentService.getPayment(UserDTO);

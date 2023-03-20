@@ -1,6 +1,7 @@
 package com.swp.onlineLearning.Repository;
 
 import com.swp.onlineLearning.Model.Account;
+import com.swp.onlineLearning.Model.Course;
 import com.swp.onlineLearning.Model.RoleUser;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,4 +20,5 @@ public interface AccountRepo extends JpaRepository<Account, Integer> {
     Account findByAccountID(int id);
     @Query(nativeQuery = true, value = "SELECT * FROM Account a inner join role_user b on a.roleid = b.roleid WHERE a.accountid = ?1 AND b.name = ?2")
     Account findByAccountIDAndRoleUser(int id,String name);
+
 }
