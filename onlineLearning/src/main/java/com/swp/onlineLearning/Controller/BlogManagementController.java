@@ -80,6 +80,22 @@ public class BlogManagementController {
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
     }
+    @PostMapping("/delete")
+    public ResponseEntity<HashMap<String, Object>> deleteBlog(@RequestParam("id") String id, Principal principal) {
+        HashMap<String, Object> json = new HashMap<>();
+        if (principal == null) {
+            json.put("msg", "please login to update blog");
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
+        json= blogService.delete(id, principal.getName());
+
+        String type = json.get("type").toString();
+        if (type.equals("true")) {
+            return new ResponseEntity<>(json, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
+    }
 
     @GetMapping("/my_blog")
     public ResponseEntity<HashMap<String, Object>> getOwnerBlog(Principal principal) {
