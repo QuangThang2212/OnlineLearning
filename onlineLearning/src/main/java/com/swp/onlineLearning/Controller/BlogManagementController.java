@@ -12,7 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.beans.factory.annotation.Value;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.ArrayList;
@@ -27,7 +27,10 @@ public class BlogManagementController {
     private BlogService blogService;
     @Autowired
     private BlogReactService blogReactService;
-
+    @Value("${role.courseExpert}")
+    private String roleCourseExpert;
+    @Value("${role.user}")
+    private String roleUser;
     @PostMapping("/create")
     public ResponseEntity<HashMap<String, Object>> createBlogType(@Valid @RequestBody BlogDTO blogDTO, BindingResult result, Principal principal) throws Exception{
         HashMap<String, Object> json = new HashMap<>();
@@ -50,35 +53,9 @@ public class BlogManagementController {
         }
     }
 
-    @GetMapping("/my_blog")
-    public ResponseEntity<HashMap<String, Object>> getAllMyBlog() throws Exception {
-        HashMap<String, Object> json = blogService.findAll();
-        return new ResponseEntity<>(json, HttpStatus.OK);
-    }
 
-    @PostMapping("/update")
-    public ResponseEntity<HashMap<String, Object>> updateMyBlog(@Valid @RequestBody BlogDTO blogDTO, @RequestParam("id") String id, BindingResult result) throws Exception {
-        HashMap<String, Object> json = new HashMap<>();
-        StringBuilder stringBuilder = new StringBuilder();
-        if (result.hasErrors()) {
-            for (FieldError error : result.getFieldErrors()) {
-                stringBuilder.append(error.getDefaultMessage()) ;
-                stringBuilder.append("\n") ;
-            }
-            json.put("msg",stringBuilder.toString());
-            return new ResponseEntity<>(json,HttpStatus.BAD_REQUEST);
-        }
 
-        blogDTO.setBlogID(id);
-        json = blogService.update(blogDTO);
 
-        String type = json.get("type").toString();
-        if(type.equals("true")){
-            return new ResponseEntity<>(json, HttpStatus.OK);
-        }else{
-            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
-        }
-    }
     @PostMapping("/save")
     public ResponseEntity<HashMap<String, Object>> saveBlog(@Valid @RequestBody BlogReactDTO blogReactDTO, BindingResult result, Principal principal) throws Exception{
         HashMap<String, Object> json = new HashMap<>();
@@ -106,5 +83,23 @@ public class BlogManagementController {
         HashMap<String, Object> json = blogReactService.getBlogMark();
         return new ResponseEntity<>(json, HttpStatus.OK);
     }
+
+    @GetMapping("/my_blog")
+    public ResponseEntity<HashMap<String, Object>> getOwnerBlog(Principal principal) {
+        HashMap<String, Object> json = new HashMap<>();
+        if (principal == null) {
+            json.put("msg", "please login to access");
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
+        json = blogService.getOwnerBlog(principal.getName());
+        String type = json.get("type").toString();
+        if (type.equals("true")) {
+            return new ResponseEntity<>(json, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+
 
 }

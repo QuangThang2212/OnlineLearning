@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import com.swp.onlineLearning.Model.Account;
 import java.util.List;
 
 @Repository
@@ -19,5 +20,6 @@ public interface BlogRepo extends JpaRepository<Blog,Integer> {
     @Query(nativeQuery = true, value = "select * from blog where blog_name like :name%")
     Page<Blog> searchByName(Pageable pageable,@Param("name")String name);
     Blog findByBlogID(String id);
+    List<Blog> findByAccount(Account account);
 
 }
