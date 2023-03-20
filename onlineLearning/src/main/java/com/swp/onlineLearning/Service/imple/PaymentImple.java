@@ -1,7 +1,6 @@
 package com.swp.onlineLearning.Service.imple;
 
 import com.swp.onlineLearning.DTO.PaymentDTO;
-import com.swp.onlineLearning.DTO.UserDTO;
 import com.swp.onlineLearning.Model.Account;
 import com.swp.onlineLearning.Model.Payment;
 import com.swp.onlineLearning.Repository.AccountRepo;
@@ -26,31 +25,34 @@ public class PaymentImple implements PaymentService {
     private AccountRepo accountRepo;
 
     @Override
-    public HashMap<String, Object> getPayment(UserDTO userDTO) {
+    public HashMap<String, Object> getPayment(String gmail) {
         HashMap<String, Object> json = new HashMap<>();
         json.put("type", false);
-        if (userDTO == null) {
-            log.error("account not allow null value");
-            json.put("msg", "account not allow null value");
+
+        Account account = accountRepo.findByGmail(gmail);
+        List<Payment> payments = paymentRepo.findByAccount(account);
+        if (payments.isEmpty()) {
+            log.info("0 payments history founded");
+            json.put("type", true);
             return json;
         }
-        Account account = accountRepo.findByGmail(userDTO.getGmail());
-        List<Payment> payments = paymentRepo.findByAccount(account);
 
         List<PaymentDTO> paymentDTOS = new ArrayList<>();
-        for (Payment a: payments){
-           PaymentDTO paymentDTO = new PaymentDTO();
-           paymentDTO.setPaymentAt(a.getPaymentAt());
-           paymentDTO.setPaymentID(a.getPaymentID());
-           paymentDTO.setCourse(a.getCourse());
+        for (Payment a : payments) {
+            PaymentDTO paymentDTO = new PaymentDTO();
+            paymentDTO.setPaymentAt(a.getPaymentAt());
+            paymentDTO.setPaymentID(a.getPaymentID());
+            paymentDTO.setAmount(a.getAmount());
+            paymentDTO.setCourseID(a.getCourse().getCourseID());
+            paymentDTO.setCourseName(a.getCourse().getCourseName());
 
-           paymentDTOS.add(paymentDTO);
+            paymentDTOS.add(paymentDTO);
         }
         log.info("successfully");
-        json.put("payments",paymentDTOS);
-        json.put("msg","successfully");
+        json.put("payments", paymentDTOS);
+        json.put("msg", "successfully");
         json.put("type", true);
         return json;
     }
-    }
+}
 

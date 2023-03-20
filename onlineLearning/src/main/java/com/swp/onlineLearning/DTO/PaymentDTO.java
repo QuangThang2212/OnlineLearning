@@ -1,6 +1,5 @@
 package com.swp.onlineLearning.DTO;
 
-import com.swp.onlineLearning.Model.Course;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,6 +12,8 @@ public class PaymentDTO {
     private String paymentID;
     private LocalDateTime paymentAt;
     private Double amount;
-    private Course course;
+    private Integer courseID;
+    private String courseName;
+
 
 }

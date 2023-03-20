@@ -25,10 +25,8 @@ public class BlogServiceImple implements BlogService {
     private BlogRepo blogRepo;
     @Autowired
     private CourseTypeRepo courseTypeRepo;
-
     @Autowired
     private AccountRepo accountRepo;
-
     @Override
     @Transactional
     public HashMap<String, Object> save(BlogDTO blogDTO) {
@@ -94,25 +92,60 @@ public class BlogServiceImple implements BlogService {
             json.put("msg", "Blog type with id " + blogDTO.getBlogID() + " isn't found in system");
             return json;
         }
-        Blog blogNameCheck = blogRepo.findByBlogName(blogDTO.getBlogName());
+        Blog blogNameCheck = blogRepo.findByBlogNameForUpdate(blogDTO.getBlogName(), blogDTO.getBlogID());
         if (blogNameCheck != null) {
             log.error(blogDTO.getBlogName() + " name had already exist in system, can't update");
             json.put("msg", blogDTO.getBlogName() + " name had already exist in system, can't update");
             return json;
         }
-        ModelMapper modelMapper = new ModelMapper();
-        CourseType updateObject = new CourseType();
-        modelMapper.map(blogDTO, updateObject);
+        Blog updateObject = blogRepo.findByBlogID(blogDTO.getBlogID());
+        if(updateObject==null){
+            log.error("Invalid id value");
+            json.put("msg", "Invalid id value");
+            return json;
+        }
+        updateObject.setBlogName(blogDTO.getBlogName());
+        updateObject.setBlogMeta(blogDTO.getBlogMeta());
+        updateObject.setContent(blogDTO.getContent());
+        updateObject.setCourseType(courseType);
+
         try {
-            courseTypeRepo.save(updateObject);
+            blogRepo.save(updateObject);
         } catch (Exception e) {
-            log.error("Update blog type with name " + updateObject.getCourseTypeName() + " fail\n" + e.getMessage());
-            json.put("msg", "Update blog type with name " + updateObject.getCourseTypeName() + " fail");
+            log.error("Update blog fail\n" + e.getMessage());
+            json.put("msg", "Update blog fail");
             return json;
         }
 
-        log.info("Update new blog type with name:" + updateObject.getCourseTypeName() + " successfully");
-        json.put("msg", "Update new blog type with name:" + updateObject.getCourseTypeName() + " successfully");
+        log.info("Update successfully");
+        json.put("msg", "Update successfully");
+        json.replace("type", true);
+
+        return json;
+    }
+
+    @Override
+    public HashMap<String, Object> delete(String id) {
+        HashMap<String, Object> json = new HashMap<>();
+        json.put("type", false);
+
+        Blog deleteBlog = blogRepo.findByBlogID(id);
+        if(deleteBlog==null){
+            log.error("Invalid id value");
+            json.put("msg", "Invalid id value");
+            return json;
+        }
+
+        try {
+            blogRepo.delete(deleteBlog);
+        } catch (Exception e) {
+            log.error("Delete blog fail\n" + e.getMessage());
+            json.put("msg", "Delete blog fail");
+            return json;
+        }
+
+        log.info("Delete successfully");
+        json.put("msg", "Delete successfully");
         json.replace("type", true);
 
         return json;
@@ -249,5 +282,36 @@ public class BlogServiceImple implements BlogService {
         return json;
     }
 
+    @Override
+    public HashMap<String, Object> getOwnerBlog(String gmail) {
+        HashMap<String, Object> json = new HashMap<>();
+        json.put("type", false);
+        Account account = accountRepo.findByGmail(gmail);
 
+        List<Blog> blogs = blogRepo.findByAccount(account);
+        if(blogs.isEmpty()){
+            json.put("type", true);
+            return json;
+        }
+        BlogDTO blogDTO;
+        List<BlogDTO> blogDTOS = new ArrayList<>();
+        for(Blog blog: blogs){
+            blogDTO = new BlogDTO();
+            blogDTO.setName(blog.getBlogName());
+            blogDTO.setBlogID(blog.getBlogID());
+            blogDTO.setBlogMeta(blog.getBlogMeta());
+            blogDTO.setBlogName(blog.getBlogName());
+            blogDTO.setContent(blog.getContent());
+            blogDTO.setCourseTypeId(blog.getCourseType().getCourseTypeID());
+            blogDTO.setCourseTypeName(blog.getCourseType().getCourseTypeName());
+            blogDTO.setAccountID(account.getAccountID());
+            blogDTO.setName(account.getName());
+            blogDTO.setImage(account.getImage());
+
+            blogDTOS.add(blogDTO);
+        }
+        json.put("blogs", blogDTOS);
+        json.put("type", true);
+        return json;
+    }
 }

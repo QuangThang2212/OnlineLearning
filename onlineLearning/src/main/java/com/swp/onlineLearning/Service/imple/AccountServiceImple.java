@@ -1,7 +1,10 @@
 package com.swp.onlineLearning.Service.imple;
 
-import com.swp.onlineLearning.DTO.*;
-import com.swp.onlineLearning.Model.*;
+import com.swp.onlineLearning.DTO.RoleDTO;
+import com.swp.onlineLearning.DTO.UserDTO;
+import com.swp.onlineLearning.Model.Account;
+import com.swp.onlineLearning.Model.CourseRate;
+import com.swp.onlineLearning.Model.RoleUser;
 import com.swp.onlineLearning.Repository.AccountRepo;
 import com.swp.onlineLearning.Repository.RoleRepo;
 import com.swp.onlineLearning.Service.AccountService;
@@ -20,7 +23,10 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -39,15 +45,15 @@ public class AccountServiceImple implements AccountService, UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        if(username==null || username.isEmpty()){
+        if (username == null || username.isEmpty()) {
             log.error("User name input null");
             throw new UsernameNotFoundException("User name input null");
         }
         Account account = accountRepo.findByGmail(username);
-        if(account == null){
+        if (account == null) {
             log.error("User not found in the database");
             throw new UsernameNotFoundException("User not found in the database");
-        }else{
+        } else {
             log.info("User found");
         }
         Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
@@ -57,37 +63,38 @@ public class AccountServiceImple implements AccountService, UserDetailsService {
                 .userdetails
                 .User(account.getName(), account.getPassword(), authorities);
     }
+
     @Override
     public HashMap<String, Object> findAllExcept(String gmail, int pageNumber, int size) {
         HashMap<String, Object> json = new HashMap<>();
-        json.put("type",false);
-        if(pageNumber<1 || size <1){
-            log.error("Invalid page "+pageNumber+" or size "+size);
-            json.put("msg", "Invalid page "+pageNumber+" or size "+size);
+        json.put("type", false);
+        if (pageNumber < 1 || size < 1) {
+            log.error("Invalid page " + pageNumber + " or size " + size);
+            json.put("msg", "Invalid page " + pageNumber + " or size " + size);
             return json;
         }
 
-        int totalNumber = accountRepo.findAllExcept(gmail, PageRequest.of(pageNumber-1,size)).getTotalPages();
-        if(totalNumber==0){
+        int totalNumber = accountRepo.findAllExcept(gmail, PageRequest.of(pageNumber - 1, size)).getTotalPages();
+        if (totalNumber == 0) {
             log.error("0 account founded");
             json.put("msg", "0 account founded for page");
             return json;
-        }else if(pageNumber>totalNumber){
-            log.error("invalid page "+pageNumber);
-            json.put("msg", "invalid page "+pageNumber);
+        } else if (pageNumber > totalNumber) {
+            log.error("invalid page " + pageNumber);
+            json.put("msg", "invalid page " + pageNumber);
             return json;
         }
-        
-        Page<Account> accounts = accountRepo.findAllExcept(gmail, PageRequest.of(pageNumber-1,size));
-        if(accounts.isEmpty()){
-            log.error("0 account founded for page "+pageNumber);
-            json.put("msg", "0 account founded for page "+pageNumber);
+
+        Page<Account> accounts = accountRepo.findAllExcept(gmail, PageRequest.of(pageNumber - 1, size));
+        if (accounts.isEmpty()) {
+            log.error("0 account founded for page " + pageNumber);
+            json.put("msg", "0 account founded for page " + pageNumber);
             return json;
         }
         List<Account> list = accounts.stream().toList();
 
         List<UserDTO> userDTOs = new ArrayList<>();
-        for(Account a : list){
+        for (Account a : list) {
             UserDTO userDTO = new UserDTO();
             userDTO.setAccountID(a.getAccountID());
             userDTO.setName(a.getName().trim());
@@ -97,10 +104,10 @@ public class AccountServiceImple implements AccountService, UserDetailsService {
 
             userDTOs.add(userDTO);
         }
-        
-        json.put("users",userDTOs);
-        json.put("numPage",totalNumber);
-        json.put("type",true);
+
+        json.put("users", userDTOs);
+        json.put("numPage", totalNumber);
+        json.put("type", true);
         return json;
     }
 
@@ -111,10 +118,10 @@ public class AccountServiceImple implements AccountService, UserDetailsService {
 
     @Override
     @Transactional
-    public HashMap<String, Object> save(UserDTO userDTO){
+    public HashMap<String, Object> save(UserDTO userDTO) {
         HashMap<String, Object> json = new HashMap<>();
-        json.put("type",false);
-        if(userDTO==null){
+        json.put("type", false);
+        if (userDTO == null) {
             log.error("Not allow null account to register");
             json.put("msg", "Not allow null account to register");
             return json;
@@ -131,42 +138,42 @@ public class AccountServiceImple implements AccountService, UserDetailsService {
         modelMapper.map(userDTO, account);
 
         RoleUser role = roleRepo.findByName(roleUser);
-        if(role==null){
-            log.error("Role "+roleUser+" isn't exist");
-            json.put("msg", "Role "+roleUser+" isn't exist");
+        if (role == null) {
+            log.error("Role " + roleUser + " isn't exist");
+            json.put("msg", "Role " + roleUser + " isn't exist");
             return json;
-        }else{
+        } else {
             account.setRoleUser(role);
         }
 
         //check exits mail
         Account checkMailExit = accountRepo.findByGmail(account.getGmail());
-        if(checkMailExit!=null){
-            log.error(account.getGmail()+" had already registered in system, ");
-            json.put("msg", account.getGmail()+" had already registered in system");
+        if (checkMailExit != null) {
+            log.error(account.getGmail() + " had already registered in system, ");
+            json.put("msg", account.getGmail() + " had already registered in system");
             return json;
         }
 
         //save account
         try {
             accountRepo.save(account);
-        }catch (Exception e){
-            log.error("Save user with gmail " + account.getGmail()+" fail\n" + e.getMessage());
-            json.put("msg", "Save user with gmail "+ account.getGmail()+" fail");
+        } catch (Exception e) {
+            log.error("Save user with gmail " + account.getGmail() + " fail\n" + e.getMessage());
+            json.put("msg", "Save user with gmail " + account.getGmail() + " fail");
             return json;
         }
-        log.info("Saving new user with email:"+ account.getGmail()+" successfully");
+        log.info("Saving new user with email:" + account.getGmail() + " successfully");
 
         json.put("msg", "Register successfully, please login for more service and voucher");
-        json.replace("type",true);
+        json.replace("type", true);
         return json;
     }
 
     @Override
     public HashMap<String, Object> activeAccount(UserDTO userDTO) {
         HashMap<String, Object> json = new HashMap<>();
-        json.put("type",false);
-        if(userDTO==null){
+        json.put("type", false);
+        if (userDTO == null) {
             log.error("Not allow null account to register");
             json.put("msg", "Not allow null account to register");
             return json;
@@ -178,69 +185,65 @@ public class AccountServiceImple implements AccountService, UserDetailsService {
     @Transactional
     public HashMap<String, Object> changRole(RoleDTO roleDTO) {
         HashMap<String, Object> json = new HashMap<>();
-        json.put("type",false);
-        if(roleDTO==null){
+        json.put("type", false);
+        if (roleDTO == null) {
             log.error("Not allow null account to register");
             json.put("msg", "Not allow null account to register");
             return json;
         }
         RoleUser roleUser = roleRepo.findByName(roleDTO.getName());
-        if(roleUser == null){
-            log.error("This role \""+roleDTO.getName()+"\" not exist in the system");
-            json.put("msg", "This role \""+roleDTO.getName()+"\" not exist in the system");
+        if (roleUser == null) {
+            log.error("This role \"" + roleDTO.getName() + "\" not exist in the system");
+            json.put("msg", "This role \"" + roleDTO.getName() + "\" not exist in the system");
             return json;
         }
         Account account = accountRepo.findByAccountID(roleDTO.getAccountID());
-        if(account == null){
-            log.error("Account with id="+roleDTO.getAccountID()+" not exist in the system");
-            json.put("msg", "Account with id="+roleDTO.getAccountID()+" not exist in the system");
+        if (account == null) {
+            log.error("Account with id=" + roleDTO.getAccountID() + " not exist in the system");
+            json.put("msg", "Account with id=" + roleDTO.getAccountID() + " not exist in the system");
             return json;
         }
         List<CourseRate> courseRate = account.getCourseRates();
-        if(!courseRate.isEmpty()){
-            log.error("Account with id="+roleDTO.getAccountID()+" had enrolled course on system, not allow change role to "+roleDTO.getName());
-            json.put("msg", "Account with id="+roleDTO.getAccountID()+" had enrolled course on system, not allow change role to "+roleDTO.getName());
+        if (!courseRate.isEmpty()) {
+            log.error("Account with id=" + roleDTO.getAccountID() + " had enrolled course on system, not allow change role to " + roleDTO.getName());
+            json.put("msg", "Account with id=" + roleDTO.getAccountID() + " had enrolled course on system, not allow change role to " + roleDTO.getName());
             return json;
         }
 
-        try{
+        try {
             account.setRoleUser(roleUser);
             accountRepo.save(account);
-        }catch (Exception e) {
-            log.error("Change role for account with id="+roleDTO.getAccountID()+" fail\n" +e.getMessage());
-            json.put("msg", "Change role for account with id="+roleDTO.getAccountID()+" fail");
+        } catch (Exception e) {
+            log.error("Change role for account with id=" + roleDTO.getAccountID() + " fail\n" + e.getMessage());
+            json.put("msg", "Change role for account with id=" + roleDTO.getAccountID() + " fail");
             return json;
         }
-        log.error("Change role for account with id="+roleDTO.getAccountID()+" successfully");
-        json.put("msg", "Change role for account with id="+roleDTO.getAccountID()+" successfully");
-        json.put("type",true);
+        log.error("Change role for account with id=" + roleDTO.getAccountID() + " successfully");
+        json.put("msg", "Change role for account with id=" + roleDTO.getAccountID() + " successfully");
+        json.put("type", true);
         return json;
     }
 
     @Override
-    public HashMap<String, Object> findBAllCourseExpert() {
+    public HashMap<String, Object> findBAllCourseExpert(String search) {
         HashMap<String, Object> json = new HashMap<>();
-        json.put("type",false);
-        if(roleCourseExpert.equals("")){
-            log.error("Can't found course expert role");
-            json.put("msg", "Can't found course expert role");
-            return json;
-        }
+        json.put("type", false);
+
         RoleUser roleUser = roleRepo.findByName(roleCourseExpert);
-        if(roleUser==null){
-            log.error("Can't found course expert role");
-            json.put("msg", "Can't found course expert role");
-            return json;
+        List<Account> accounts;
+        if (search.isEmpty()) {
+            accounts = accountRepo.findByRoleUser(roleUser);
+        } else {
+            accounts = accountRepo.findByRoleUserAndSearch(roleUser.getRoleID(), search);
         }
-        List<Account> accounts = accountRepo.findByRoleUser(roleUser);
-        if(accounts.isEmpty()){
+        if (accounts.isEmpty()) {
             log.error("0 course expert found on the system");
             json.put("msg", "0 course expert found on the system");
             return json;
         }
-        json.put("msg", accounts.size()+" course expert found on the system");
+        json.put("msg", accounts.size() + " course expert found on the system");
         json.put("users", accounts);
-        json.put("type",true);
+        json.put("type", true);
         return json;
     }
 
@@ -250,7 +253,7 @@ public class AccountServiceImple implements AccountService, UserDetailsService {
         json.put("type", false);
 
         Account account = accountRepo.findByGmail(gmail);
-        if(account==null){
+        if (account == null) {
             log.error("Account not found");
             json.put("msg", "Account not found");
             return json;
@@ -263,11 +266,12 @@ public class AccountServiceImple implements AccountService, UserDetailsService {
         userDTO.setGmail(account.getGmail());
 
         log.info("successfully");
-        json.put("user",userDTO);
-        json.put("msg","successfully");
+        json.put("user", userDTO);
+        json.put("msg", "successfully");
         json.put("type", true);
         return json;
     }
+
     @Override
     public HashMap<String, Object> update(UserDTO userDTO, String gmail) {
         HashMap<String, Object> json = new HashMap<>();
@@ -275,16 +279,16 @@ public class AccountServiceImple implements AccountService, UserDetailsService {
         Account account = accountRepo.findByGmail(gmail);
         account.setName(userDTO.getName());
         account.setImage(userDTO.getImage());
-        try{
+        try {
 
             accountRepo.save(account);
-        }catch (Exception e){
+        } catch (Exception e) {
             log.error("Update user information fail");
-            json.put("msg","Update user information fail");
+            json.put("msg", "Update user information fail");
             return json;
         }
-        json.put("msg","Update user information successfully");
-        json.put("type",true);
+        json.put("msg", "Update user information successfully");
+        json.put("type", true);
         return json;
     }
 }

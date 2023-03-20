@@ -37,21 +37,22 @@ public class BlogManagementController {
                 errorMessageDTO.setMessage(error.getDefaultMessage());
                 errorMessageDTOS.add(errorMessageDTO);
             }
-            json.put("msgProgress",errorMessageDTOS);
+            json.put("msgProgress", errorMessageDTOS);
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
         blogDTO.setGmail(principal.getName());
         json = blogService.save(blogDTO);
 
         String type = json.get("type").toString();
-        if(type.equals("true")){
+        if (type.equals("true")) {
             return new ResponseEntity<>(json, HttpStatus.OK);
-        }else{
+        } else {
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
     }
+
     @PostMapping("/update/id={id}")
-    public ResponseEntity<HashMap<String, Object>> updateBlog(@Valid @RequestBody BlogDTO blogDTO, BindingResult result, Principal principal,  @PathVariable("id") int id) {
+    public ResponseEntity<HashMap<String, Object>> updateBlog(@Valid @RequestBody BlogDTO blogDTO, BindingResult result, Principal principal, @PathVariable("id") String id) {
         HashMap<String, Object> json = new HashMap<>();
         ArrayList<ErrorMessageDTO> errorMessageDTOS = new ArrayList<>();
         ErrorMessageDTO errorMessageDTO;
@@ -62,22 +63,37 @@ public class BlogManagementController {
                 errorMessageDTO.setMessage(error.getDefaultMessage());
                 errorMessageDTOS.add(errorMessageDTO);
             }
-            json.put("msgProgress",errorMessageDTOS);
+            json.put("msgProgress", errorMessageDTOS);
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
-        if(principal==null){
-            json.put("msg","please login to update blog");
+        if (principal == null) {
+            json.put("msg", "please login to update blog");
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
-        blogDTO.setBlogID(blogDTO.getBlogID());
+        blogDTO.setBlogID(id);
         json = blogService.update(blogDTO);
 
         String type = json.get("type").toString();
-        if(type.equals("true")){
+        if (type.equals("true")) {
             return new ResponseEntity<>(json, HttpStatus.OK);
-        }else{
+        } else {
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
     }
 
+    @GetMapping("/my_blog")
+    public ResponseEntity<HashMap<String, Object>> getOwnerBlog(Principal principal) {
+        HashMap<String, Object> json = new HashMap<>();
+        if (principal == null) {
+            json.put("msg", "please login to access");
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
+        json = blogService.getOwnerBlog(principal.getName());
+        String type = json.get("type").toString();
+        if (type.equals("true")) {
+            return new ResponseEntity<>(json, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
+    }
 }

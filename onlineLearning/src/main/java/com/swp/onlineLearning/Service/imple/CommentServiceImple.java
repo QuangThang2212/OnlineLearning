@@ -28,16 +28,12 @@ public class CommentServiceImple implements CommentService {
     private BlogRepo blogRepo;
     @Autowired
     private AccountRepo accountRepo;
-    @Autowired
-    private CommentReportRepo commentReportRepo;
     @Value("${comment.type.blog}")
     private String typeBlog;
     @Value("${comment.type.lesson}")
     private String typeLesson;
     @Value("${comment.limit}")
     private int limit;
-    @Value("${comment.report.limit}")
-    private int reportLimit;
 
     @Override
     public HashMap<String, Object> findAllComment(String id, String type, int page) {
@@ -262,52 +258,6 @@ public class CommentServiceImple implements CommentService {
         }
 
         json.put("msg", "Delete comment successfully");
-        json.put("type", true);
-        return json;
-    }
-
-    @Override
-    @Transactional
-    public HashMap<String, Object> reportComment(String id, String gmail) {
-        HashMap<String, Object> json = new HashMap<>();
-        json.put("type", false);
-
-        Comment comment = commentRepo.findByCommentID(id);
-        if (comment == null) {
-            log.error("invalid comment id");
-            json.put("msg", "invalid comment id");
-            return json;
-        }
-        Account account = accountRepo.findByGmail(gmail);
-        CommentReport commentReport = commentReportRepo.findByCommentAndAccount(comment, account);
-        if (commentReport != null) {
-            json.put("msg", "You had reported comment of user " + comment.getAccount().getName() + ", we will consider this action, thank you for your support with our education community");
-            json.put("type", true);
-            return json;
-        }
-        if (comment.getCommentReports().size() + 1 == reportLimit) {
-            try {
-                commentRepo.deleteById(comment.getCommentID());
-            } catch (Exception e) {
-                log.error("Delete comment fail \n" + e.getMessage());
-                json.put("msg", "Don't have authority to change account");
-                return json;
-            }
-        } else {
-            commentReport = new CommentReport();
-            commentReport.setAccount(account);
-            commentReport.setComment(comment);
-            commentReport.setReportAt(LocalDateTime.now());
-
-            try {
-                commentReportRepo.save(commentReport);
-            } catch (Exception e) {
-                log.error("Report comment fail \n" + e.getMessage());
-                json.put("msg", "Report comment fail");
-                return json;
-            }
-        }
-        json.put("msg", "You had reported comment of user " + comment.getAccount().getName() + ", we will consider this action, thank you for your support with our education community");
         json.put("type", true);
         return json;
     }

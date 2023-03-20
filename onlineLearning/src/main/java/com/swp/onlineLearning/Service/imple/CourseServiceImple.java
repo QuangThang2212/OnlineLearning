@@ -1020,34 +1020,74 @@ public class CourseServiceImple implements CourseService {
     }
 
     @Override
+    public HashMap<String, Object> deleteCourse(String authority, Integer id) {
+        HashMap<String, Object> json = new HashMap<>();
+        json.put("type", false);
+
+        Course course = courseRepo.findByCourseID(id);
+        if (course == null) {
+            log.error("Course with id " + id + " isn't exist in system");
+            json.put("msg", "Course with id " + id + " isn't exist in system");
+            return json;
+        }
+        Account account = accountRepo.findByGmail(authority);
+        if (!account.getRoleUser().getName().equals(roleAdmin)) {
+            log.error("Account with gmail " + authority + " don't have authority to delete course");
+            json.put("msg", "Account with gmail " + authority + " don't have authority to delete course");
+            return json;
+        }
+        List<CourseRate> courseRates = course.getCourseRates();
+        if(!courseRates.isEmpty()){
+            log.error("Course " + course.getCourseName() + " have user learning history, not allow to delete");
+            json.put("msg", "Course " + course.getCourseName() + " have user learning history, not allow to delete");
+            return json;
+        }
+        try{
+            courseRepo.delete(course);
+        }catch (Exception e){
+            log.error("Course " + course.getCourseName() + "delete fail\n"+e.getMessage());
+            json.put("msg", "Course " + course.getCourseName() + "delete fail");
+            return json;
+        }
+        log.info("Course " + course.getCourseName() + "delete successfully");
+        json.put("msg", "Course " + course.getCourseName() + "delete successfully");
+        json.put("type", true);
+        return json;
+    }
+
+    @Override
     public HashMap<String, Object> getEnrollCourseForUser(Integer id) {
         HashMap<String, Object> json = new HashMap<>();
         json.put("type", false);
-        List Course = courseRepo.getCourseForUserOnProcess(id);
+        List<Course> Course = courseRepo.getCourseForUserOnProcess(id);
         if (Course == null) {
             log.error("Course with id " + id + " isn't exist in system");
             json.put("msg", "Course with id " + id + " isn't exist in system");
             return json;
         }
-        List<CourseDTO> courseDTOS = new ArrayList<>();
-        for (Course course : courseRepo.getCourseForUser(id)) {
-
-            CourseDTO courseDTO = new CourseDTO();
-            courseDTO.setCourseID(course.getCourseID());
-            courseDTO.setCourseName(course.getCourseName());
-            courseDTO.setDescription(course.getDescription());
-            courseDTO.setImage(course.getImage());
-        }
-        for (Course course : courseRepo.getCourseForUser(id)){
+        List<CourseDTO> courseDTOProgress = new ArrayList<>();
+        List<CourseDTO> courseDTOFinish = new ArrayList<>();
+        for (Course course : courseRepo.getCourseForUserOnProcess(id)) {
             CourseDTO courseDTO = new CourseDTO();
             courseDTO.setCourseID(course.getCourseID());
             courseDTO.setCourseName(course.getCourseName());
             courseDTO.setDescription(course.getDescription());
             courseDTO.setImage(course.getImage());
 
+            courseDTOProgress.add(courseDTO);
+        }
+        for (Course course : courseRepo.getCourseForUserFinish(id)){
+            CourseDTO courseDTO = new CourseDTO();
+            courseDTO.setCourseID(course.getCourseID());
+            courseDTO.setCourseName(course.getCourseName());
+            courseDTO.setDescription(course.getDescription());
+            courseDTO.setImage(course.getImage());
+
+            courseDTOFinish.add(courseDTO);
         }
 
-        json.put("course", courseDTOS);
+        json.put("completed", courseDTOFinish);
+        json.put("onProcess", courseDTOProgress);
         json.put("type", true);
         return json;
 

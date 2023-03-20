@@ -86,7 +86,6 @@ public class QuestionServiceImple implements QuestionService {
                 json.put("msg", "Question with id " + questionID + " isn't exist in system");
                 return json;
             }
-            deleteAnswer.addAll(question.getAnswers());
             deleteQuestion.add(question);
         }
         try{
