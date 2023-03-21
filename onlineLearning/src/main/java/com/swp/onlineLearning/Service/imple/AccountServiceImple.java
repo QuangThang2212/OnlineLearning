@@ -1,5 +1,6 @@
 package com.swp.onlineLearning.Service.imple;
 
+import com.swp.onlineLearning.Config.JWTUtil;
 import com.swp.onlineLearning.DTO.RoleDTO;
 import com.swp.onlineLearning.DTO.UserDTO;
 import com.swp.onlineLearning.Model.Account;
@@ -42,6 +43,8 @@ public class AccountServiceImple implements AccountService, UserDetailsService {
     private String roleCourseExpert;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private SendMailService sendMailService;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -127,15 +130,67 @@ public class AccountServiceImple implements AccountService, UserDetailsService {
             return json;
         }
 
-        //object validation
-        userDTO.setCreateAt(LocalDateTime.now());
-        userDTO.setBanStatus(false);
         userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         userDTO.setGmail(userDTO.getGmail().trim());
 
         ModelMapper modelMapper = new ModelMapper();
         Account account = new Account();
         modelMapper.map(userDTO, account);
+
+        //check exits mail
+        Account checkMailExit = accountRepo.findByGmail(account.getGmail());
+        if (checkMailExit != null) {
+            log.error(account.getGmail() + " had already registered in system, ");
+            json.put("msg", account.getGmail() + " had already registered in system");
+            return json;
+        }
+
+        final String token = JWTUtil.generateTokenWithExpiration(account);
+        if(token==null){
+            json.put("msg", "Invalid token");
+            json.put("type", true);
+            return json;
+        }
+
+        String title = "Register confirm to active account";
+        String content = "Thank you for create account on our system, please click to active your account";
+        String button = "Active";
+        String url= "https://swplearning.netlify.app/account/active/"+token;
+
+        try {
+            sendMailService.sendMail(title, content, button, account.getGmail(), url);
+            json.put("msg", "Please check your mail to active the account");
+            json.put("type", true);
+        }catch (Exception e){
+            log.error("Send mail fail \n"+e.getMessage());
+            json.put("msg", "Send mail fail, please try register again");
+            json.put("type", false);
+        }
+        return json;
+    }
+
+    @Override
+    public HashMap<String, Object> activeAccount(String token) {
+        HashMap<String, Object> json = new HashMap<>();
+        json.put("type", false);
+        if (token == null) {
+            log.error("Not allow null account to register");
+            json.put("msg", "Not allow null account to register");
+            return json;
+        }
+        try{
+            JWTUtil.isTokenExpired(token);
+        }catch (Exception ex){
+            log.error("Register token had out of date, please register again");
+            json.put("msg", "Register token had out of date, please register again");
+            return json;
+        }
+        Account account = new Account();
+        account.setPassword(JWTUtil.getSubjectFromToken(token));
+        account.setName(JWTUtil.getUseNameFromToken(token));
+        account.setGmail(JWTUtil.getIdFromToken(token));
+        account.setCreateAt(LocalDateTime.now());
+        account.setBanStatus(false);
 
         RoleUser role = roleRepo.findByName(roleUser);
         if (role == null) {
@@ -146,15 +201,6 @@ public class AccountServiceImple implements AccountService, UserDetailsService {
             account.setRoleUser(role);
         }
 
-        //check exits mail
-        Account checkMailExit = accountRepo.findByGmail(account.getGmail());
-        if (checkMailExit != null) {
-            log.error(account.getGmail() + " had already registered in system, ");
-            json.put("msg", account.getGmail() + " had already registered in system");
-            return json;
-        }
-
-        //save account
         try {
             accountRepo.save(account);
         } catch (Exception e) {
@@ -164,21 +210,48 @@ public class AccountServiceImple implements AccountService, UserDetailsService {
         }
         log.info("Saving new user with email:" + account.getGmail() + " successfully");
 
-        json.put("msg", "Register successfully, please login for more service and voucher");
+        json.put("msg", "Register successfully");
         json.replace("type", true);
         return json;
     }
 
     @Override
-    public HashMap<String, Object> activeAccount(UserDTO userDTO) {
+    public HashMap<String, Object> forgotPassword(String gmail) {
         HashMap<String, Object> json = new HashMap<>();
         json.put("type", false);
-        if (userDTO == null) {
-            log.error("Not allow null account to register");
-            json.put("msg", "Not allow null account to register");
+        if (gmail == null) {
+            log.error("Not allow null gmail");
+            json.put("msg", "Not allow null gmail");
             return json;
         }
-        return null;
+        Account account = accountRepo.findByGmail(gmail);
+        if (account == null) {
+            log.error("This gmail isn't found in system, please register");
+            json.put("msg", "This gmail isn't found in system, please register");
+            return json;
+        }
+
+        final String token = JWTUtil.generateTokenWithExpiration(account);
+        if(token==null){
+            json.put("msg", "Invalid token");
+            json.put("type", true);
+            return json;
+        }
+        String title = "Confirm change password";
+        String content = "This mail were send to confirm you want to change your password";
+        String button = "Change password";
+        String url= "https://swplearning.netlify.app/account/active/"+token;
+
+        try {
+            sendMailService.sendMail(title, content, button, account.getGmail(), url);
+            json.put("msg", "Please check your mail to change your password");
+            json.put("type", true);
+        }catch (Exception e){
+            log.error("Send mail fail \n"+e.getMessage());
+            json.put("msg", "Send mail fail, please try again");
+            json.put("type", false);
+        }
+        return json;
     }
 
     @Override
@@ -314,6 +387,44 @@ public class AccountServiceImple implements AccountService, UserDetailsService {
         }
         json.put("msg", "Update user information successfully");
         json.put("type", true);
+        return json;
+    }
+
+    @Override
+    public HashMap<String, Object> changePassword(String token, String password) {
+        HashMap<String, Object> json = new HashMap<>();
+        json.put("type", false);
+        if (token == null) {
+            log.error("Not allow null account to register");
+            json.put("msg", "Not allow null account to register");
+            return json;
+        }
+        try{
+            JWTUtil.isTokenExpired(token);
+        }catch (Exception ex){
+            log.error("Register token had out of date, please register again");
+            json.put("msg", "Register token had out of date, please register again");
+            return json;
+        }
+        String gmail = JWTUtil.getIdFromToken(token);
+        Account account = accountRepo.findByGmail(gmail);
+        if (account == null) {
+            log.error("Account " + gmail+ " isn't exist in the system");
+            json.put("msg", "Account " + gmail + " isn't exist in the system");
+            return json;
+        }
+        account.setPassword(passwordEncoder.encode(password));
+        try {
+            accountRepo.save(account);
+        } catch (Exception e) {
+            log.error("Change password of gmail " + account.getGmail() + " fail\n" + e.getMessage());
+            json.put("msg", "Change password of gmail " + account.getGmail() + " fail");
+            return json;
+        }
+        log.info("Change password of gmail email:" + account.getGmail() + " successfully");
+
+        json.put("msg", "Change password successfully");
+        json.replace("type", true);
         return json;
     }
 }

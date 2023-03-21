@@ -4,7 +4,6 @@ import com.swp.onlineLearning.DTO.ErrorMessageDTO;
 import com.swp.onlineLearning.DTO.RoleDTO;
 import com.swp.onlineLearning.DTO.UserDTO;
 import com.swp.onlineLearning.Service.AccountService;
-import com.swp.onlineLearning.Service.CourseService;
 import com.swp.onlineLearning.Service.PaymentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,8 +24,6 @@ import java.util.HashMap;
 @Slf4j
 @RequestMapping("/api/account")
 public class AccountManagerController {
-    @Autowired
-    private CourseService courseService;
     @Autowired
     private AccountService accountService;
     @Autowired

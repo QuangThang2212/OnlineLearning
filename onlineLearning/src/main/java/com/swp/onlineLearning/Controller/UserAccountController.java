@@ -17,6 +17,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -71,6 +72,55 @@ public class UserAccountController {
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
         json = accountService.save(userDTO);
+
+        String type = json.get("type").toString();
+        if(type.equals("true")){
+            return new ResponseEntity<>(json, HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
+    }
+    @PostMapping("/active")
+    public ResponseEntity<HashMap<String, Object>> active(HttpServletRequest request){
+        final String token = request.getHeader("token");
+        HashMap<String, Object> json = new HashMap<>();
+        try{
+            json = accountService.activeAccount(token);
+        }catch (Exception e){
+            log.error(e.getMessage());
+            json.put("msg", "Save user with gmail fail");
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
+
+        String type = json.get("type").toString();
+        if(type.equals("true")){
+            return new ResponseEntity<>(json, HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
+    }
+    @PostMapping("/forgot_password")
+    public ResponseEntity<HashMap<String, Object>> forgotPass(@PathVariable("gmail") String gmail){
+        HashMap<String, Object> json = accountService.forgotPassword(gmail);
+
+        String type = json.get("type").toString();
+        if(type.equals("true")){
+            return new ResponseEntity<>(json, HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
+    }
+    @PostMapping("/change_password")
+    public ResponseEntity<HashMap<String, Object>> changePassword(@PathVariable("password") String password, HttpServletRequest request){
+        final String token = request.getHeader("token");
+        HashMap<String, Object> json = new HashMap<>();
+        try{
+            json = accountService.changePassword(password, token);
+        }catch (Exception e){
+            log.error(e.getMessage());
+            json.put("msg", "Change password fail");
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
 
         String type = json.get("type").toString();
         if(type.equals("true")){
