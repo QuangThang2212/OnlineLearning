@@ -15,7 +15,7 @@ public interface AccountRepo extends JpaRepository<Account, Integer> {
     @Query(nativeQuery = true, value = "SELECT * FROM Account WHERE NOT gmail=?1")
     Page<Account> findAllExcept(String gmail, Pageable pageable);
     List<Account> findByRoleUser(RoleUser roleUser);
-    @Query(nativeQuery = true, value = "SELECT * FROM Account a where roleid=?1 and name like %?2%")
+    @Query(nativeQuery = true, value = "SELECT * FROM Account a where roleid=?1 and (name like %?2% Or gmail like %?2%)")
     List<Account> findByRoleUserAndSearch(Integer roleID, String search);
     Account findByGmail(String gmail);
     Account findByAccountID(int id);
