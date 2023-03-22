@@ -143,7 +143,7 @@ public class AccountServiceImple implements AccountService, UserDetailsService {
         }
 
         final String token = JWTUtil.generateTokenWithExpiration(account);
-        if(token==null){
+        if (token == null) {
             json.put("msg", "Invalid token");
             json.put("type", true);
             return json;
@@ -152,14 +152,14 @@ public class AccountServiceImple implements AccountService, UserDetailsService {
         String title = "Register confirm to active account";
         String content = "Thank you for create account on our system, please click to active your account";
         String button = "Active";
-        String url= "https://swplearning.netlify.app/account/active/"+token;
+        String url = "https://swplearning.netlify.app/account/active/" + token;
 
         try {
             sendMailService.sendMail(title, content, button, account.getGmail(), url);
             json.put("msg", "Please check your mail to active the account");
             json.put("type", true);
-        }catch (Exception e){
-            log.error("Send mail fail \n"+e.getMessage());
+        } catch (Exception e) {
+            log.error("Send mail fail \n" + e.getMessage());
             json.put("msg", "Send mail fail, please try register again");
             json.put("type", false);
         }
@@ -175,9 +175,9 @@ public class AccountServiceImple implements AccountService, UserDetailsService {
             json.put("msg", "Not allow null account to register");
             return json;
         }
-        try{
+        try {
             JWTUtil.isTokenExpired(token);
-        }catch (Exception ex){
+        } catch (Exception ex) {
             log.error("Register token had out of date, please register again");
             json.put("msg", "Register token had out of date, please register again");
             return json;
@@ -227,28 +227,28 @@ public class AccountServiceImple implements AccountService, UserDetailsService {
             json.put("msg", "This gmail isn't found in system, please register");
             return json;
         }
-//        String newPassword = Random;
+
         String upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         String lower = upper.toLowerCase(Locale.ROOT);
         String digits = "0123456789";
         String alphanum = upper + lower + digits;
         Random random = new Random();
         char[] newPassword = new char[15];
-        for(int i=0; i<newPassword.length; i++){
-            newPassword[i]=alphanum.charAt(random.nextInt(alphanum.length()));
+        for (int i = 0; i < newPassword.length; i++) {
+            newPassword[i] = alphanum.charAt(random.nextInt(alphanum.length()));
         }
 
         String title = "Confirm change password";
         String content = "This mail were send to confirm you want to change your password";
-        String button = "New Password: "+ Arrays.toString(newPassword);
-        String url= "#";
+        String button = "New Password: " + Arrays.toString(newPassword);
+        String url = "#";
 
         try {
             sendMailService.sendMail(title, content, button, account.getGmail(), url);
             json.put("msg", "Please check your mail to change your password");
             json.put("type", true);
-        }catch (Exception e){
-            log.error("Send mail fail \n"+e.getMessage());
+        } catch (Exception e) {
+            log.error("Send mail fail \n" + e.getMessage());
             json.put("msg", "Send mail fail, please try again");
             json.put("type", false);
         }
@@ -305,18 +305,19 @@ public class AccountServiceImple implements AccountService, UserDetailsService {
 
         RoleUser roleUser = roleRepo.findByName(roleCourseExpert);
         List<Account> accounts;
-        if (search.isEmpty()) {
+        System.out.println(search);
+        if (search.isEmpty() || search.equals("null")) {
             accounts = accountRepo.findByRoleUser(roleUser);
         } else {
             accounts = accountRepo.findByRoleUserAndSearch(roleUser.getRoleID(), search);
         }
+        json.put("users", accounts);
         if (accounts.isEmpty()) {
             log.error("0 course expert found on the system");
             json.put("msg", "0 course expert found on the system");
             return json;
         }
         json.put("msg", accounts.size() + " course expert found on the system");
-        json.put("users", accounts);
         json.put("type", true);
         return json;
     }
