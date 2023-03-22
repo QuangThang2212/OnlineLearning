@@ -269,7 +269,9 @@ public class BlogServiceImple implements BlogService {
 
         BlogReact blogReact;
         List<BlogDTO> blogDTOs = new ArrayList<>();
+        Account accountUser;
         for (Blog a : list) {
+            accountUser = a.getAccount();
             BlogDTO blogDTO = new BlogDTO();
             blogDTO.setBlogID(a.getBlogID());
             blogDTO.setBlogName(a.getBlogName());
@@ -277,10 +279,10 @@ public class BlogServiceImple implements BlogService {
             blogDTO.setContent(a.getContent());
             blogDTO.setCourseTypeId(a.getCourseType().getCourseTypeID());
             blogDTO.setCourseType(a.getCourseType().getCourseTypeName());
-            blogDTO.setAccountID(a.getAccount().getAccountID());
+            blogDTO.setAccountID(accountUser.getAccountID());
             blogDTO.setCreateDate(a.getCreateDate());
-            blogDTO.setName(a.getAccount().getName());
-            blogDTO.setImage(a.getAccount().getImage());
+            blogDTO.setName(accountUser.getName());
+            blogDTO.setImage(accountUser.getImage());
 
             if(setMark_blogStatus){
                 blogReact = blogReactRepo.findByAccountAndBlog(account, a);
@@ -379,7 +381,7 @@ public class BlogServiceImple implements BlogService {
 
         BlogReact blogReact = new BlogReact();
         if (blogReactDTO.getBlogReactID() != null) {
-            blogReact = blogReactRepo.findByBlogReactID(blogReact.getBlogReactID());
+            blogReact = blogReactRepo.findByBlogReactID(blogReactDTO.getBlogReactID());
             if (blogReact == null) {
                 log.error("blogReact with id: " + blogReactDTO.getBlogReactID() + " isn't found in system");
                 json.put("msg", "React blog fail");
@@ -411,7 +413,7 @@ public class BlogServiceImple implements BlogService {
 
             try {
                 BlogReact result = blogReactRepo.saveAndFlush(blogReact);
-                json.put("id",result.getBlogReactID());
+                json.put("blogReactID",result.getBlogReactID());
             } catch (Exception e) {
                 log.error("Love Blog fail\n" + e.getMessage());
                 json.put("msg", "Love Blog fail\n");
@@ -437,8 +439,10 @@ public class BlogServiceImple implements BlogService {
 
         boolean setMark_blogStatus = !account.getRoleUser().getName().equals(roleGuest);
         BlogDTO blogDTO;
+        Account accountUser;
         List<BlogDTO> blogDTOS = new ArrayList<>();
         for(Blog blog: blogs){
+            accountUser = blog.getAccount();
             blogDTO = new BlogDTO();
             blogDTO.setName(blog.getBlogName());
             blogDTO.setBlogID(blog.getBlogID());
@@ -447,9 +451,9 @@ public class BlogServiceImple implements BlogService {
             blogDTO.setContent(blog.getContent());
             blogDTO.setCourseTypeId(blog.getCourseType().getCourseTypeID());
             blogDTO.setCourseTypeName(blog.getCourseType().getCourseTypeName());
-            blogDTO.setAccountID(account.getAccountID());
-            blogDTO.setName(account.getName());
-            blogDTO.setImage(account.getImage());
+            blogDTO.setAccountID(accountUser.getAccountID());
+            blogDTO.setName(accountUser.getName());
+            blogDTO.setImage(accountUser.getImage());
 
             if(setMark_blogStatus){
                 BlogReact blogReact = blogReactRepo.findByAccountAndBlog(account, blog);

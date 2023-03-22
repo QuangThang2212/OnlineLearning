@@ -21,5 +21,6 @@ public interface AccountRepo extends JpaRepository<Account, Integer> {
     Account findByAccountID(int id);
     @Query(nativeQuery = true, value = "SELECT * FROM Account a inner join role_user b on a.roleid = b.roleid WHERE a.accountid = ?1 AND b.name = ?2")
     Account findByAccountIDAndRoleUser(int id,String name);
-
+    @Query(nativeQuery = true, value = "select count(accountid) from account")
+    Integer countTotalAccount();
 }

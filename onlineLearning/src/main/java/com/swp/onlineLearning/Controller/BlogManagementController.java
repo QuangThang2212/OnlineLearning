@@ -97,9 +97,15 @@ public class BlogManagementController {
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
     }
-    @GetMapping("/mark_blog")
-    public ResponseEntity<HashMap<String, Object>> getMarkBlog(@RequestBody BlogReactDTO blogReactDTO) {
-        HashMap<String, Object> json = blogService.mark_blog(blogReactDTO);
+    @PostMapping("/mark_blog")
+    public ResponseEntity<HashMap<String, Object>> getMarkBlog(@RequestBody BlogReactDTO blogReactDTO, Principal principal) {
+        HashMap<String, Object> json = new HashMap<>();
+        if (principal == null) {
+            json.put("msg", "please login to react blog");
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
+        blogReactDTO.setGmail(principal.getName());
+        json = blogService.mark_blog(blogReactDTO);
         String type = json.get("type").toString();
         if (type.equals("true")) {
             return new ResponseEntity<>(json, HttpStatus.OK);
