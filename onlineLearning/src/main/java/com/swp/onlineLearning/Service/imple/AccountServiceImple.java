@@ -301,7 +301,7 @@ public class AccountServiceImple implements AccountService, UserDetailsService {
     @Override
     public HashMap<String, Object> findBAllCourseExpert(String search) {
         HashMap<String, Object> json = new HashMap<>();
-        json.put("type", false);
+        json.put("type", true);
 
         RoleUser roleUser = roleRepo.findByName(roleCourseExpert);
         List<Account> accounts;
@@ -318,7 +318,6 @@ public class AccountServiceImple implements AccountService, UserDetailsService {
             return json;
         }
         json.put("msg", accounts.size() + " course expert found on the system");
-        json.put("type", true);
         return json;
     }
 
