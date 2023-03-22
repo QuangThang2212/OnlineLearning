@@ -134,8 +134,14 @@ public class CommonActionController {
     }
 
     @GetMapping("/blog/blog_search")
-    public ResponseEntity<HashMap<String, Object>> searchByNameBlog(@RequestParam("page") int page, @RequestParam("limit") int limit, @RequestParam("search") String search) {
-        HashMap<String, Object> json = blogService.searchByNameBlog(page, limit, search);
+    public ResponseEntity<HashMap<String, Object>> searchByNameBlog(@RequestParam("page") int page, @RequestParam("limit") int limit, @RequestParam("search") String search, Principal principal) {
+        String authority;
+        if (principal == null) {
+            authority = roleGuest;
+        } else {
+            authority = principal.getName();
+        }
+        HashMap<String, Object> json = blogService.searchByNameBlog(page, limit, search, authority);
         String type = json.get("type").toString();
         if (type.equals("true")) {
             return new ResponseEntity<>(json, HttpStatus.OK);

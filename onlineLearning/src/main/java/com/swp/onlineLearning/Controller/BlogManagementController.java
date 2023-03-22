@@ -122,4 +122,19 @@ public class BlogManagementController {
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
     }
+    @GetMapping("/get_favorite")
+    public ResponseEntity<HashMap<String, Object>> getFavoriteBlog(Principal principal) {
+        HashMap<String, Object> json = new HashMap<>();
+        if (principal == null) {
+            json.put("msg", "please login to access");
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
+        json = blogService.getFavouriteBlog(principal.getName());
+        String type = json.get("type").toString();
+        if (type.equals("true")) {
+            return new ResponseEntity<>(json, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
+    }
 }

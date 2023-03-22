@@ -24,4 +24,6 @@ public interface BlogRepo extends JpaRepository<Blog,String> {
     List<Blog> findByAccount(Account account);
     @Query(nativeQuery = true, value = "select * from blog where blog_name=?1 and blogid != ?2")
     Blog findByBlogNameForUpdate(String BlogName, String id);
+    @Query(nativeQuery = true, value = "select * from blog a inner join blog_react b on a.blogid = b.blogid where b.accountid=?1")
+    List<Blog> findFavoriteBlog(Integer accountid);
 }

@@ -232,7 +232,7 @@ public class BlogServiceImple implements BlogService {
     }
 
     @Override
-    public HashMap<String, Object> searchByNameBlog(int pageNumber, int size, String name) {
+    public HashMap<String, Object> searchByNameBlog(int pageNumber, int size, String name, String authority) {
         HashMap<String, Object> json = new HashMap<>();
         json.put("type", false);
         if (pageNumber < 1 || size < 1) {
@@ -260,7 +260,14 @@ public class BlogServiceImple implements BlogService {
             return json;
         }
         List<Blog> list = blogs.stream().toList();
+        boolean setMark_blogStatus = false;
+        Account account = new Account();
+        if(!authority.equals(roleGuest)){
+            setMark_blogStatus=true;
+            account = accountRepo.findByGmail(authority);
+        }
 
+        BlogReact blogReact;
         List<BlogDTO> blogDTOs = new ArrayList<>();
         for (Blog a : list) {
             BlogDTO blogDTO = new BlogDTO();
@@ -274,6 +281,13 @@ public class BlogServiceImple implements BlogService {
             blogDTO.setCreateDate(a.getCreateDate());
             blogDTO.setName(a.getAccount().getName());
             blogDTO.setImage(a.getAccount().getImage());
+
+            if(setMark_blogStatus){
+                blogReact = blogReactRepo.findByAccountAndBlog(account, a);
+                if(blogReact!=null){
+                    blogDTO.setBlogReactID(blogReact.getBlogReactID());
+                }
+            }
 
             blogDTOs.add(blogDTO);
         }
@@ -406,6 +420,48 @@ public class BlogServiceImple implements BlogService {
         }
         log.info("Un-like blog successfully\n");
         json.replace("type", true);
+        return json;
+    }
+
+    @Override
+    public HashMap<String, Object> getFavouriteBlog(String gmail) {
+        HashMap<String, Object> json = new HashMap<>();
+        json.put("type", false);
+        Account account = accountRepo.findByGmail(gmail);
+
+        List<Blog> blogs = blogRepo.findFavoriteBlog(account.getAccountID());
+        if(blogs.isEmpty()){
+            json.put("type", true);
+            return json;
+        }
+
+        boolean setMark_blogStatus = !account.getRoleUser().getName().equals(roleGuest);
+        BlogDTO blogDTO;
+        List<BlogDTO> blogDTOS = new ArrayList<>();
+        for(Blog blog: blogs){
+            blogDTO = new BlogDTO();
+            blogDTO.setName(blog.getBlogName());
+            blogDTO.setBlogID(blog.getBlogID());
+            blogDTO.setBlogMeta(blog.getBlogMeta());
+            blogDTO.setBlogName(blog.getBlogName());
+            blogDTO.setContent(blog.getContent());
+            blogDTO.setCourseTypeId(blog.getCourseType().getCourseTypeID());
+            blogDTO.setCourseTypeName(blog.getCourseType().getCourseTypeName());
+            blogDTO.setAccountID(account.getAccountID());
+            blogDTO.setName(account.getName());
+            blogDTO.setImage(account.getImage());
+
+            if(setMark_blogStatus){
+                BlogReact blogReact = blogReactRepo.findByAccountAndBlog(account, blog);
+                if(blogReact!=null){
+                    blogDTO.setBlogReactID(blogReact.getBlogReactID());
+                }
+            }
+
+            blogDTOS.add(blogDTO);
+        }
+        json.put("blogs", blogDTOS);
+        json.put("type", true);
         return json;
     }
 }
