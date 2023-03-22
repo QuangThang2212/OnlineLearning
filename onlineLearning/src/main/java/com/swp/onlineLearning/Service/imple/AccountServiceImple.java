@@ -24,10 +24,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -230,17 +227,21 @@ public class AccountServiceImple implements AccountService, UserDetailsService {
             json.put("msg", "This gmail isn't found in system, please register");
             return json;
         }
-
-        final String token = JWTUtil.generateTokenWithExpiration(account);
-        if(token==null){
-            json.put("msg", "Invalid token");
-            json.put("type", true);
-            return json;
+//        String newPassword = Random;
+        String upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        String lower = upper.toLowerCase(Locale.ROOT);
+        String digits = "0123456789";
+        String alphanum = upper + lower + digits;
+        Random random = new Random();
+        char[] newPassword = new char[15];
+        for(int i=0; i<newPassword.length; i++){
+            newPassword[i]=alphanum.charAt(random.nextInt(alphanum.length()));
         }
+
         String title = "Confirm change password";
         String content = "This mail were send to confirm you want to change your password";
-        String button = "Change password";
-        String url= "https://swplearning.netlify.app/account/active/"+token;
+        String button = "New Password: "+ Arrays.toString(newPassword);
+        String url= "#";
 
         try {
             sendMailService.sendMail(title, content, button, account.getGmail(), url);
@@ -391,29 +392,17 @@ public class AccountServiceImple implements AccountService, UserDetailsService {
     }
 
     @Override
-    public HashMap<String, Object> changePassword(String token, String password) {
+    public HashMap<String, Object> changePassword(UserDTO userDTO) {
         HashMap<String, Object> json = new HashMap<>();
         json.put("type", false);
-        if (token == null) {
-            log.error("Not allow null account to register");
-            json.put("msg", "Not allow null account to register");
-            return json;
-        }
-        try{
-            JWTUtil.isTokenExpired(token);
-        }catch (Exception ex){
-            log.error("Register token had out of date, please register again");
-            json.put("msg", "Register token had out of date, please register again");
-            return json;
-        }
-        String gmail = JWTUtil.getIdFromToken(token);
-        Account account = accountRepo.findByGmail(gmail);
+
+        Account account = accountRepo.findByGmail(userDTO.getGmail());
         if (account == null) {
-            log.error("Account " + gmail+ " isn't exist in the system");
-            json.put("msg", "Account " + gmail + " isn't exist in the system");
+            log.error("Account isn't exist in the system");
+            json.put("msg", "Account isn't exist in the system");
             return json;
         }
-        account.setPassword(passwordEncoder.encode(password));
+        account.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         try {
             accountRepo.save(account);
         } catch (Exception e) {

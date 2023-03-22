@@ -17,5 +17,5 @@ public interface AccountService {
     HashMap<String,Object> findUser(Integer id);
     HashMap<String,Object> findUserWithGmail(String gmail);
     HashMap<String,Object> update(UserDTO userDTO, String gmail);
-    HashMap<String,Object> changePassword(String token, String password);
+    HashMap<String,Object> changePassword(UserDTO userDTO);
 }

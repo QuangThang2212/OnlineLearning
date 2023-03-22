@@ -110,23 +110,4 @@ public class UserAccountController {
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
     }
-    @PostMapping("/change_password")
-    public ResponseEntity<HashMap<String, Object>> changePassword(@PathVariable("password") String password, HttpServletRequest request){
-        final String token = request.getHeader("token");
-        HashMap<String, Object> json = new HashMap<>();
-        try{
-            json = accountService.changePassword(password, token);
-        }catch (Exception e){
-            log.error(e.getMessage());
-            json.put("msg", "Change password fail");
-            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
-        }
-
-        String type = json.get("type").toString();
-        if(type.equals("true")){
-            return new ResponseEntity<>(json, HttpStatus.OK);
-        }else{
-            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
-        }
-    }
 }

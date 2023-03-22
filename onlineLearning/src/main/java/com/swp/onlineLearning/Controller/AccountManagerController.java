@@ -126,4 +126,27 @@ public class AccountManagerController {
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
     }
+    @PostMapping("/change_password")
+    public ResponseEntity<HashMap<String, Object>> changePassword(@RequestBody UserDTO userDTO, Principal principal){
+        HashMap<String, Object> json = new HashMap<>();
+        if (principal == null) {
+            json.put("msg", "Invalid account");
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
+        userDTO.setGmail(principal.getName());
+        try{
+            json = accountService.changePassword(userDTO);
+        }catch (Exception e){
+            log.error(e.getMessage());
+            json.put("msg", "Change password fail");
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
+
+        String type = json.get("type").toString();
+        if(type.equals("true")){
+            return new ResponseEntity<>(json, HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
+    }
 }
