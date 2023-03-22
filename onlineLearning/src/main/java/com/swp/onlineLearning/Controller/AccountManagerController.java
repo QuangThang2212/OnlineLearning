@@ -77,7 +77,7 @@ public class AccountManagerController {
             json.put("msg", "Invalid account");
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
-        json = accountService.findUser(principal.getName());
+        json = accountService.findUserWithGmail(principal.getName());
         String type = json.get("type").toString();
         if (type.equals("true")) {
             return new ResponseEntity<>(json, HttpStatus.OK);
