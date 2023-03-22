@@ -348,4 +348,38 @@ public class VoucherServiceImple implements VoucherService {
         json.put("type", true);
         return json;
     }
+
+    @Override
+    public HashMap<String, Object> deleteVoucher(Integer id) {
+        HashMap<String, Object> json = new HashMap<>();
+        json.put("type", false);
+        Voucher voucher = voucherRepo.findByVoucherID(id);
+        if (voucher == null) {
+            log.error("voucher with id " + id + " isn't exist in system");
+            json.put("msg", "voucher with id " + id + " isn't exist in system");
+            return json;
+        }
+        if(voucher.isStatus()){
+            log.error("voucher with id " + id + " is in active mode, not allow delete");
+            json.put("msg", "voucher with id " + id + " is in active mode, not allow delete");
+            return json;
+        }
+        List<Payment> payments = voucher.getPayments();
+        if(!payments.isEmpty()){
+            log.error("voucher with id " + id + " have user payment history, not allow delete");
+            json.put("msg", "voucher with id " + id + " have user payment history, not allow delete");
+            return json;
+        }
+        try {
+            voucherRepo.delete(voucher);
+        } catch (Exception e) {
+            log.error("Delete Voucher fail \n" + e.getMessage());
+            json.put("msg", "Delete Voucher fail");
+            return json;
+        }
+        log.info("Delete voucher successfully");
+        json.put("msg", "Delete voucher successfully");
+        json.put("type", true);
+        return json;
+    }
 }

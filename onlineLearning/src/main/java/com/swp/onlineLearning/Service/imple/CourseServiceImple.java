@@ -1059,35 +1059,36 @@ public class CourseServiceImple implements CourseService {
     public HashMap<String, Object> getEnrollCourseForUser(Integer id) {
         HashMap<String, Object> json = new HashMap<>();
         json.put("type", false);
-        List<Course> Course = courseRepo.getCourseForUserOnProcess(id);
-        if (Course == null) {
-            log.error("Course with id " + id + " isn't exist in system");
-            json.put("msg", "Course with id " + id + " isn't exist in system");
-            return json;
-        }
         List<CourseDTO> courseDTOProgress = new ArrayList<>();
         List<CourseDTO> courseDTOFinish = new ArrayList<>();
-        for (Course course : courseRepo.getCourseForUserOnProcess(id)) {
-            CourseDTO courseDTO = new CourseDTO();
-            courseDTO.setCourseID(course.getCourseID());
-            courseDTO.setCourseName(course.getCourseName());
-            courseDTO.setDescription(course.getDescription());
-            courseDTO.setImage(course.getImage());
 
-            courseDTOProgress.add(courseDTO);
-        }
-        for (Course course : courseRepo.getCourseForUserFinish(id)){
-            CourseDTO courseDTO = new CourseDTO();
-            courseDTO.setCourseID(course.getCourseID());
-            courseDTO.setCourseName(course.getCourseName());
-            courseDTO.setDescription(course.getDescription());
-            courseDTO.setImage(course.getImage());
+        List<Course> onProgress = courseRepo.getCourseForUserOnProcess(id);
+        if (!onProgress.isEmpty()) {
+            for (Course course : onProgress) {
+                CourseDTO courseDTO = new CourseDTO();
+                courseDTO.setCourseID(course.getCourseID());
+                courseDTO.setCourseName(course.getCourseName());
+                courseDTO.setDescription(course.getDescription());
+                courseDTO.setImage(course.getImage());
 
-            courseDTOFinish.add(courseDTO);
+                courseDTOProgress.add(courseDTO);
+            }
+            json.put("onProcess", courseDTOProgress);
         }
 
-        json.put("completed", courseDTOFinish);
-        json.put("onProcess", courseDTOProgress);
+        List<Course> finish = courseRepo.getCourseForUserFinish(id);
+        if (!finish.isEmpty()) {
+            for (Course course : finish){
+                CourseDTO courseDTO = new CourseDTO();
+                courseDTO.setCourseID(course.getCourseID());
+                courseDTO.setCourseName(course.getCourseName());
+                courseDTO.setDescription(course.getDescription());
+                courseDTO.setImage(course.getImage());
+
+                courseDTOFinish.add(courseDTO);
+            }
+            json.put("completed", courseDTOFinish);
+        }
         json.put("type", true);
         return json;
 

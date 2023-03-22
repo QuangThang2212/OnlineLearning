@@ -81,4 +81,15 @@ public class VoucherController {
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
     }
+    @PostMapping("/delete")
+    public ResponseEntity<HashMap<String, Object>> deleteVoucher(@RequestParam("id")Integer id){
+        HashMap<String, Object> json = voucherService.deleteVoucher(id);
+
+        String type = json.get("type").toString();
+        if(type.equals("true")){
+            return new ResponseEntity<>(json, HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
+    }
 }

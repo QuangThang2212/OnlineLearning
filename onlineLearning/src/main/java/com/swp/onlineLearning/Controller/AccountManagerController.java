@@ -46,8 +46,8 @@ public class AccountManagerController {
     }
 
     @GetMapping("/course_expert")
-    public ResponseEntity<HashMap<String, Object>> getAllCourseExpert() {
-        HashMap<String, Object> json = accountService.findBAllCourseExpert();
+    public ResponseEntity<HashMap<String, Object>> getAllCourseExpert(@RequestParam("search") String search) {
+        HashMap<String, Object> json = accountService.findBAllCourseExpert(search);
 
         String type = json.get("type").toString();
         if (type.equals("true")) {
@@ -113,23 +113,30 @@ public class AccountManagerController {
         } else return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
 
     }
-    @GetMapping("/user_course={id}")
-    public ResponseEntity<HashMap<String, Object>> getCourseForUser(@RequestParam("id") Integer id, Principal principal){
-    HashMap<String, Object> json = new HashMap<>();
-    if (principal == null) {
-        return new ResponseEntity<>(json, HttpStatus.OK);
+
+    @GetMapping("/user_course")
+    public ResponseEntity<HashMap<String, Object>> getCourseForUser(@RequestParam("id") Integer id, Principal principal) {
+        HashMap<String, Object> json = new HashMap<>();
+        if (principal == null) {
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
+        json = courseService.getEnrollCourseForUser(id);
+        String type = json.get("type").toString();
+        if (type.equals("true")) {
+            return new ResponseEntity<>(json, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
     }
-    json = courseService.getEnrollCourseForUser(id);
-    String type = json.get("type").toString();
-    if (type.equals("true")) {
-        return new ResponseEntity<>(json, HttpStatus.OK);
-    } else {
-        return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
-    }
-}
+
     @GetMapping("/getpayment")
-    public ResponseEntity<HashMap<String, Object>> getUserPayment(@RequestBody UserDTO UserDTO, String gmail) {
-        HashMap<String, Object> json = paymentService.getPayment(gmail);
+    public ResponseEntity<HashMap<String, Object>> getUserPayment(Principal principal) {
+        HashMap<String, Object> json = new HashMap<>();
+        if (principal == null) {
+            json.put("msg", "Invalid account");
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
+        json = paymentService.getPayment(principal.getName());
         String type = json.get("type").toString();
         if (type.equals("true")) {
             return new ResponseEntity<>(json, HttpStatus.OK);

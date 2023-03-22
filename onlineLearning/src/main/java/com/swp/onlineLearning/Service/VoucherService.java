@@ -11,4 +11,5 @@ public interface VoucherService {
     HashMap<String, Object> changeVoucherStatus(ChangeStatusVoucherDTO changeStatusVoucherDTO);
     HashMap<String, Object> getVoucherForUpdate(Integer voucherID);
     HashMap<String, Object> getVoucherForUser(Integer courseID, String gmail);
+    HashMap<String, Object> deleteVoucher(Integer id);
 }

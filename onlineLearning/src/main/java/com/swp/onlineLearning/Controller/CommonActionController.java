@@ -25,6 +25,8 @@ public class CommonActionController {
     private CourseRateService courseRateService;
     @Autowired
     private MarketingService marketingService;
+    @Autowired
+    private AccountService accountService;
 
     @GetMapping("/home")
     public ResponseEntity<HashMap<String, Object>> homePage(Principal principal) {
@@ -90,6 +92,27 @@ public class CommonActionController {
     @GetMapping("/blog/blog_details")
     public ResponseEntity<HashMap<String, Object>> getBlogDetail(@RequestParam("id") String id) {
         HashMap<String, Object> json = blogService.getBlogDetail(id);
+        String type = json.get("type").toString();
+        if (type.equals("true")) {
+            return new ResponseEntity<>(json, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
+    }
+    @GetMapping("/get_user")
+    public ResponseEntity<HashMap<String, Object>> getUser(@RequestParam("id") Integer id) {
+        HashMap<String, Object> json = accountService.findUser(id);
+        String type = json.get("type").toString();
+        if (type.equals("true")) {
+            return new ResponseEntity<>(json, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
+    }
+    @GetMapping("/user_course")
+    public ResponseEntity<HashMap<String, Object>> getCourseForUser(@RequestParam("id") Integer id) {
+        HashMap<String, Object> json = courseService.getEnrollCourseForUser(id);
+
         String type = json.get("type").toString();
         if (type.equals("true")) {
             return new ResponseEntity<>(json, HttpStatus.OK);

@@ -125,14 +125,20 @@ public class BlogServiceImple implements BlogService {
     }
 
     @Override
-    public HashMap<String, Object> delete(String id) {
+    public HashMap<String, Object> delete(String id, String gmail) {
         HashMap<String, Object> json = new HashMap<>();
         json.put("type", false);
+        Account account = accountRepo.findByGmail(gmail);
 
         Blog deleteBlog = blogRepo.findByBlogID(id);
         if(deleteBlog==null){
             log.error("Invalid id value");
             json.put("msg", "Invalid id value");
+            return json;
+        }
+        if(deleteBlog.getAccount().getAccountID()!= account.getAccountID()){
+            log.error("Invalid account");
+            json.put("msg", "Invalid account");
             return json;
         }
 
@@ -274,6 +280,7 @@ public class BlogServiceImple implements BlogService {
         blogDTO.setBlogName(blog.getBlogName());
         blogDTO.setBlogMeta(blog.getBlogMeta());
         blogDTO.setContent(blog.getContent());
+        blogDTO.setAccountID(blog.getAccount().getAccountID());
         blogDTO.setName(blog.getAccount().getName());
         blogDTO.setImage(blog.getAccount().getImage());
         blogDTO.setCreateDate(blog.getCreateDate());

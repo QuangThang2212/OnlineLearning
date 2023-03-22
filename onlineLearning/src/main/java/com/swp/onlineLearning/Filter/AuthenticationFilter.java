@@ -32,8 +32,9 @@ public class AuthenticationFilter extends BasicAuthenticationFilter {
             filterChain.doFilter(request, response);
             return;
         }
+
         String gmail = JWTUtil.getIdFromToken(token);
-        String role = JWTUtil.getRoleFromToken(token);
+        String role = JWTUtil.getSubjectFromToken(token);
 
         if (gmail == null || role == null) {
             log.error("token unavailable");
