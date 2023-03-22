@@ -88,8 +88,8 @@ public class BlogServiceImple implements BlogService {
 
         CourseType courseType = courseTypeRepo.findByCourseTypeID(blogDTO.getCourseTypeId());
         if (courseType == null) {
-            log.error("Blog type with id " + blogDTO.getBlogID() + " isn't found in system");
-            json.put("msg", "Blog type with id " + blogDTO.getBlogID() + " isn't found in system");
+            log.error("Blog type with id " + blogDTO.getCourseTypeId() + " isn't found in system");
+            json.put("msg", "Blog type with id " + blogDTO.getCourseTypeId() + " isn't found in system");
             return json;
         }
         Blog blogNameCheck = blogRepo.findByBlogNameForUpdate(blogDTO.getBlogName(), blogDTO.getBlogID());
@@ -268,6 +268,8 @@ public class BlogServiceImple implements BlogService {
             json.put("msg", "blogdetail with id " + id + " isn't found in system");
             return json;
         }
+        CourseType courseType = blog.getCourseType();
+
         BlogDTO blogDTO = new BlogDTO();
         blogDTO.setBlogName(blog.getBlogName());
         blogDTO.setBlogMeta(blog.getBlogMeta());
@@ -275,7 +277,8 @@ public class BlogServiceImple implements BlogService {
         blogDTO.setName(blog.getAccount().getName());
         blogDTO.setImage(blog.getAccount().getImage());
         blogDTO.setCreateDate(blog.getCreateDate());
-        blogDTO.setCourseTypeName(blog.getCourseType().getCourseTypeName());
+        blogDTO.setCourseTypeId(courseType.getCourseTypeID());
+        blogDTO.setCourseTypeName(courseType.getCourseTypeName());
 
         json.put("blogDetail", blogDTO);
         json.put("type", true);
