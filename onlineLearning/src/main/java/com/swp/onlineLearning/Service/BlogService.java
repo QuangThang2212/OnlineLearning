@@ -12,9 +12,9 @@ public interface BlogService {
     HashMap<String, Object> save(BlogDTO blogDTO);
     HashMap<String, Object> update(BlogDTO blogDTO);
     HashMap<String, Object> delete(String id, String gmail);
-    HashMap<String, Object> findAllBlog(int pageNumber, int size);
+    HashMap<String, Object> findAllBlog(int pageNumber, int size, String authority);
     HashMap<String, Object> searchByNameBlog(int pageNumber, int size,String name);
-    HashMap<String, Object> getBlogDetail(String id);
+    HashMap<String, Object> getBlogDetail(String id, String authority);
     HashMap<String, Object> getOwnerBlog(String gmail);
     HashMap<String, Object> mark_blog(BlogReactDTO blogReactDTO);
 }

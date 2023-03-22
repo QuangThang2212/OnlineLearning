@@ -32,6 +32,6 @@ public class BlogDTO {
     private int accountID;
     private String courseType;
 
-
+    private String blogReactID;
     }
 

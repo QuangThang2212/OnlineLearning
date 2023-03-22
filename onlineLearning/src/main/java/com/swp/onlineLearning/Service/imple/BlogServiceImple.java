@@ -11,6 +11,7 @@ import com.swp.onlineLearning.Service.BlogService;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -31,6 +32,8 @@ public class BlogServiceImple implements BlogService {
     private AccountRepo accountRepo;
     @Autowired
     private BlogReactRepo blogReactRepo;
+    @Value("${role.guest}")
+    private String roleGuest;
     @Override
     @Transactional
     public HashMap<String, Object> save(BlogDTO blogDTO) {
@@ -162,7 +165,7 @@ public class BlogServiceImple implements BlogService {
     }
 
     @Override
-    public HashMap<String, Object> findAllBlog(int pageNumber, int size) {
+    public HashMap<String, Object> findAllBlog(int pageNumber, int size, String authority) {
         HashMap<String, Object> json = new HashMap<>();
         json.put("type", false);
         if (pageNumber < 1 || size < 1) {
@@ -189,7 +192,14 @@ public class BlogServiceImple implements BlogService {
             return json;
         }
         List<Blog> list = blogs.stream().toList();
+        boolean setMark_blogStatus = false;
+        Account account = new Account();
+        if(!authority.equals(roleGuest)){
+            setMark_blogStatus=true;
+            account = accountRepo.findByGmail(authority);
+        }
 
+        BlogReact blogReact;
         List<BlogDTO> blogDTOs = new ArrayList<>();
         for (Blog a : list) {
             BlogDTO blogDTO = new BlogDTO();
@@ -205,6 +215,12 @@ public class BlogServiceImple implements BlogService {
             blogDTO.setImage(a.getAccount().getImage());
             blogDTO.setCreateDate(a.getCreateDate());
 
+            if(setMark_blogStatus){
+                blogReact = blogReactRepo.findByAccountAndBlog(account, a);
+                if(blogReact!=null){
+                    blogDTO.setBlogReactID(blogReact.getBlogReactID());
+                }
+            }
 
             blogDTOs.add(blogDTO);
 
@@ -268,7 +284,7 @@ public class BlogServiceImple implements BlogService {
     }
 
     @Override
-    public HashMap<String, Object> getBlogDetail(String id) {
+    public HashMap<String, Object> getBlogDetail(String id, String authority) {
         HashMap<String, Object> json = new HashMap<>();
         json.put("type", false);
 
@@ -279,6 +295,12 @@ public class BlogServiceImple implements BlogService {
             return json;
         }
         CourseType courseType = blog.getCourseType();
+        boolean setMark_blogStatus = false;
+        Account account = new Account();
+        if(!authority.equals(roleGuest)){
+            setMark_blogStatus=true;
+            account = accountRepo.findByGmail(authority);
+        }
 
         BlogDTO blogDTO = new BlogDTO();
         blogDTO.setBlogName(blog.getBlogName());
@@ -290,6 +312,13 @@ public class BlogServiceImple implements BlogService {
         blogDTO.setCreateDate(blog.getCreateDate());
         blogDTO.setCourseTypeId(courseType.getCourseTypeID());
         blogDTO.setCourseTypeName(courseType.getCourseTypeName());
+
+        if(setMark_blogStatus){
+            BlogReact blogReact = blogReactRepo.findByAccountAndBlog(account, blog);
+            if(blogReact!=null){
+                blogDTO.setBlogReactID(blogReact.getBlogReactID());
+            }
+        }
 
         json.put("blogDetail", blogDTO);
         json.put("type", true);
