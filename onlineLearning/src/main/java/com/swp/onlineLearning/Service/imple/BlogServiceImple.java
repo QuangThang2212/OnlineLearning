@@ -1,8 +1,10 @@
 package com.swp.onlineLearning.Service.imple;
 
 import com.swp.onlineLearning.DTO.BlogDTO;
+import com.swp.onlineLearning.DTO.BlogReactDTO;
 import com.swp.onlineLearning.Model.Account;
 import com.swp.onlineLearning.Model.Blog;
+import com.swp.onlineLearning.Model.BlogReact;
 import com.swp.onlineLearning.Model.CourseType;
 import com.swp.onlineLearning.Repository.*;
 import com.swp.onlineLearning.Service.BlogService;
@@ -27,6 +29,8 @@ public class BlogServiceImple implements BlogService {
     private CourseTypeRepo courseTypeRepo;
     @Autowired
     private AccountRepo accountRepo;
+    @Autowired
+    private BlogReactRepo blogReactRepo;
     @Override
     @Transactional
     public HashMap<String, Object> save(BlogDTO blogDTO) {
@@ -322,6 +326,57 @@ public class BlogServiceImple implements BlogService {
         }
         json.put("blogs", blogDTOS);
         json.put("type", true);
+        return json;
+    }
+
+    @Override
+    public HashMap<String, Object> mark_blog(BlogReactDTO blogReactDTO) {
+        HashMap<String, Object> json = new HashMap<>();
+        json.put("type", false);
+
+        BlogReact blogReact = new BlogReact();
+        if (blogReactDTO.getBlogReactID() != null) {
+            blogReact = blogReactRepo.findByBlogReactID(blogReact.getBlogReactID());
+            if (blogReact == null) {
+                log.error("blogReact with id: " + blogReactDTO.getBlogReactID() + " isn't found in system");
+                json.put("msg", "React blog fail");
+                return json;
+            }
+            try {
+                blogReactRepo.delete(blogReact);
+            } catch (Exception e) {
+                log.error("delete react blog fail\n" + e.getMessage());
+                json.put("msg", "delete react blog fail");
+                return json;
+            }
+        } else {
+            Blog blog = blogRepo.findByBlogID(blogReactDTO.getBlogID());
+            if (blog == null) {
+                log.error("blog isn't exist in system");
+                json.put("msg", "blog isn't exist in system");
+                return json;
+            }
+            Account account = accountRepo.findByGmail(blogReactDTO.getGmail());
+            if (account == null) {
+                log.error("account isn't exist in system");
+                json.put("msg", "account isn't exist in system");
+                return json;
+            }
+            blogReact.setBlogReactID(LocalDateTime.now().toString());
+            blogReact.setBlog(blog);
+            blogReact.setAccount(account);
+
+            try {
+                BlogReact result = blogReactRepo.saveAndFlush(blogReact);
+                json.put("id",result.getBlogReactID());
+            } catch (Exception e) {
+                log.error("Love Blog fail\n" + e.getMessage());
+                json.put("msg", "Love Blog fail\n");
+                return json;
+            }
+        }
+        log.info("Un-like blog successfully\n");
+        json.replace("type", true);
         return json;
     }
 }

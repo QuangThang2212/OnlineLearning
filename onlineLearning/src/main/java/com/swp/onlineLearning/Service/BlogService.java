@@ -2,6 +2,7 @@ package com.swp.onlineLearning.Service;
 
 
 import com.swp.onlineLearning.DTO.BlogDTO;
+import com.swp.onlineLearning.DTO.BlogReactDTO;
 
 
 import java.util.HashMap;
@@ -15,5 +16,6 @@ public interface BlogService {
     HashMap<String, Object> searchByNameBlog(int pageNumber, int size,String name);
     HashMap<String, Object> getBlogDetail(String id);
     HashMap<String, Object> getOwnerBlog(String gmail);
+    HashMap<String, Object> mark_blog(BlogReactDTO blogReactDTO);
 }
 

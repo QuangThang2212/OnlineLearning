@@ -1,6 +1,7 @@
 package com.swp.onlineLearning.Controller;
 
 import com.swp.onlineLearning.DTO.BlogDTO;
+import com.swp.onlineLearning.DTO.BlogReactDTO;
 import com.swp.onlineLearning.DTO.ErrorMessageDTO;
 import com.swp.onlineLearning.Service.BlogService;
 import lombok.RequiredArgsConstructor;
@@ -96,7 +97,16 @@ public class BlogManagementController {
             return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
         }
     }
-
+    @GetMapping("/mark_blog")
+    public ResponseEntity<HashMap<String, Object>> getMarkBlog(@RequestBody BlogReactDTO blogReactDTO) {
+        HashMap<String, Object> json = blogService.mark_blog(blogReactDTO);
+        String type = json.get("type").toString();
+        if (type.equals("true")) {
+            return new ResponseEntity<>(json, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
+    }
     @GetMapping("/my_blog")
     public ResponseEntity<HashMap<String, Object>> getOwnerBlog(Principal principal) {
         HashMap<String, Object> json = new HashMap<>();
