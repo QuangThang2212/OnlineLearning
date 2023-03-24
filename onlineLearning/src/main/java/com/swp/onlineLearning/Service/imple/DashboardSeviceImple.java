@@ -18,6 +18,7 @@ public class DashboardSeviceImple implements DashboardService {
         json.put("type", false);
 
         int totalAccount = accountRepo.countTotalAccount();
+        
 
         return null;
     }

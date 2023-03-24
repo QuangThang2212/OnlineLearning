@@ -18,7 +18,7 @@ public class SendMailService {
     private String gmail;
     @Autowired
     private JavaMailSender mailSender;
-    public void sendMail(String title, String content, String button, String mailAccount, String url)  throws MessagingException {
+    public void sendMail(String title, String content, String button, String mailAccount)  throws MessagingException {
         String messageToSend = "<!DOCTYPE html>\n" +
                 "<html lang=\"en-US\">\n" +
                 "<head>\n" +
@@ -67,7 +67,7 @@ public class SendMailService {
                 "\t\t\t\t\t\t<tr>\n" +
                 "\t\t\t\t\t\t\t<td style=\"text-align: center\">\n" +
                 "\t\t\t\t\t\t\t\t<a\n" +
-                "\t\t\t\t\t\t\t\t\thref=\""+url+"\"\n" +
+                "\t\t\t\t\t\t\t\t\thref=\"#\"\n" +
                 "\t\t\t\t\t\t\t\t\ttitle=\"logo\"\n" +
                 "\t\t\t\t\t\t\t\t\ttarget=\"_blank\"\n" +
                 "\t\t\t\t\t\t\t\t>\n" +
@@ -137,7 +137,7 @@ public class SendMailService {
                 "\t\t\t\t\t\t\t\t\t\t\t\t"+content+"\n" +
                 "\t\t\t\t\t\t\t\t\t\t\t</p>\n" +
                 "\t\t\t\t\t\t\t\t\t\t\t<a\n" +
-                "\t\t\t\t\t\t\t\t\t\t\t\thref=\""+url+"\"\n" +
+                "\t\t\t\t\t\t\t\t\t\t\t\thref=\"#\"\n" +
                 "\t\t\t\t\t\t\t\t\t\t\t\tstyle=\"\n" +
                 "\t\t\t\t\t\t\t\t\t\t\t\t\tbackground: #20e277;\n" +
                 "\t\t\t\t\t\t\t\t\t\t\t\t\ttext-decoration: none !important;\n" +

@@ -1,6 +1,5 @@
 package com.swp.onlineLearning.Service.imple;
 
-import com.swp.onlineLearning.Config.JWTUtil;
 import com.swp.onlineLearning.DTO.RoleDTO;
 import com.swp.onlineLearning.DTO.UserDTO;
 import com.swp.onlineLearning.Model.Account;
@@ -23,7 +22,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -126,7 +124,7 @@ public class AccountServiceImple implements AccountService, UserDetailsService {
             json.put("msg", "Not allow null account to register");
             return json;
         }
-
+        
         userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         userDTO.setGmail(userDTO.getGmail().trim());
 
@@ -134,61 +132,20 @@ public class AccountServiceImple implements AccountService, UserDetailsService {
         Account account = new Account();
         modelMapper.map(userDTO, account);
 
-        //check exits mail
-        Account checkMailExit = accountRepo.findByGmail(account.getGmail());
-        if (checkMailExit != null) {
-            log.error(account.getGmail() + " had already registered in system, ");
-            json.put("msg", account.getGmail() + " had already registered in system");
-            return json;
-        }
+        if(userDTO.getType().equals("normal")){
+            String title = "Register confirm to active account";
+            String content = "Thank you for create account on our system, welcome our community";
+            String button = "Return website";
 
-        final String token = JWTUtil.generateTokenWithExpiration(account);
-        if (token == null) {
-            json.put("msg", "Invalid token");
-            json.put("type", true);
-            return json;
+            try {
+                sendMailService.sendMail(title, content, button, account.getGmail());
+            } catch (Exception e) {
+                log.error("Send mail fail \n" + e.getMessage());
+                json.put("msg", "Send mail fail, please try register again");
+                json.put("type", false);
+                return json;
+            }
         }
-
-        String title = "Register confirm to active account";
-        String content = "Thank you for create account on our system, please click to active your account";
-        String button = "Active";
-        String url = "https://swplearning.netlify.app/account/active/" + token;
-
-        try {
-            sendMailService.sendMail(title, content, button, account.getGmail(), url);
-            json.put("msg", "Please check your mail to active the account");
-            json.put("type", true);
-        } catch (Exception e) {
-            log.error("Send mail fail \n" + e.getMessage());
-            json.put("msg", "Send mail fail, please try register again");
-            json.put("type", false);
-        }
-        return json;
-    }
-
-    @Override
-    public HashMap<String, Object> activeAccount(String token) {
-        HashMap<String, Object> json = new HashMap<>();
-        json.put("type", false);
-        if (token == null) {
-            log.error("Not allow null account to register");
-            json.put("msg", "Not allow null account to register");
-            return json;
-        }
-        try {
-            JWTUtil.isTokenExpired(token);
-        } catch (Exception ex) {
-            log.error("Register token had out of date, please register again");
-            json.put("msg", "Register token had out of date, please register again");
-            return json;
-        }
-        Account account = new Account();
-        account.setPassword(JWTUtil.getSubjectFromToken(token));
-        account.setName(JWTUtil.getUseNameFromToken(token));
-        account.setGmail(JWTUtil.getIdFromToken(token));
-        account.setCreateAt(LocalDateTime.now());
-        account.setBanStatus(false);
-
         RoleUser role = roleRepo.findByName(roleUser);
         if (role == null) {
             log.error("Role " + roleUser + " isn't exist");
@@ -197,7 +154,7 @@ public class AccountServiceImple implements AccountService, UserDetailsService {
         } else {
             account.setRoleUser(role);
         }
-
+        
         try {
             accountRepo.save(account);
         } catch (Exception e) {
@@ -241,10 +198,9 @@ public class AccountServiceImple implements AccountService, UserDetailsService {
         String title = "Confirm change password";
         String content = "This mail were send to confirm you want to change your password";
         String button = "New Password: " + Arrays.toString(newPassword);
-        String url = "#";
 
         try {
-            sendMailService.sendMail(title, content, button, account.getGmail(), url);
+            sendMailService.sendMail(title, content, button, account.getGmail());
             json.put("msg", "Please check your mail to change your password");
             json.put("type", true);
         } catch (Exception e) {
