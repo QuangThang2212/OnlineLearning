@@ -22,6 +22,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -131,6 +132,8 @@ public class AccountServiceImple implements AccountService, UserDetailsService {
         ModelMapper modelMapper = new ModelMapper();
         Account account = new Account();
         modelMapper.map(userDTO, account);
+        account.setCreateAt(LocalDateTime.now());
+        account.setBanStatus(false);
 
         if(userDTO.getType().equals("normal")){
             String title = "Register confirm to active account";
