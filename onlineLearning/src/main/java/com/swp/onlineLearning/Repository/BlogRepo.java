@@ -26,4 +26,6 @@ public interface BlogRepo extends JpaRepository<Blog,String> {
     Blog findByBlogNameForUpdate(String BlogName, String id);
     @Query(nativeQuery = true, value = "select * from blog a inner join blog_react b on a.blogid = b.blogid where b.accountid=?1")
     List<Blog> findFavoriteBlog(Integer accountid);
+    @Query(nativeQuery = true, value = "SELECT sum(blogid) FROM blog")
+    int totalBlog();
 }

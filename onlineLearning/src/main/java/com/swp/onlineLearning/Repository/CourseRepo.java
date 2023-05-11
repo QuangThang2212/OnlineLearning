@@ -36,5 +36,6 @@ public interface CourseRepo extends JpaRepository<Course, Integer> {
     List<Course> getCourseForUserOnProcess(Integer id);
     @Query(nativeQuery = true, value = "Select *  from course c inner join course_rate cr on c.courseid = cr.courseid where cr.accountid = ?1 and cr.status = 1")
     List<Course> getCourseForUserFinish(Integer id);
-
+    @Query(nativeQuery = true, value = "SELECT sum(courseid) FROM course")
+    int totalCourse();
 }

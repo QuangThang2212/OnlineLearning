@@ -23,4 +23,6 @@ public interface AccountRepo extends JpaRepository<Account, Integer> {
     Account findByAccountIDAndRoleUser(int id,String name);
     @Query(nativeQuery = true, value = "select count(accountid) from account")
     Integer countTotalAccount();
+    @Query(nativeQuery = true, value = "select count(accountid) from account where roleid = ?1")
+    Integer totalByRole(int roleID);
 }
