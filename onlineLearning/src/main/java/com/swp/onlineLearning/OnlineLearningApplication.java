@@ -4,16 +4,12 @@ import com.swp.onlineLearning.Model.LessonType;
 import com.swp.onlineLearning.Model.RoleUser;
 import com.swp.onlineLearning.Repository.LessonTypeRepo;
 import com.swp.onlineLearning.Repository.RoleRepo;
-import com.swp.onlineLearning.Service.AccountService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 @SpringBootApplication
 @EnableWebSecurity
